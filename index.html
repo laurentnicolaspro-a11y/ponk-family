@@ -463,6 +463,7 @@ async function loadItems() {
 }
 
 async function addItem() {
+  if (!familyCode) { toast("Connecte-toi d'abord"); return; }
   const input = document.getElementById("newItem");
   const pi = document.getElementById("priceInput");
   const name = input.value.trim();
@@ -562,10 +563,19 @@ const PRODUCTS = ["Pomme","Pomme Granny Smith","Pomme Golden","Poire","Poire Wil
 function getSuggestions(q) {
   if (!q || q.length < 2) return [];
   const qn = q.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  return PRODUCTS.filter(p => {
+  const starts = PRODUCTS.filter(p => {
     const pn = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    return pn.startsWith(qn) || pn.includes(qn);
-  }).slice(0, 5);
+    return pn.startsWith(qn);
+  });
+  const exact = starts.filter(p => {
+    const pn = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return pn === qn;
+  });
+  const others = starts.filter(p => {
+    const pn = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return pn !== qn;
+  });
+  return [...exact, ...others].slice(0, 5);
 }
 
 function showSuggestions(q) {
