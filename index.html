@@ -6,783 +6,175 @@
 <title>Ponk Family</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
 :root {
-  --bg:      #F2F2F7;
-  --surface: #FFFFFF;
-  --green:   #34C759;
-  --green-dk:#248A3D;
-  --black:   #0A0A0A;
-  --text:    #0A0A0A;
-  --muted:   #8E8E93;
-  --border:  rgba(60,60,67,0.12);
-  --red:     #FF3B30;
-  --blue:    #007AFF;
-  --r:       16px;
+  --bg: #F2F2F7; --surface: #FFFFFF; --green: #34C759; --green-dk: #248A3D;
+  --black: #0A0A0A; --text: #0A0A0A; --muted: #8E8E93; --border: rgba(60,60,67,0.12);
+  --red: #FF3B30; --blue: #007AFF; --r: 16px;
 }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-/* ══════════════════════════════════════
-   ONBOARDING
-══════════════════════════════════════ */
-#onboarding {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 24px;
-  background: var(--bg);
-}
-
-.ob-logo {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.8px;
-  color: var(--text);
-  margin-bottom: 6px;
-}
+/* ONBOARDING */
+#onboarding { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; background: var(--bg); }
+.ob-logo { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; color: var(--text); margin-bottom: 6px; }
 .ob-logo span { color: var(--green); }
-
-.ob-sub {
-  font-size: 14px;
-  color: var(--muted);
-  font-weight: 400;
-  margin-bottom: 40px;
-  text-align: center;
-}
-
-.ob-card {
-  background: var(--surface);
-  border-radius: 20px;
-  padding: 28px 24px;
-  width: 100%;
-  max-width: 380px;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.07);
-}
-
-.ob-card h2 {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin-bottom: 6px;
-}
-
-.ob-card p {
-  font-size: 14px;
-  color: var(--muted);
-  margin-bottom: 24px;
-  line-height: 1.5;
-}
-
-.ob-field {
-  margin-bottom: 12px;
-}
-
-.ob-field label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 6px;
-}
-
-.ob-field input {
-  width: 100%;
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 13px 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s;
-}
+.ob-sub { font-size: 14px; color: var(--muted); font-weight: 400; margin-bottom: 40px; text-align: center; }
+.ob-card { background: var(--surface); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: 0 2px 20px rgba(0,0,0,0.07); }
+.ob-card h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+.ob-card p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+.ob-field { margin-bottom: 12px; }
+.ob-field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+.ob-field input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 13px 14px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); outline: none; transition: border-color 0.2s; }
 .ob-field input:focus { border-color: var(--green); }
-
-.ob-btn {
-  width: 100%;
-  background: var(--green);
-  color: white;
-  border: none;
-  border-radius: 13px;
-  padding: 15px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 20px;
-  transition: background 0.15s, transform 0.12s;
-  box-shadow: 0 4px 14px rgba(52,199,89,0.35);
-}
+.ob-btn { width: 100%; background: var(--green); color: white; border: none; border-radius: 13px; padding: 15px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: background 0.15s, transform 0.12s; box-shadow: 0 4px 14px rgba(52,199,89,0.35); }
 .ob-btn:active { background: var(--green-dk); transform: scale(0.98); }
-
-.ob-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-}
-.ob-divider::before, .ob-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-.ob-divider span {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.ob-btn-secondary {
-  width: 100%;
-  background: var(--bg);
-  color: var(--blue);
-  border: 1.5px solid var(--border);
-  border-radius: 13px;
-  padding: 15px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-}
+.ob-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.ob-divider::before, .ob-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.ob-divider span { font-size: 12px; color: var(--muted); font-weight: 600; }
+.ob-btn-secondary { width: 100%; background: var(--bg); color: var(--blue); border: 1.5px solid var(--border); border-radius: 13px; padding: 15px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
 .ob-btn-secondary:active { background: #E5E5EA; }
 
-/* ══════════════════════════════════════
-   APP
-══════════════════════════════════════ */
+/* APP */
 #app { display: none; flex-direction: column; min-height: 100vh; }
 #app.visible { display: flex; }
 
-/* ── HEADER ── */
-.app-header {
-  background: rgba(242,242,247,0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 54px 20px 14px;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  border-bottom: 0.5px solid var(--border);
-}
-
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header-title {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.8px;
-}
+/* HEADER */
+.app-header { background: rgba(242,242,247,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 54px 20px 14px; position: sticky; top: 0; z-index: 20; border-bottom: 0.5px solid var(--border); }
+.header-row { display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; }
 .header-title span { color: var(--green); }
-
-.sync-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-}
-
-.dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--muted);
-  flex-shrink: 0;
-}
-.dot.on  { background: var(--green); animation: pulse 2.5s ease-in-out infinite; }
+.sync-badge { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.dot.on { background: var(--green); animation: pulse 2.5s ease-in-out infinite; }
 .dot.off { background: var(--red); }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
-/* ── CONTENT ── */
+/* TABS */
 .tab-content { flex: 1; overflow-y: auto; padding-bottom: 90px; }
 .tab-pane { display: none; }
 .tab-pane.active { display: block; }
 
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: rgba(242,242,247,0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 0.5px solid var(--border);
-  display: flex;
-  padding: 10px 0 24px;
-  z-index: 30;
-}
-
-.nav-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
-  transition: transform 0.12s;
-}
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(242,242,247,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid var(--border); display: flex; padding: 10px 0 24px; z-index: 30; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 4px 0; transition: transform 0.12s; }
 .nav-btn:active { transform: scale(0.92); }
-
-.nav-icon {
-  width: 26px; height: 26px;
-  display: flex; align-items: center; justify-content: center;
-}
+.nav-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
 .nav-icon svg { width: 24px; height: 24px; }
-
-.nav-label {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--muted);
-  transition: color 0.15s;
-}
-
+.nav-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 600; color: var(--muted); }
 .nav-btn.active .nav-label { color: var(--green); }
-.nav-btn.active .nav-icon svg path,
-.nav-btn.active .nav-icon svg rect,
-.nav-btn.active .nav-icon svg circle { stroke: var(--green); }
+.nav-btn.active svg path, .nav-btn.active svg rect, .nav-btn.active svg circle { stroke: var(--green) !important; }
 
-/* ══════════════════════════════════════
-   TAB ACCUEIL
-══════════════════════════════════════ */
+/* ACCUEIL */
 .accueil-pad { padding: 20px 16px; }
-
-/* Greeting */
-.greeting-card {
-  background: var(--black);
-  border-radius: 20px;
-  padding: 24px 22px;
-  margin-bottom: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.greeting-card::before {
-  content: '';
-  position: absolute;
-  top: -30px; right: -30px;
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  background: var(--green);
-  opacity: 0.12;
-}
-.greeting-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 4px;
-}
-.greeting-msg {
-  font-size: 24px;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.5px;
-  line-height: 1.2;
-}
-.greeting-family {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--green);
-  margin-top: 8px;
-}
-
-/* Code partage */
-.share-card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 18px 18px;
-  margin-bottom: 14px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
-.share-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 10px;
-}
-.share-code-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.share-code {
-  flex: 1;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 6px;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-.share-copy-btn {
-  background: var(--green);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 9px 16px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.12s;
-  white-space: nowrap;
-}
-.share-copy-btn:active { background: var(--green-dk); transform: scale(0.96); }
-.share-hint {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 8px;
-  line-height: 1.4;
-}
-
-/* Membres */
-.members-card {
-  background: var(--surface);
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 14px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
-.members-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 14px 16px 8px;
-}
-.member-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-bottom: 0.5px solid var(--border);
-}
+.greeting-card { background: var(--black); border-radius: 20px; padding: 24px 22px; margin-bottom: 14px; position: relative; overflow: hidden; }
+.greeting-card::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: var(--green); opacity: 0.12; }
+.greeting-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+.greeting-msg { font-size: 24px; font-weight: 800; color: white; letter-spacing: -0.5px; line-height: 1.2; }
+.greeting-family { font-size: 13px; font-weight: 500; color: var(--green); margin-top: 8px; }
+.info-card { background: var(--surface); border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.info-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.share-code-row { display: flex; align-items: center; gap: 10px; }
+.share-code { flex: 1; font-size: 26px; font-weight: 800; letter-spacing: 6px; color: var(--text); }
+.share-copy-btn { background: var(--green); color: white; border: none; border-radius: 10px; padding: 9px 16px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+.share-copy-btn:active { background: var(--green-dk); }
+.share-hint { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+.members-list-wrap { background: var(--surface); border-radius: 16px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.members-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; padding: 14px 16px 8px; }
+.member-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 0.5px solid var(--border); }
 .member-row:last-child { border-bottom: none; }
-.member-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--green);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  font-weight: 800;
-  color: white;
-  flex-shrink: 0;
-}
+.member-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: white; flex-shrink: 0; }
 .member-name { font-size: 15px; font-weight: 600; }
-.member-you  { font-size: 12px; color: var(--muted); font-weight: 400; }
-
-/* Météo */
-.meteo-card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  margin-bottom: 14px;
-}
-.meteo-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 10px;
-}
-.meteo-main {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
+.member-you { font-size: 12px; color: var(--muted); }
+.meteo-main { display: flex; align-items: center; gap: 14px; }
 .meteo-icon { font-size: 46px; line-height: 1; }
-.meteo-info {}
-.meteo-temp {
-  font-size: 36px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  line-height: 1;
-}
-.meteo-desc {
-  font-size: 14px;
-  color: var(--muted);
-  font-weight: 500;
-  margin-top: 3px;
-  text-transform: capitalize;
-}
-.meteo-city {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 400;
-  margin-top: 2px;
-}
-.meteo-loading {
-  font-size: 14px;
-  color: var(--muted);
-  font-weight: 500;
-}
+.meteo-temp { font-size: 36px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.meteo-desc { font-size: 14px; color: var(--muted); font-weight: 500; margin-top: 3px; text-transform: capitalize; }
+.meteo-city { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.meteo-loading { font-size: 14px; color: var(--muted); font-weight: 500; }
 
-/* ══════════════════════════════════════
-   TAB COURSES
-══════════════════════════════════════ */
-.courses-add {
-  padding: 14px 16px;
-}
-
-.add-bar {
-  display: flex;
-  align-items: center;
-  background: var(--surface);
-  border-radius: 13px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-.add-bar input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 14px 16px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text);
-  background: transparent;
-  min-width: 0;
-}
+/* COURSES */
+.courses-add { padding: 14px 16px; }
+.add-bar { display: flex; align-items: center; background: var(--surface); border-radius: 13px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.add-bar input { flex: 1; border: none; outline: none; padding: 14px 16px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 500; color: var(--text); background: transparent; min-width: 0; }
 .add-bar input::placeholder { color: var(--muted); font-weight: 400; }
-.add-btn {
-  background: var(--green);
-  border: none;
-  width: 52px; height: 48px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s, transform 0.12s;
-}
-.add-btn:active { background: var(--green-dk); transform: scale(0.94); }
-/* ── PRICE INPUT ── */
-.price-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px 0;
-}
-.price-input-wrap {
-  display: flex;
-  align-items: center;
-  background: var(--surface);
-  border-radius: 10px;
-  padding: 8px 12px;
-  gap: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-  flex: 1;
-}
-.price-input-wrap span {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-}
-.price-input {
-  border: none;
-  outline: none;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  background: transparent;
-  width: 100%;
-}
-.price-hint {
-  font-size: 11px;
-  color: var(--muted);
-  padding: 4px 16px 0;
-  font-weight: 500;
-}
-
-
-
-/* ── ITEM PRICE ── */
-.item-price {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-  flex-shrink: 0;
-  min-width: 36px;
-  text-align: right;
-}
-.item.checked .item-price { color: #C7C7CC; }
-
-/* ── SUGGESTIONS ── */
-.suggest-wrap {
-  padding: 0 16px;
-  position: relative;
-}
-.suggest-list {
-  background: var(--surface);
-  border-radius: 13px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  margin-top: 6px;
-}
-.suggest-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 16px;
-  cursor: pointer;
-  border-bottom: 0.5px solid var(--border);
-  transition: background 0.12s;
-}
+.add-btn { background: var(--green); border: none; width: 52px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+.add-btn:active { background: var(--green-dk); }
+.price-row { display: flex; align-items: center; gap: 8px; padding: 8px 16px 0; }
+.price-input-wrap { display: flex; align-items: center; background: var(--surface); border-radius: 10px; padding: 8px 12px; gap: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); flex: 1; }
+.price-input-wrap span { font-size: 14px; font-weight: 600; color: var(--muted); }
+.price-input { border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); background: transparent; width: 100%; }
+.suggest-wrap { padding: 0 16px; }
+.suggest-list { background: var(--surface); border-radius: 13px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-top: 6px; }
+.suggest-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; border-bottom: 0.5px solid var(--border); transition: background 0.12s; }
 .suggest-item:last-child { border-bottom: none; }
 .suggest-item:active { background: var(--bg); }
 .suggest-cat-icon { font-size: 18px; flex-shrink: 0; }
 .suggest-name { font-size: 15px; font-weight: 600; flex: 1; }
 .suggest-cat-label { font-size: 11px; color: var(--muted); font-weight: 500; }
-
-
+.cat-section { margin-bottom: 4px; }
+.cat-header { display: flex; align-items: center; gap: 8px; padding: 16px 20px 6px; }
+.cat-icon { font-size: 16px; line-height: 1; }
+.cat-name { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; flex: 1; }
+.cat-count { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--bg); border-radius: 20px; padding: 1px 7px; }
+.cat-price { font-size: 12px; font-weight: 700; color: var(--green); }
+.cat-percent { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--bg); border-radius: 20px; padding: 1px 7px; }
 .list-wrap { padding: 0 16px; }
-.list-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 4px 4px 8px;
-}
-.items-list {
-  background: var(--surface);
-  border-radius: var(--r);
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-}
-
-.item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  cursor: pointer;
-  background: var(--surface);
-  transition: background 0.12s;
-  border-bottom: 0.5px solid var(--border);
-  animation: fadeSlide 0.2s ease both;
-}
+.items-list { background: var(--surface); border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+.item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; cursor: pointer; background: var(--surface); transition: background 0.12s; border-bottom: 0.5px solid var(--border); animation: fadeSlide 0.2s ease both; }
 .item:last-child { border-bottom: none; }
 .item:active { background: var(--bg); }
-.item.checked { background: var(--surface); }
-
-@keyframes fadeSlide {
-  from { opacity:0; transform: translateY(5px); }
-  to   { opacity:1; transform: translateY(0); }
-}
-
-.cb {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  border: 2px solid #C7C7CC;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s cubic-bezier(0.34,1.4,0.64,1);
-}
+@keyframes fadeSlide { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+.cb { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #C7C7CC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s cubic-bezier(0.34,1.4,0.64,1); }
 .item.checked .cb { background: var(--green); border-color: var(--green); transform: scale(1.05); }
-.cb svg { width: 13px; height: 13px; opacity:0; transform:scale(0.3); transition: all 0.18s cubic-bezier(0.34,1.4,0.64,1); }
-.item.checked .cb svg { opacity:1; transform:scale(1); }
-
-.item-name {
-  flex: 1;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text);
-  transition: color 0.2s;
-  word-break: break-word;
-}
+.cb svg { width: 13px; height: 13px; opacity: 0; transform: scale(0.3); transition: all 0.18s cubic-bezier(0.34,1.4,0.64,1); }
+.item.checked .cb svg { opacity: 1; transform: scale(1); }
+.item-name { flex: 1; font-size: 16px; font-weight: 500; color: var(--text); transition: color 0.2s; word-break: break-word; }
 .item.checked .item-name { color: var(--muted); text-decoration: line-through; text-decoration-color: #C7C7CC; }
-
-.del {
-  background: none; border: none; cursor: pointer;
-  color: #C7C7CC; width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; transition: all 0.15s; flex-shrink: 0;
-}
+.item-price { font-size: 12px; font-weight: 600; color: var(--muted); flex-shrink: 0; min-width: 36px; text-align: right; }
+.item.checked .item-price { color: #C7C7CC; }
+.del { background: none; border: none; cursor: pointer; color: #C7C7CC; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.15s; flex-shrink: 0; }
 .del:hover { color: var(--red); background: rgba(255,59,48,0.08); }
 .del svg { width: 14px; height: 14px; }
-/* ── CATEGORIES ── */
-.cat-section { margin-bottom: 4px; }
-.cat-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 20px 6px;
-}
-.cat-icon { font-size: 16px; line-height: 1; }
-.cat-name {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  flex: 1;
-}
-.cat-count {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  background: var(--bg);
-  border-radius: 20px;
-  padding: 1px 7px;
-}
-.cat-price {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--green);
-}
-.cat-percent {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  background: var(--bg);
-  border-radius: 20px;
-  padding: 1px 7px;
-}
-
-/* ── TOTAL BAR FINAL ── */
-.total-final {
-  background: var(--black);
-  border-radius: var(--r);
-  margin: 12px 16px 6px;
-  padding: 16px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.total-final-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.6);
-}
-.total-final-amount {
-  font-size: 22px;
-  font-weight: 800;
-  color: #4ADE80;
-  letter-spacing: -0.5px;
-}
-
-
+.total-final { background: var(--black); border-radius: var(--r); margin: 12px 16px 6px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; }
+.total-final-label { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); }
+.total-final-amount { font-size: 22px; font-weight: 800; color: #4ADE80; letter-spacing: -0.5px; }
 .vider-wrap { padding: 10px 16px 16px; display: flex; gap: 10px; }
-.vider-btn {
-  flex: 1;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px; font-weight: 600;
-  color: var(--red);
-  background: var(--surface);
-  border: none; border-radius: var(--r);
-  padding: 14px; cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-  transition: background 0.15s;
-}
+.vider-btn { flex: 1; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--red); background: var(--surface); border: none; border-radius: var(--r); padding: 14px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
 .vider-btn:active { background: var(--bg); }
-.refresh-btn {
-  flex: 1;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px; font-weight: 600;
-  color: var(--blue);
-  background: var(--surface);
-  border: none; border-radius: var(--r);
-  padding: 14px; cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-  transition: background 0.15s;
-}
+.refresh-btn { flex: 1; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--blue); background: var(--surface); border: none; border-radius: var(--r); padding: 14px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
 .refresh-btn:active { background: var(--bg); }
 
-.empty {
-  text-align: center; padding: 60px 30px;
-}
-.empty-icon { font-size: 52px; display: block; margin-bottom: 14px; }
-.empty h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-.empty p { font-size: 14px; color: var(--muted); line-height: 1.5; }
-
-/* ══════════════════════════════════════
-   TAB PLANNING
-══════════════════════════════════════ */
+/* PLANNING */
 .planning-pad { padding: 20px 16px; }
-
-.planning-coming {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 30px 20px;
-  text-align: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
+.planning-coming { background: var(--surface); border-radius: 16px; padding: 30px 20px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 .planning-coming .big { font-size: 46px; margin-bottom: 12px; display: block; }
 .planning-coming h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
 .planning-coming p { font-size: 14px; color: var(--muted); line-height: 1.5; }
 
-/* ══════════════════════════════════════
-   LOADING / TOAST
-══════════════════════════════════════ */
-.loading {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 12px;
-  padding: 60px 20px;
-  color: var(--muted); font-size: 14px; font-weight: 500;
-}
-.spinner {
-  width: 24px; height: 24px;
-  border: 2.5px solid #E5E5EA;
-  border-top-color: var(--green);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.toast {
-  position: fixed; bottom: 90px; left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: rgba(10,10,10,0.88);
-  backdrop-filter: blur(12px);
-  color: #fff; padding: 11px 22px;
-  border-radius: 20px;
-  font-size: 14px; font-weight: 600;
-  z-index: 999;
-  transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1);
-  white-space: nowrap; pointer-events: none;
-}
+/* UTILS */
+.empty { text-align: center; padding: 60px 30px; }
+.empty-icon { font-size: 52px; display: block; margin-bottom: 14px; }
+.empty h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.empty p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px 20px; color: var(--muted); font-size: 14px; font-weight: 500; }
+.spinner { width: 24px; height: 24px; border: 2.5px solid #E5E5EA; border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(80px); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); color: #fff; padding: 11px 22px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1); white-space: nowrap; pointer-events: none; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- ══ ONBOARDING ══ -->
+<!-- ONBOARDING -->
 <div id="onboarding">
   <div class="ob-logo">Ponk <span>Family</span></div>
   <div class="ob-sub">Votre espace famille partagé</div>
 
-  <!-- Étape 0 : Email -->
   <div class="ob-card" id="ob-email">
     <h2>Connexion</h2>
-    <p>Entre ton adresse email pour recevoir un lien de connexion magique.</p>
+    <p>Entre ton adresse email pour recevoir un lien de connexion.</p>
     <div class="ob-field">
       <label>Adresse email</label>
       <input type="email" id="ob-email-input" placeholder="nicolas@exemple.fr" autocorrect="off" autocapitalize="off" />
@@ -790,14 +182,12 @@ body {
     <button class="ob-btn" onclick="sendMagicLink()">Recevoir le lien</button>
   </div>
 
-  <!-- Étape 0b : Email envoyé -->
   <div class="ob-card" id="ob-sent" style="display:none">
     <h2>📬 Vérifie tes emails !</h2>
-    <p>Un lien de connexion a été envoyé à <strong id="ob-sent-email"></strong>.<br><br>Clique sur le lien pour continuer.</p>
-    <button class="ob-btn-secondary" onclick="showEmailForm()">Changer d'email</button>
+    <p>Un lien de connexion a été envoyé à <strong id="ob-sent-email"></strong>.<br><br>Clique sur le lien dans l'email pour continuer.</p>
+    <button class="ob-btn-secondary" onclick="showCard('ob-email')">Changer d'email</button>
   </div>
 
-  <!-- Étape 1 : Créer -->
   <div class="ob-card" id="ob-create" style="display:none">
     <h2>Créer mon espace</h2>
     <p>Renseigne vos informations pour créer votre espace famille.</p>
@@ -811,10 +201,9 @@ body {
     </div>
     <button class="ob-btn" onclick="createAccount()">Créer mon espace</button>
     <div class="ob-divider"><span>ou</span></div>
-    <button class="ob-btn-secondary" onclick="showJoin()">Rejoindre avec un code</button>
+    <button class="ob-btn-secondary" onclick="showCard('ob-join')">Rejoindre avec un code</button>
   </div>
 
-  <!-- Étape 2 : Rejoindre -->
   <div class="ob-card" id="ob-join" style="display:none">
     <h2>Rejoindre un espace</h2>
     <p>Entre le code partagé par un membre de ta famille.</p>
@@ -828,11 +217,11 @@ body {
     </div>
     <button class="ob-btn" onclick="joinAccount()">Rejoindre</button>
     <div class="ob-divider"><span>ou</span></div>
-    <button class="ob-btn-secondary" onclick="showCreate()">Créer un nouvel espace</button>
+    <button class="ob-btn-secondary" onclick="showCard('ob-create')">Créer un nouvel espace</button>
   </div>
 </div>
 
-<!-- ══ APP ══ -->
+<!-- APP -->
 <div id="app">
   <header class="app-header">
     <div class="header-row">
@@ -845,100 +234,73 @@ body {
   </header>
 
   <div class="tab-content">
-    <!-- ACCUEIL -->
     <div class="tab-pane active" id="pane-accueil">
       <div class="accueil-pad">
         <div class="greeting-card">
-          <div class="greeting-name" id="greeting-name">Bonjour</div>
+          <div class="greeting-name" id="greeting-name"></div>
           <div class="greeting-msg" id="greeting-msg">Bonjour !</div>
           <div class="greeting-family" id="greeting-family"></div>
         </div>
-
-        <div class="meteo-card">
-          <div class="meteo-label">Météo</div>
-          <div id="meteo-content"><div class="meteo-loading">Récupération de la météo…</div></div>
+        <div class="info-card">
+          <div class="info-label">Météo</div>
+          <div id="meteo-content"><div class="meteo-loading">Récupération…</div></div>
         </div>
-
-        <div class="share-card">
-          <div class="share-label">Code d'invitation</div>
+        <div class="info-card">
+          <div class="info-label">Code d'invitation</div>
           <div class="share-code-row">
             <div class="share-code" id="share-code">–</div>
             <button class="share-copy-btn" onclick="copyCode()">Copier</button>
           </div>
           <div class="share-hint">Partage ce code à ta famille pour qu'ils rejoignent ton espace.</div>
         </div>
-
-        <div class="members-card">
+        <div class="members-list-wrap">
           <div class="members-title">Membres</div>
           <div id="members-list"><div style="padding:14px 16px;font-size:14px;color:var(--muted)">Chargement…</div></div>
         </div>
       </div>
     </div>
 
-    <!-- COURSES -->
     <div class="tab-pane" id="pane-courses">
       <div class="courses-add">
         <div class="add-bar">
           <input type="text" id="newItem" placeholder="Ajouter un article…" autocomplete="off" autocorrect="off" />
-          <button class="add-btn" onclick="addItem()" aria-label="Ajouter">
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-              <path d="M10 4v12M4 10h12" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-            </svg>
+          <button class="add-btn" onclick="addItem()">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="white" stroke-width="2.8" stroke-linecap="round"/></svg>
           </button>
         </div>
-      </div>
-      <div class="price-row">
-        <div class="price-input-wrap">
-          <span>€</span>
-          <input type="number" class="price-input" id="priceInput" placeholder="Prix estimé" step="0.01" min="0" />
+        <div class="price-row">
+          <div class="price-input-wrap">
+            <span>€</span>
+            <input type="number" class="price-input" id="priceInput" placeholder="Prix estimé" step="0.01" min="0" />
+          </div>
         </div>
       </div>
       <div class="suggest-wrap" id="suggest-wrap"></div>
-      <div id="courses-content">
-        <div class="loading"><div class="spinner"></div>Connexion…</div>
-      </div>
+      <div id="courses-content"><div class="loading"><div class="spinner"></div>Connexion…</div></div>
     </div>
 
-    <!-- PLANNING -->
     <div class="tab-pane" id="pane-planning">
       <div class="planning-pad">
         <div class="planning-coming">
           <span class="big">📅</span>
           <h3>Planning bientôt disponible</h3>
-          <p>La fonctionnalité agenda arrive dans la prochaine version de Ponk Family.</p>
+          <p>La fonctionnalité agenda arrive dans la prochaine version.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-btn active" id="nav-accueil" onclick="switchTab('accueil')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M9 21V12h6v9" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <span class="nav-label">Accueil</span>
     </button>
     <button class="nav-btn" id="nav-courses" onclick="switchTab('courses')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="9" cy="21" r="1" stroke="#8E8E93" stroke-width="1.8"/>
-          <circle cx="20" cy="21" r="1" stroke="#8E8E93" stroke-width="1.8"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="21" r="1" stroke="#8E8E93" stroke-width="1.8"/><circle cx="20" cy="21" r="1" stroke="#8E8E93" stroke-width="1.8"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <span class="nav-label">Courses</span>
     </button>
     <button class="nav-btn" id="nav-planning" onclick="switchTab('planning')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="4" width="18" height="18" rx="2" stroke="#8E8E93" stroke-width="1.8"/>
-          <path d="M16 2v4M8 2v4M3 10h18" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#8E8E93" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/></svg></div>
       <span class="nav-label">Planning</span>
     </button>
   </nav>
@@ -947,900 +309,383 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── CONFIG SUPABASE ───────────────────────────────────────
-const SUPABASE_URL = 'https://qxsojquzoifvsarmktvk.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4c29qcXV6b2lmdnNhcm1rdHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDc1NTIsImV4cCI6MjA5NDc4MzU1Mn0.C6snaKaQmENwSKczZbwWU3nMGCgWs6fDNTajWcwqTDQ';
-// ──────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+const SB_URL = "https://qxsojquzoifvsarmktvk.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4c29qcXV6b2lmdnNhcm1rdHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDc1NTIsImV4cCI6MjA5NDc4MzU1Mn0.C6snaKaQmENwSKczZbwWU3nMGCgWs6fDNTajWcwqTDQ";
 
-let supabase = null, channel = null, items = [];
-let familyCode = '', familyName = '', myPrenom = '';
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+let items = [], channel = null;
+let familyCode = "", familyName = "", myPrenom = "";
 
-// ── ONBOARDING ──
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function fmt(p) { if (!p && p !== 0) return ""; return Number(p).toFixed(2).replace(".", ",") + " €"; }
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove("show"), 2500);
+}
+function setSync(label, state) {
+  document.getElementById("syncLabel").textContent = label;
+  document.getElementById("dot").className = "dot" + (state === true ? " on" : state === false ? " off" : "");
+}
+
+// ═══════════════════════════════════════════
+// ONBOARDING HELPERS
+// ═══════════════════════════════════════════
 function showCard(id) {
-  ['ob-email','ob-sent','ob-create','ob-join'].forEach(c => {
+  ["ob-email","ob-sent","ob-create","ob-join"].forEach(c => {
     const el = document.getElementById(c);
-    if (el) el.style.display = c === id ? 'block' : 'none';
+    if (el) el.style.display = c === id ? "block" : "none";
   });
 }
 
-window.showJoin      = function() { showCard("ob-join"); }
-window.showCreate    = function() { showCard("ob-create"); }
-window.showEmailForm = function() { showCard("ob-email"); }
-
-async function _sendMagicLink() {
-  const email = document.getElementById('ob-email-input').value.trim();
-  if (!email) { showToast('Entre ton email'); return; }
-  await loadLib();
-  if (!supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const { error } = await supabase.auth.signInWithOtp({
+async function sendMagicLink() {
+  const email = document.getElementById("ob-email-input").value.trim();
+  if (!email) { toast("Entre ton email"); return; }
+  const { error } = await sb.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: 'https://ponk-family.vercel.app' }
+    options: { emailRedirectTo: "https://ponk-family.vercel.app" }
   });
-  if (error) { showToast('Erreur : ' + error.message); return; }
-  document.getElementById('ob-sent-email').textContent = email;
-  showCard('ob-sent');
-}
-
-window.showJoin         = function() { showCard('ob-join'); }
-window.showCreate       = function() { showCard('ob-create'); }
-window.showEmailForm    = function() { showCard('ob-email'); }
-window.sendMagicLink    = async function() { return _sendMagicLink(); }
-window.createAccount    = async function() { return createAccount(); }
-window.joinAccount      = async function() { return joinAccount(); }
-window.copyCode         = function() { return copyCode(); }
-window.clearChecked     = function() { return clearChecked(); }
-window.resetChecked     = function() { return resetChecked(); }
-window.addItem          = function() { return addItem(); }
-window.toggleItem       = function(id, checked) { return toggleItem(id, checked); }
-window.deleteItem       = function(id) { return deleteItem(id); }
-window.selectSuggestion = function(name) { return selectSuggestion(name); }
-window.switchTab        = function(name) { return switchTab(name); }
-
-function generateCode() {
-  return Math.random().toString(36).substring(2,8).toUpperCase();
+  if (error) { toast("Erreur : " + error.message); return; }
+  document.getElementById("ob-sent-email").textContent = email;
+  showCard("ob-sent");
 }
 
 async function createAccount() {
-  const fn = document.getElementById('ob-family').value.trim();
-  const pr = document.getElementById('ob-prenom-create').value.trim();
-  if (!fn || !pr) { showToast('Remplis tous les champs'); return; }
-
-  const code = generateCode();
-  await initApp(code, fn, pr);
-  await registerMember(code, pr);
+  const fn = document.getElementById("ob-family").value.trim();
+  const pr = document.getElementById("ob-prenom-create").value.trim();
+  if (!fn || !pr) { toast("Remplis tous les champs"); return; }
+  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  await saveMember(code, fn, pr);
+  await startApp(code, fn, pr);
 }
 
 async function joinAccount() {
-  const code = document.getElementById('ob-code').value.trim().toUpperCase();
-  const pr   = document.getElementById('ob-prenom-join').value.trim();
-  if (!code || !pr) { showToast('Remplis tous les champs'); return; }
-  if (code.length !== 6) { showToast('Code à 6 caractères'); return; }
-
-  const { data } = await supabase.from('pf_members').select('family_name').eq('family_code', code).limit(1);
-  if (!data || data.length === 0) { showToast('Code famille introuvable'); return; }
-  const fn = data[0].family_name;
-
-  await initApp(code, fn, pr);
-  await registerMember(code, pr);
+  const code = document.getElementById("ob-code").value.trim().toUpperCase();
+  const pr = document.getElementById("ob-prenom-join").value.trim();
+  if (!code || !pr) { toast("Remplis tous les champs"); return; }
+  if (code.length !== 6) { toast("Code à 6 caractères"); return; }
+  const { data } = await sb.from("pf_members").select("family_name").eq("family_code", code).limit(1);
+  if (!data || data.length === 0) { toast("Code famille introuvable"); return; }
+  await saveMember(code, data[0].family_name, pr);
+  await startApp(code, data[0].family_name, pr);
 }
 
-async function registerMember(code, prenom) {
-  const { data: { session } } = await supabase.auth.getSession();
+async function saveMember(code, fn, pr) {
+  const { data: { session } } = await sb.auth.getSession();
   const userId = session?.user?.id || null;
-  await supabase.from('pf_members').upsert([{
-    family_code: code,
-    prenom: prenom,
-    family_name: familyName,
-    user_id: userId
-  }], { onConflict: 'user_id' });
+  await sb.from("pf_members").upsert([{
+    family_code: code, family_name: fn, prenom: pr, user_id: userId
+  }], { onConflict: "user_id" });
 }
 
-// ── INIT APP ──
-async function initApp(code, fn, prenom) {
-  familyCode = code;
-  familyName = fn;
-  myPrenom   = prenom;
-
-  document.getElementById('onboarding').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-
+// ═══════════════════════════════════════════
+// APP INIT
+// ═══════════════════════════════════════════
+async function startApp(code, fn, pr) {
+  familyCode = code; familyName = fn; myPrenom = pr;
+  document.getElementById("onboarding").style.display = "none";
+  document.getElementById("app").classList.add("visible");
   updateGreeting();
-  updateShareCode();
+  document.getElementById("share-code").textContent = code;
   loadMembers();
   loadWeather();
   loadItems();
   subscribeRealtime();
 }
 
-async function loadLib() {
-  return new Promise((res) => {
-    if (window.supabase) return res();
-    // already loaded via <script> tag in head
-    res();
-  });
-}
-
-// ── GREETING ──
 function updateGreeting() {
   const h = new Date().getHours();
-  const msg = h < 6 ? 'Bonne nuit' : h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
-  document.getElementById('greeting-name').textContent = myPrenom;
-  document.getElementById('greeting-msg').textContent  = `${msg}, ${myPrenom} !`;
-  document.getElementById('greeting-family').textContent = `Famille ${familyName}`;
-}
-
-// ── SHARE CODE ──
-function updateShareCode() {
-  document.getElementById('share-code').textContent = familyCode;
+  const msg = h < 6 ? "Bonne nuit" : h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir";
+  document.getElementById("greeting-name").textContent = myPrenom;
+  document.getElementById("greeting-msg").textContent = msg + ", " + myPrenom + " !";
+  document.getElementById("greeting-family").textContent = "Famille " + familyName;
 }
 
 function copyCode() {
-  navigator.clipboard.writeText(familyCode).then(() => showToast('Code copié !')).catch(() => {
-    // fallback
-    const el = document.createElement('textarea');
-    el.value = familyCode;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    showToast('Code copié !');
-  });
+  navigator.clipboard.writeText(familyCode).then(() => toast("Code copié !")).catch(() => toast(familyCode));
 }
 
-// ── MEMBRES ──
 async function loadMembers() {
-  const { data } = await supabase.from('pf_members').select('prenom').eq('family_code', familyCode);
-  const list = document.getElementById('members-list');
-  if (!data || data.length === 0) { list.innerHTML = '<div style="padding:14px 16px;font-size:14px;color:var(--muted)">Aucun membre</div>'; return; }
-  list.innerHTML = data.map(m => `
-    <div class="member-row">
-      <div class="member-avatar">${m.prenom.charAt(0).toUpperCase()}</div>
-      <div>
-        <div class="member-name">${esc(m.prenom)}</div>
-        ${m.prenom === myPrenom ? '<div class="member-you">Toi</div>' : ''}
-      </div>
-    </div>`).join('');
+  const { data } = await sb.from("pf_members").select("prenom").eq("family_code", familyCode);
+  const el = document.getElementById("members-list");
+  if (!data || !data.length) { el.innerHTML = '<div style="padding:14px 16px;font-size:14px;color:var(--muted)">Aucun membre</div>'; return; }
+  el.innerHTML = data.map(m => `<div class="member-row"><div class="member-avatar">${esc(m.prenom[0].toUpperCase())}</div><div><div class="member-name">${esc(m.prenom)}</div>${m.prenom === myPrenom ? '<div class="member-you">Toi</div>' : ""}</div></div>`).join("");
 }
 
-// ── MÉTÉO ──
+// ═══════════════════════════════════════════
+// METEO
+// ═══════════════════════════════════════════
 function loadWeather() {
-  if (!navigator.geolocation) { document.getElementById('meteo-content').innerHTML = '<div class="meteo-loading">Géolocalisation non disponible</div>'; return; }
+  if (!navigator.geolocation) { document.getElementById("meteo-content").innerHTML = '<div class="meteo-loading">Géolocalisation indisponible</div>'; return; }
   navigator.geolocation.getCurrentPosition(async pos => {
     try {
       const { latitude: lat, longitude: lon } = pos.coords;
-      const res  = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=auto`);
-      const data = await res.json();
-      const temp = Math.round(data.current.temperature_2m);
-      const code = data.current.weathercode;
-      const { icon, desc } = weatherInfo(code);
-
-      // Ville via reverse geocoding
-      let city = '';
-      try {
-        const gr = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-        const gd = await gr.json();
-        city = gd.address.city || gd.address.town || gd.address.village || '';
-      } catch(e) {}
-
-      document.getElementById('meteo-content').innerHTML = `
-        <div class="meteo-main">
-          <div class="meteo-icon">${icon}</div>
-          <div class="meteo-info">
-            <div class="meteo-temp">${temp}°C</div>
-            <div class="meteo-desc">${desc}</div>
-            ${city ? `<div class="meteo-city">${city}</div>` : ''}
-          </div>
-        </div>`;
-    } catch(e) {
-      document.getElementById('meteo-content').innerHTML = '<div class="meteo-loading">Météo indisponible</div>';
-    }
-  }, () => {
-    document.getElementById('meteo-content').innerHTML = '<div class="meteo-loading">Autorise la localisation pour voir la météo</div>';
-  });
+      const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,weathercode&timezone=auto");
+      const d = await r.json();
+      const temp = Math.round(d.current.temperature_2m);
+      const { icon, desc } = weatherInfo(d.current.weathercode);
+      let city = "";
+      try { const gr = await fetch("https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lon + "&format=json"); const gd = await gr.json(); city = gd.address.city || gd.address.town || gd.address.village || ""; } catch(e) {}
+      document.getElementById("meteo-content").innerHTML = '<div class="meteo-main"><div class="meteo-icon">' + icon + '</div><div><div class="meteo-temp">' + temp + '°C</div><div class="meteo-desc">' + desc + '</div>' + (city ? '<div class="meteo-city">' + esc(city) + '</div>' : "") + "</div></div>";
+    } catch(e) { document.getElementById("meteo-content").innerHTML = '<div class="meteo-loading">Météo indisponible</div>'; }
+  }, () => { document.getElementById("meteo-content").innerHTML = '<div class="meteo-loading">Autorise la localisation pour voir la météo</div>'; });
+}
+function weatherInfo(c) {
+  if (c===0) return {icon:"☀️",desc:"Ciel dégagé"};
+  if (c<=2)  return {icon:"🌤️",desc:"Partiellement nuageux"};
+  if (c<=3)  return {icon:"☁️",desc:"Nuageux"};
+  if (c<=49) return {icon:"🌫️",desc:"Brouillard"};
+  if (c<=59) return {icon:"🌦️",desc:"Bruine"};
+  if (c<=69) return {icon:"🌧️",desc:"Pluie"};
+  if (c<=79) return {icon:"❄️",desc:"Neige"};
+  if (c<=82) return {icon:"🌧️",desc:"Averses"};
+  return {icon:"⛈️",desc:"Orage"};
 }
 
-function weatherInfo(code) {
-  if (code === 0) return { icon:'☀️', desc:'Ciel dégagé' };
-  if (code <= 2)  return { icon:'🌤️', desc:'Partiellement nuageux' };
-  if (code <= 3)  return { icon:'☁️', desc:'Nuageux' };
-  if (code <= 49) return { icon:'🌫️', desc:'Brouillard' };
-  if (code <= 59) return { icon:'🌦️', desc:'Bruine' };
-  if (code <= 69) return { icon:'🌧️', desc:'Pluie' };
-  if (code <= 79) return { icon:'❄️', desc:'Neige' };
-  if (code <= 82) return { icon:'🌧️', desc:'Averses' };
-  if (code <= 86) return { icon:'🌨️', desc:'Averses de neige' };
-  return { icon:'⛈️', desc:'Orage' };
-}
-
-
-// ── CATEGORIES ──
-const CATEGORIES = [
-  { id: 'fruits-legumes',  label: 'Fruits & Légumes',   icon: '🥦',
-    keys: ['pomme','poire','banane','orange','citron','raisin','fraise','cerise','peche','abricot','melon','pastèque','ananas','mangue','kiwi','framboise','mure','myrtille','prune','figue','datte','noix de coco','avocat','carotte','pomme de terre','tomate','concombre','courgette','poivron','aubergine','oignon','ail','poireau','brocoli','chou','laitue','salade','epinard','haricot','petit pois','maïs','mais','champignon','radis','betterave','navet','celeri','fenouil','artichaut','asperge','patate','legume','fruit','herbe','persil','basilic','coriandre','menthe','thym','romarin','ciboulette'] },
-  { id: 'viande-poisson',  label: 'Viande & Poisson',   icon: '🥩',
-    keys: ['poulet','boeuf','veau','porc','agneau','dinde','canard','lapin','jambon','lardons','bacon','saucisse','merguez','chipolata','steak','filet','escalope','côte','entrecote','roti','viande','poisson','saumon','thon','cabillaud','truite','sardine','crevette','moule','huitre','saint-jacques','dorade','bar','merlu','lieu','colin','calamar','homard','crabe','fruits de mer'] },
-  { id: 'laitier',         label: 'Produits laitiers',  icon: '🥛',
-    keys: ['lait','yaourt','yogourt','fromage','beurre','creme','crème','emmental','gruyere','camembert','brie','roquefort','mozzarella','parmesan','comté','comte','reblochon','munster','ricotta','mascarpone','feta','cottage','fromage blanc','creme fraiche','lait fermenté','kefir'] },
-  { id: 'boulangerie',     label: 'Boulangerie',         icon: '🥖',
-    keys: ['pain','baguette','brioche','croissant','pain de mie','biscotte','crackers','pain grillé','farine','levure','madeleine','gateau','cake','tarte','quiche','pizza','pate','feuilleté'] },
-  { id: 'epicerie',        label: 'Épicerie',            icon: '🥫',
-    keys: ['pates','riz','semoule','quinoa','lentille','pois chiche','haricot sec','boite','conserve','sauce','coulis','concentre','soupe','bouillon','huile','olive','tournesol','vinaigre','moutarde','ketchup','mayonnaise','sel','poivre','sucre','farine','maizena','levure chimique','chocolat','cacao','cafe','the','tisane','confiture','miel','nutella','pate a tartiner','sirop','biscuit','chips','noix','amande','noisette','cacahuete','pistache','cereales','muesli','flocon','compote'] },
-  { id: 'boissons',        label: 'Boissons',            icon: '🥤',
-    keys: ['eau','jus','soda','coca','pepsi','limonade','biere','vin','champagne','cidre','whisky','rhum','vodka','gin','liqueur','aperitif','sirop','lait de coco','lait vegetale','lait vegetal','lait amande','lait soja','lait avoine','smoothie','nectar','litre','bouteille'] },
-  { id: 'surgele',         label: 'Surgelés',            icon: '🧊',
-    keys: ['surgele','surgelé','congele','congelé','glace','sorbet','pizza surgelee','frite','légume surgele','legume surgele','poisson surgele','viande surgelee'] },
-  { id: 'hygiene',         label: 'Hygiène & Beauté',   icon: '🧴',
-    keys: ['shampoing','shampooing','gel douche','savon','dentifrice','brosse a dent','rasoir','mousse a raser','deodorant','parfum','creme hydratante','lotion','coton','coton tige','serviette hygienique','tampon','couche','lingette','mouchoir'] },
-  { id: 'menage',          label: 'Entretien',           icon: '🧹',
-    keys: ['lessive','liquide vaisselle','produit menager','nettoyant','desinfectant','javel','wd40','essuie tout','papier toilette','sac poubelle','eponge','serpillere','balai','aspirateur','produit wc','calgon','assouplissant'] },
-  { id: 'bebe',            label: 'Bébé',                icon: '👶',
-    keys: ['couche','lait maternise','petit pot','compote bebe','biscuit bebe','biberon','tétine','tetine','lingette bebe'] },
-];
-
-function detectCategory(name) {
-  const low = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  for (const cat of CATEGORIES) {
-    if (cat.keys.some(k => low.includes(k.normalize('NFD').replace(/[̀-ͯ]/g, '')))) {
-      return cat;
-    }
-  }
-  return { id: 'autre', label: 'Autre', icon: '🛒' };
-}
-
-
-// ── PRODUITS ──
-const PRODUCTS = [
-  "Pomme","Pomme Granny Smith","Pomme Golden","Pomme Fuji","Poire",
-  "Poire Williams","Banane","Orange","Orange à jus","Citron",
-  "Citron vert","Raisin blanc","Raisin noir","Fraise","Cerise",
-  "Pêche","Nectarine","Abricot","Melon","Pastèque",
-  "Ananas","Mangue","Kiwi","Framboise","Myrtille",
-  "Mûre","Prune","Mirabelle","Figue","Avocat",
-  "Clémentine","Mandarine","Pamplemousse","Litchi","Grenade",
-  "Papaye","Carotte","Pomme de terre","Tomate","Tomate cerise",
-  "Tomate grappe","Concombre","Courgette","Poivron rouge","Poivron vert",
-  "Poivron jaune","Aubergine","Oignon","Oignon rouge","Échalote",
-  "Ail","Poireau","Brocoli","Chou-fleur","Chou blanc",
-  "Chou rouge","Chou de Bruxelles","Laitue","Salade verte","Roquette",
-  "Mâche","Endive","Épinard","Haricots verts","Petits pois",
-  "Maïs","Champignons de Paris","Champignons shiitake","Girolles","Radis",
-  "Betterave","Navet","Céleri branche","Céleri rave","Fenouil",
-  "Asperge verte","Asperge blanche","Patate douce","Artichaut","Potiron",
-  "Butternut","Potimarron","Panais","Persil","Basilic",
-  "Coriandre","Menthe","Thym","Romarin","Ciboulette",
-  "Estragon","Sauge","Origan","Gingembre","Piment",
-  "Poulet entier","Blanc de poulet","Cuisses de poulet","Pilons de poulet","Ailes de poulet",
-  "Boeuf haché","Steak haché","Steak","Entrecôte","Faux-filet",
-  "Filet de boeuf","Rôti de boeuf","Veau haché","Escalope de veau","Côte de veau",
-  "Porc haché","Côte de porc","Filet mignon de porc","Rôti de porc","Travers de porc",
-  "Agneau haché","Gigot d'agneau","Épaule d'agneau","Dinde entière","Escalope de dinde",
-  "Blanc de dinde","Canard","Magret de canard","Confit de canard","Lapin",
-  "Jambon blanc","Jambon cru","Jambon de Bayonne","Chorizo","Lardons",
-  "Bacon","Saucisses de Strasbourg","Merguez","Chipolatas","Boudin noir",
-  "Boudin blanc","Pâté","Rillettes","Foie gras","Saumon frais",
-  "Saumon fumé","Thon frais","Thon en boîte","Cabillaud","Truite",
-  "Sardines fraîches","Sardines en boîte","Maquereau","Maquereau fumé","Lieu noir",
-  "Colin","Merlu","Dorade","Bar","Sole",
-  "Lotte","Anchois","Crevettes roses","Crevettes grises","Gambas",
-  "Moules","Huîtres","Saint-Jacques","Calamars","Homard",
-  "Langoustines","Crabe","Surimi","Lait demi-écrémé","Lait entier",
-  "Lait écrémé","Lait sans lactose","Yaourt nature","Yaourt aux fruits","Yaourt grec",
-  "Yaourt brassé","Skyr","Fromage blanc","Petit suisse","Beurre doux",
-  "Beurre demi-sel","Margarine","Crème fraîche épaisse","Crème fraîche liquide","Crème liquide",
-  "Emmental","Gruyère","Comté","Beaufort","Camembert",
-  "Brie","Coulommiers","Roquefort","Bleu d'Auvergne","Mozzarella",
-  "Burrata","Parmesan","Pecorino","Reblochon","Munster",
-  "Maroilles","Cheddar","Gouda","Ricotta","Feta",
-  "Mascarpone","Saint-Môret","Kiri","Babybel","Mimolette",
-  "Crème dessert","Flan","Riz au lait","Baguette","Pain complet",
-  "Pain aux céréales","Pain de mie","Pain de mie complet","Pain de seigle","Pain au levain",
-  "Pain sans gluten","Brioche","Croissants","Pains au chocolat","Pain aux raisins",
-  "Chausson aux pommes","Madeleines","Cookies","Sablés","Biscottes",
-  "Crackers","Gressins","Pâte brisée","Pâte feuilletée","Pâte sablée",
-  "Pâte à pizza","Pâtes spaghetti","Pâtes tagliatelles","Pâtes penne","Pâtes fusilli",
-  "Pâtes farfalle","Pâtes rigatoni","Pâtes macaroni","Lasagnes","Gnocchi",
-  "Riz basmati","Riz long grain","Riz rond","Riz complet","Riz arborio",
-  "Boulgour","Semoule","Quinoa","Millet","Sarrasin",
-  "Lentilles vertes","Lentilles corail","Pois chiches","Haricots rouges","Haricots blancs",
-  "Flageolets","Fèves","Pois cassés","Sauce tomate","Coulis de tomate",
-  "Concentré de tomate","Passata","Sauce bolognaise","Pesto","Sauce béchamel",
-  "Huile d'olive","Huile de tournesol","Huile de colza","Huile de coco","Huile de sésame",
-  "Vinaigre de vin","Vinaigre balsamique","Vinaigre de cidre","Vinaigre blanc","Moutarde de Dijon",
-  "Moutarde à l'ancienne","Ketchup","Mayonnaise","Sauce soja","Tabasco",
-  "Sauce sriracha","Sauce barbecue","Sauce teriyaki","Sel fin","Sel de mer",
-  "Fleur de sel","Poivre noir","Poivre blanc","Paprika","Cumin",
-  "Curcuma","Curry","Cannelle","Muscade","Herbes de Provence",
-  "Sucre blanc","Sucre roux","Sucre glace","Cassonade","Miel",
-  "Sirop d'érable","Sirop d'agave","Confiture fraise","Confiture abricot","Confiture cerise",
-  "Confiture framboise","Confiture orange","Marmelade","Nutella","Farine de blé",
-  "Farine complète","Farine sans gluten","Maïzena","Levure boulangère","Levure chimique",
-  "Bicarbonate","Gélatine","Chocolat noir","Chocolat au lait","Chocolat blanc",
-  "Chocolat pâtissier","Cacao en poudre","Café moulu","Café en grains","Café soluble",
-  "Capsules café","Thé noir","Thé vert","Thé blanc","Tisane",
-  "Infusion","Verveine","Camomille","Chips nature","Chips paprika",
-  "Noix","Amandes","Noisettes","Noix de cajou","Pistaches",
-  "Cacahuètes","Graines de tournesol","Graines de sésame","Graines de chia","Céréales petit déjeuner",
-  "Muesli","Flocons d'avoine","Corn flakes","Granola","Compote pomme",
-  "Compote poire","Compote fruits","Bouillon de légumes","Bouillon de poulet","Bouillon de boeuf",
-  "Conserve de thon","Conserve de sardines","Tomates pelées","Petits pois en boîte","Maïs en boîte",
-  "Soupe en brique","Biscuits secs","Galettes bretonnes","Palets bretons","Spéculoos",
-  "Palmiers","Petits beurre","Gaufrettes","Bonbons","Caramels",
-  "Nougat","Eau plate 1,5L","Eau gazeuse","Eau aromatisée","Jus d'orange",
-  "Jus de pomme","Jus de raisin","Jus de tomate","Jus multifruits","Nectar de pêche",
-  "Nectar d'abricot","Coca-Cola","Coca-Cola Zero","Pepsi","Sprite",
-  "Fanta","Limonade","Orangina","Perrier","San Pellegrino",
-  "Bière blonde","Bière brune","Bière sans alcool","Vin rouge","Vin blanc",
-  "Vin rosé","Champagne","Prosecco","Cidre","Porto",
-  "Pastis","Whisky","Rhum","Vodka","Gin",
-  "Lait d'amande","Lait de soja","Lait d'avoine","Lait de coco","Smoothie",
-  "Boisson énergisante","Boisson sportive","Pizza surgelée","Pizza margherita surgelée","Pizza 4 fromages surgelée",
-  "Frites surgelées","Frites au four","Potatoes surgelées","Nuggets de poulet","Légumes surgelés",
-  "Épinards surgelés","Haricots verts surgelés","Poisson pané surgelé","Filet de poisson surgelé","Crevettes surgelées",
-  "Lasagnes surgelées","Hachis parmentier surgelé","Glace vanille","Glace chocolat","Glace fraise",
-  "Sorbet citron","Sorbet framboise","Shampoing","Shampoing sec","Après-shampoing",
-  "Gel douche","Savon liquide","Savon solide","Gel nettoyant visage","Démaquillant",
-  "Eau micellaire","Crème hydratante visage","Crème corps","Lait corps","Dentifrice",
-  "Brosse à dents","Fil dentaire","Bain de bouche","Déodorant","Anti-transpirant",
-  "Rasoir","Mousse à raser","Coton","Coton-tiges","Disques démaquillants",
-  "Serviettes hygiéniques","Tampons","Protège-slips","Couches","Couches-culottes",
-  "Lingettes bébé","Mouchoirs","Crème solaire","Après-soleil","Lessive liquide",
-  "Lessive en poudre","Lessive capsules","Assouplissant","Détachant","Liquide vaisselle",
-  "Pastilles lave-vaisselle","Sel lave-vaisselle","Nettoyant multi-surfaces","Nettoyant cuisine","Nettoyant salle de bain",
-  "Nettoyant WC","Détartrant","Déboucheur","Javel","Spray désinfectant",
-  "Essuie-tout","Papier toilette","Sacs poubelle","Sacs congélation","Film alimentaire",
-  "Papier aluminium","Papier cuisson","Éponge","Assouplissant","Lait maternisé",
-  "Lait 1er âge","Lait 2ème âge","Lait de croissance","Petit pot légumes","Petit pot viande",
-  "Petit pot fruits","Compote bébé","Biscuits bébé","Céréales bébé","Couches taille 1",
-  "Couches taille 2","Couches taille 3","Couches taille 4","Couches taille 5","Couches taille 6",
-  "Lingettes bébé","Crème change","Savon bébé","Shampoing bébé","Tétine",
-  "Biberon","Croquettes chien","Croquettes chat","Pâtée chien","Pâtée chat",
-  "Litière chat","Friandises chien","Friandises chat"
-];
-
-function getSuggestions(query) {
-  if (!query || query.length < 2) return [];
-  const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  return PRODUCTS.filter(p => {
-    const pn = p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    return pn.startsWith(q) || pn.includes(q);
-  }).slice(0, 5);
-}
-
-function showSuggestions(query) {
-  let wrap = document.getElementById('suggest-wrap');
-  if (!wrap) return;
-  const suggestions = getSuggestions(query);
-  if (suggestions.length === 0) { wrap.innerHTML = ''; return; }
-  wrap.innerHTML = `<div class="suggest-list">${suggestions.map(s => {
-    const cat = detectCategory(s);
-    return `<div class="suggest-item" onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')">
-      <span class="suggest-cat-icon">${cat.icon}</span>
-      <span class="suggest-name">${s}</span>
-      <span class="suggest-cat-label">${cat.label}</span>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-function selectSuggestion(name) {
-  document.getElementById('newItem').value = name;
-  document.getElementById('suggest-wrap').innerHTML = '';
-  // Pre-fill price
-  const priceInput = document.getElementById('priceInput');
-  if (priceInput) {
-    const p = getDefaultPrice(name);
-    priceInput.value = p ? p.toFixed(2) : '';
-    priceInput.placeholder = p ? 'Prix estimé' : 'Prix estimé';
-  }
-  priceInput && priceInput.focus();
-}
-
-
-// ── PRIX PAR DÉFAUT ──
-const DEFAULT_PRICES = {
-  "Pomme": 0.30,
-  "Pomme Granny Smith": 0.35,
-  "Pomme Golden": 0.30,
-  "Pomme Fuji": 0.35,
-  "Poire": 0.40,
-  "Poire Williams": 0.45,
-  "Banane": 0.25,
-  "Orange": 0.50,
-  "Orange à jus": 0.60,
-  "Citron": 0.40,
-  "Citron vert": 0.40,
-  "Raisin blanc": 2.50,
-  "Raisin noir": 2.50,
-  "Fraise": 3.50,
-  "Cerise": 4.00,
-  "Pêche": 0.60,
-  "Nectarine": 0.60,
-  "Abricot": 0.50,
-  "Melon": 2.50,
-  "Pastèque": 3.00,
-  "Ananas": 2.00,
-  "Mangue": 1.50,
-  "Kiwi": 0.40,
-  "Framboise": 3.50,
-  "Myrtille": 3.00,
-  "Prune": 0.40,
-  "Avocat": 1.20,
-  "Carotte": 1.20,
-  "Pomme de terre": 1.50,
-  "Tomate": 2.00,
-  "Tomate cerise": 2.50,
-  "Concombre": 0.80,
-  "Courgette": 1.00,
-  "Poivron rouge": 1.20,
-  "Poivron vert": 1.00,
-  "Aubergine": 1.20,
-  "Oignon": 1.00,
-  "Ail": 0.80,
-  "Échalote": 1.20,
-  "Poireau": 1.50,
-  "Brocoli": 1.80,
-  "Chou-fleur": 2.00,
-  "Laitue": 1.20,
-  "Salade verte": 1.00,
-  "Roquette": 1.80,
-  "Épinard": 2.00,
-  "Haricots verts": 2.50,
-  "Petits pois": 1.50,
-  "Maïs": 1.00,
-  "Champignons de Paris": 2.00,
-  "Radis": 0.80,
-  "Betterave": 1.20,
-  "Céleri branche": 1.50,
-  "Fenouil": 1.50,
-  "Asperge verte": 3.00,
-  "Patate douce": 1.80,
-  "Persil": 0.60,
-  "Basilic": 1.20,
-  "Poulet entier": 7.00,
-  "Blanc de poulet": 6.00,
-  "Cuisses de poulet": 4.00,
-  "Pilons de poulet": 3.50,
-  "Boeuf haché": 7.00,
-  "Steak haché": 7.00,
-  "Steak": 10.00,
-  "Entrecôte": 14.00,
-  "Filet de boeuf": 22.00,
-  "Rôti de boeuf": 12.00,
-  "Escalope de veau": 12.00,
-  "Côte de porc": 8.00,
-  "Filet mignon de porc": 10.00,
-  "Rôti de porc": 8.00,
-  "gneau": 14.00,
-  "gneau": 18.00,
-  "Dinde entière": 14.00,
-  "Escalope de dinde": 7.00,
-  "Magret de canard": 12.00,
-  "Confit de canard": 8.00,
-  "Jambon blanc": 2.50,
-  "Jambon cru": 3.50,
-  "Jambon de Bayonne": 4.00,
-  "Chorizo": 3.00,
-  "Lardons": 2.00,
-  "Bacon": 2.50,
-  "Saucisses de Strasbourg": 2.50,
-  "Merguez": 3.50,
-  "Chipolatas": 3.50,
-  "Boudin noir": 3.00,
-  "Pâté": 2.50,
-  "Rillettes": 2.50,
-  "Foie gras": 12.00,
-  "Saumon frais": 15.00,
-  "Saumon fumé": 5.00,
-  "Thon frais": 12.00,
-  "Thon en boîte": 1.80,
-  "Cabillaud": 14.00,
-  "Truite": 10.00,
-  "Sardines fraîches": 4.00,
-  "Sardines en boîte": 1.50,
-  "Maquereau": 5.00,
-  "Maquereau fumé": 3.00,
-  "Colin": 8.00,
-  "Merlu": 8.00,
-  "Dorade": 10.00,
-  "Crevettes roses": 8.00,
-  "Gambas": 12.00,
-  "Moules": 3.50,
-  "Huîtres": 8.00,
-  "Lait demi-écrémé": 1.10,
-  "Lait entier": 1.20,
-  "Lait écrémé": 1.00,
-  "Lait sans lactose": 1.80,
-  "Yaourt nature": 1.50,
-  "Yaourt aux fruits": 2.00,
-  "Yaourt grec": 2.20,
-  "Skyr": 2.50,
-  "Fromage blanc": 1.50,
-  "Beurre doux": 2.20,
-  "Beurre demi-sel": 2.20,
-  "Margarine": 1.80,
-  "Crème fraîche épaisse": 1.50,
-  "Crème fraîche liquide": 1.20,
-  "Crème liquide": 1.20,
-  "Emmental": 3.50,
-  "Gruyère": 4.00,
-  "Comté": 5.00,
-  "Camembert": 2.20,
-  "Brie": 3.00,
-  "Mozzarella": 1.80,
-  "Parmesan": 4.50,
-  "Reblochon": 4.00,
-  "Feta": 3.00,
-  "Ricotta": 2.00,
-  "Mascarpone": 2.50,
-  "Saint-Môret": 2.50,
-  "Kiri": 2.00,
-  "Babybel": 3.50,
-  "Crème dessert": 1.50,
-  "Flan": 1.20,
-  "Riz au lait": 1.50,
-  "Baguette": 1.10,
-  "Pain complet": 2.00,
-  "Pain de mie": 1.80,
-  "Brioche": 2.50,
-  "Croissants": 3.50,
-  "Pains au chocolat": 4.00,
-  "Biscottes": 2.00,
-  "Crackers": 1.80,
-  "Madeleines": 2.50,
-  "Cookies": 2.50,
-  "Spéculoos": 2.00,
-  "Pâtes spaghetti": 1.20,
-  "Pâtes penne": 1.20,
-  "Pâtes fusilli": 1.20,
-  "Pâtes farfalle": 1.20,
-  "Lasagnes": 1.50,
-  "Gnocchi": 2.00,
-  "Riz basmati": 2.50,
-  "Riz long grain": 1.80,
-  "Quinoa": 3.50,
-  "Semoule": 1.50,
-  "Boulgour": 2.00,
-  "Lentilles vertes": 2.00,
-  "Lentilles corail": 2.50,
-  "Pois chiches": 1.80,
-  "Haricots rouges": 1.50,
-  "Sauce tomate": 1.20,
-  "Coulis de tomate": 1.00,
-  "Concentré de tomate": 0.80,
-  "Sauce bolognaise": 2.50,
-  "Pesto": 3.00,
-  "Sauce béchamel": 1.50,
-  "live": 5.00,
-  "Huile de tournesol": 2.50,
-  "Huile de colza": 3.00,
-  "Vinaigre de vin": 1.50,
-  "Vinaigre balsamique": 3.00,
-  "Moutarde de Dijon": 1.80,
-  "Ketchup": 1.50,
-  "Mayonnaise": 2.00,
-  "Sauce soja": 2.50,
-  "Tabasco": 3.50,
-  "Sel fin": 0.50,
-  "Poivre noir": 2.00,
-  "Paprika": 1.50,
-  "Cumin": 1.50,
-  "Curcuma": 1.80,
-  "Curry": 1.50,
-  "Cannelle": 1.50,
-  "Herbes de Provence": 1.50,
-  "Sucre blanc": 1.20,
-  "Sucre roux": 1.50,
-  "Miel": 4.00,
-  "rable": 5.50,
-  "Confiture fraise": 2.50,
-  "Confiture abricot": 2.50,
-  "Nutella": 4.00,
-  "Farine de blé": 1.20,
-  "Fécule de maïs": 1.50,
-  "Levure chimique": 1.00,
-  "Chocolat noir": 2.50,
-  "Chocolat au lait": 2.00,
-  "Chocolat pâtissier": 2.80,
-  "Cacao en poudre": 3.00,
-  "Café moulu": 4.50,
-  "Café en grains": 6.00,
-  "Café soluble": 5.00,
-  "Capsules café": 4.50,
-  "Thé noir": 3.50,
-  "Thé vert": 3.50,
-  "Tisane": 3.00,
-  "Camomille": 3.00,
-  "Chips nature": 1.80,
-  "Noix": 4.00,
-  "Amandes": 5.00,
-  "Noisettes": 4.50,
-  "Pistaches": 5.00,
-  "Cacahuètes": 2.00,
-  "Céréales petit déjeuner": 3.50,
-  "Muesli": 3.00,
-  "voine": 2.00,
-  "Compote pomme": 2.00,
-  "Bouillon de légumes": 1.50,
-  "Bouillon de poulet": 1.50,
-  "Conserve de thon": 1.80,
-  "Tomates pelées": 1.00,
-  "Soupe en brique": 2.00,
-  "Eau plate 1,5L": 0.40,
-  "Eau gazeuse": 0.60,
-  "range": 2.50,
-  "Jus de pomme": 2.00,
-  "Coca-Cola": 1.80,
-  "Pepsi": 1.60,
-  "Sprite": 1.60,
-  "Limonade": 1.20,
-  "Orangina": 1.80,
-  "Bière blonde": 1.20,
-  "Vin rouge": 5.00,
-  "Vin blanc": 5.00,
-  "Vin rosé": 5.00,
-  "Champagne": 18.00,
-  "Cidre": 3.00,
-  "mande": 1.80,
-  "Lait de soja": 1.50,
-  "voine": 1.80,
-  "Smoothie": 2.50,
-  "Pizza surgelée": 3.50,
-  "Frites surgelées": 2.50,
-  "Nuggets de poulet": 4.00,
-  "Légumes surgelés": 2.50,
-  "Glace vanille": 3.50,
-  "Glace chocolat": 3.50,
-  "Sorbet citron": 3.00,
-  "Shampoing": 3.50,
-  "Gel douche": 2.80,
-  "Savon liquide": 2.50,
-  "Dentifrice": 2.50,
-  "Déodorant": 3.00,
-  "Rasoir": 4.00,
-  "Coton": 2.00,
-  "Coton-tiges": 1.50,
-  "Serviettes hygiéniques": 3.50,
-  "Tampons": 3.50,
-  "Couches": 14.00,
-  "Lingettes": 3.00,
-  "Mouchoirs": 2.00,
-  "Crème solaire": 8.00,
-  "Lessive liquide": 6.00,
-  "Lessive capsules": 8.00,
-  "Assouplissant": 4.00,
-  "Liquide vaisselle": 2.50,
-  "Pastilles lave-vaisselle": 8.00,
-  "Nettoyant WC": 2.50,
-  "Javel": 1.50,
-  "Essuie-tout": 3.50,
-  "Papier toilette": 5.00,
-  "Sacs poubelle": 3.00,
-  "Éponge": 1.50,
-  "Film alimentaire": 2.50,
-  "Papier aluminium": 2.50,
-  "Lait maternisé": 12.00,
-  "Petit pot légumes": 1.20,
-  "Petit pot fruits": 1.00,
-  "Compote bébé": 2.50,
-  "Biscuits bébé": 2.50,
-  "Couches taille 3": 14.00,
-  "Croquettes chien": 8.00,
-  "Croquettes chat": 6.00,
-  "Pâtée chat": 3.00,
-  "Litière chat": 5.00
-};
-
-function getDefaultPrice(name) {
-  if (DEFAULT_PRICES[name] !== undefined) return DEFAULT_PRICES[name];
-  // Try saved prices
-  const saved = getSavedPrices();
-  return saved[name] || null;
-}
-
-function getSavedPrices() {
-  try { return JSON.parse(localStorage.getItem('pf_prices') || '{}'); } catch(e) { return {}; }
-}
-
-function savePrice(name, price) {
-  const saved = getSavedPrices();
-  saved[name] = parseFloat(price);
-  localStorage.setItem('pf_prices', JSON.stringify(saved));
-}
-
-function formatPrice(p) {
-  if (!p && p !== 0) return '';
-  return p.toFixed(2).replace('.', ',') + ' €';
-}
-
-// ── COURSES ──
+// ═══════════════════════════════════════════
+// COURSES
+// ═══════════════════════════════════════════
 async function loadItems() {
-  setSync('Connexion…', null);
-  const { data, error } = await supabase.from('pf_courses').select('*').eq('family_code', familyCode).order('created_at', { ascending: true });
-  if (error) { setSync('Erreur', false); return; }
+  setSync("Connexion…", null);
+  const { data, error } = await sb.from("pf_courses").select("*").eq("family_code", familyCode).order("created_at", { ascending: true });
+  if (error) { setSync("Erreur", false); return; }
   items = data || [];
   renderCourses();
 }
 
 async function addItem() {
-  const input = document.getElementById('newItem');
-  const name  = input.value.trim();
+  const input = document.getElementById("newItem");
+  const pi = document.getElementById("priceInput");
+  const name = input.value.trim();
   if (!name) return;
-  input.value = '';
-  const { error } = await supabase.from('pf_courses').insert([{ name, checked: false, family_code: familyCode }]);
-  if (error) { showToast('Erreur ajout'); console.error(error); }
+  const price = pi && pi.value ? parseFloat(pi.value) : (getDefaultPrice(name) || null);
+  if (pi && pi.value) savePrice(name, pi.value);
+  input.value = ""; if (pi) pi.value = "";
+  document.getElementById("suggest-wrap").innerHTML = "";
+  await sb.from("pf_courses").insert([{ name, checked: false, family_code: familyCode, price }]);
 }
 
-async function toggleItem(id, checked) {
-  const { error } = await supabase.from('pf_courses').update({ checked: !checked }).eq('id', id);
-  if (error) console.error(error);
-}
-
-async function deleteItem(id) {
-  const { error } = await supabase.from('pf_courses').delete().eq('id', id);
-  if (error) console.error(error);
-}
-
+async function toggleItem(id, checked) { await sb.from("pf_courses").update({ checked: !checked }).eq("id", id); }
+async function deleteItem(id) { await sb.from("pf_courses").delete().eq("id", id); }
 async function clearChecked() {
   const ids = items.filter(i => i.checked).map(i => i.id);
   if (!ids.length) return;
-  const { error } = await supabase.from('pf_courses').delete().in('id', ids);
-  if (error) console.error(error);
+  await sb.from("pf_courses").delete().in("id", ids);
 }
-
 async function resetChecked() {
   const ids = items.filter(i => i.checked).map(i => i.id);
   if (!ids.length) return;
-  const { error } = await supabase.from('pf_courses').update({ checked: false }).in('id', ids);
-  if (error) console.error(error);
-  else showToast('Liste remise à zéro');
+  await sb.from("pf_courses").update({ checked: false }).in("id", ids);
+  toast("Liste remise à zéro");
 }
 
 function subscribeRealtime() {
-  if (channel) supabase.removeChannel(channel);
-  channel = supabase.channel('pf-' + familyCode)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'pf_courses', filter: `family_code=eq.${familyCode}` }, handleChange)
-    .subscribe(status => {
-      if (status === 'SUBSCRIBED') setSync('En direct', true);
-      if (status === 'CLOSED')     setSync('Déconnecté', false);
+  if (channel) sb.removeChannel(channel);
+  channel = sb.channel("pf-" + familyCode)
+    .on("postgres_changes", { event: "*", schema: "public", table: "pf_courses", filter: "family_code=eq." + familyCode }, ({ eventType, new: n, old: o }) => {
+      if (eventType === "INSERT") { if (!items.find(i => i.id === n.id)) items.push(n); }
+      else if (eventType === "UPDATE") { const idx = items.findIndex(i => i.id === n.id); if (idx !== -1) items[idx] = n; }
+      else if (eventType === "DELETE") { items = items.filter(i => i.id !== o.id); }
+      renderCourses();
+    })
+    .subscribe(s => {
+      if (s === "SUBSCRIBED") setSync("En direct", true);
+      if (s === "CLOSED") setSync("Déconnecté", false);
     });
 }
 
-function handleChange({ eventType, new: n, old: o }) {
-  if (eventType === 'INSERT') { if (!items.find(i => i.id === n.id)) items.push(n); }
-  else if (eventType === 'UPDATE') { const idx = items.findIndex(i => i.id === n.id); if (idx !== -1) items[idx] = n; }
-  else if (eventType === 'DELETE') { items = items.filter(i => i.id !== o.id); }
-  renderCourses();
+// ═══════════════════════════════════════════
+// CATEGORIES
+// ═══════════════════════════════════════════
+const CATS = [
+  { id:"fruits-legumes", label:"Fruits & Légumes", icon:"🥦", keys:["pomme","poire","banane","orange","citron","raisin","fraise","cerise","peche","abricot","melon","pasteque","ananas","mangue","kiwi","framboise","myrtille","prune","avocat","carotte","pomme de terre","tomate","concombre","courgette","poivron","aubergine","oignon","ail","poireau","brocoli","chou","laitue","salade","epinard","haricot","pois","mais","champignon","radis","betterave","navet","celeri","fenouil","artichaut","asperge","patate","persil","basilic","coriandre","menthe","thym","romarin","ciboulette","gingembre","piment"] },
+  { id:"viande-poisson", label:"Viande & Poisson", icon:"🥩", keys:["poulet","boeuf","veau","porc","agneau","dinde","canard","lapin","jambon","lardons","bacon","saucisse","merguez","chipolata","steak","escalope","roti","viande","saumon","thon","cabillaud","truite","sardine","maquereau","crevette","moule","huitre","saint-jacques","dorade","bar","merlu","lieu","colin","calamar","homard","langoustine","crabe","surimi","magret","confit","filet"] },
+  { id:"laitier", label:"Produits laitiers", icon:"🥛", keys:["lait","yaourt","fromage","beurre","creme","emmental","gruyere","camembert","brie","roquefort","mozzarella","parmesan","comte","reblochon","munster","ricotta","mascarpone","feta","cottage","skyr","burrata","kiri","babybel"] },
+  { id:"boulangerie", label:"Boulangerie", icon:"🥖", keys:["pain","baguette","brioche","croissant","madeleine","cookie","sable","biscotte","cracker","pate brisee","pate feuilletee","pate a pizza","ficelle","fougasse","ciabatta"] },
+  { id:"epicerie", label:"Épicerie", icon:"🥫", keys:["pates","riz","semoule","quinoa","lentille","pois chiche","boite","conserve","sauce","coulis","concentre","soupe","bouillon","huile","vinaigre","moutarde","ketchup","mayonnaise","sel","poivre","sucre","farine","maizena","levure","chocolat","cacao","cafe","the","tisane","confiture","miel","nutella","chips","noix","amande","noisette","cacahuete","pistache","cereales","muesli","flocon","compote","boulgour","sarrasin","millet","curry","paprika","cumin","curcuma","cannelle","origan","basilic en poudre"] },
+  { id:"boissons", label:"Boissons", icon:"🥤", keys:["eau","jus","soda","coca","pepsi","limonade","biere","vin","champagne","cidre","whisky","rhum","vodka","gin","liqueur","aperitif","smoothie","nectar","orangina","perrier","schweppes","fanta","sprite"] },
+  { id:"surgele", label:"Surgelés", icon:"🧊", keys:["surgele","surgelee","glace","sorbet","frite","nugget","hachis"] },
+  { id:"hygiene", label:"Hygiène & Beauté", icon:"🧴", keys:["shampoing","gel douche","savon","dentifrice","brosse a dent","rasoir","mousse a raser","deodorant","parfum","creme","lotion","coton","tampon","serviette hygienique","protege","couche","lingette","mouchoir"] },
+  { id:"menage", label:"Entretien", icon:"🧹", keys:["lessive","liquide vaisselle","nettoyant","desinfectant","javel","essuie","papier toilette","sac poubelle","eponge","assouplissant","pastille","detartrant","deboucheur"] },
+  { id:"bebe", label:"Bébé", icon:"👶", keys:["lait maternise","petit pot","compote bebe","biscuit bebe","biberon","tetine","couche taille"] },
+  { id:"animaux", label:"Animaux", icon:"🐾", keys:["croquette","patee chien","patee chat","litiere","friandise chien","friandise chat"] },
+];
+
+function detectCat(name) {
+  const n = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  for (const c of CATS) {
+    if (c.keys.some(k => n.includes(k.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) return c;
+  }
+  return { id:"autre", label:"Autre", icon:"🛒" };
 }
 
+// ═══════════════════════════════════════════
+// PRIX
+// ═══════════════════════════════════════════
+const DEF_PRICES = {
+  "Pomme":0.30,"Poire":0.40,"Banane":0.25,"Orange":0.50,"Citron":0.40,"Fraise":3.50,"Cerise":4.00,"Pêche":0.60,"Abricot":0.50,"Melon":2.50,"Ananas":2.00,"Mangue":1.50,"Kiwi":0.40,"Framboise":3.50,"Myrtille":3.00,"Avocat":1.20,
+  "Carotte":1.20,"Pomme de terre":1.50,"Tomate":2.00,"Tomate cerise":2.50,"Concombre":0.80,"Courgette":1.00,"Poivron rouge":1.20,"Aubergine":1.20,"Oignon":1.00,"Ail":0.80,"Poireau":1.50,"Brocoli":1.80,"Laitue":1.20,"Épinard":2.00,"Haricots verts":2.50,"Champignons de Paris":2.00,"Patate douce":1.80,
+  "Poulet entier":7.00,"Blanc de poulet":6.00,"Cuisses de poulet":4.00,"Boeuf haché":7.00,"Steak":10.00,"Entrecôte":14.00,"Filet de boeuf":22.00,"Côte de porc":8.00,"Filet mignon de porc":10.00,"Gigot d'agneau":18.00,"Escalope de dinde":7.00,"Magret de canard":12.00,"Jambon blanc":2.50,"Jambon cru":3.50,"Chorizo":3.00,"Lardons":2.00,"Saucisses de Strasbourg":2.50,"Merguez":3.50,"Chipolatas":3.50,"Foie gras":12.00,
+  "Saumon frais":15.00,"Saumon fumé":5.00,"Thon en boîte":1.80,"Cabillaud":14.00,"Sardines en boîte":1.50,"Crevettes roses":8.00,"Gambas":12.00,"Moules":3.50,
+  "Lait demi-écrémé":1.10,"Lait entier":1.20,"Yaourt nature":1.50,"Yaourt aux fruits":2.00,"Yaourt grec":2.20,"Fromage blanc":1.50,"Beurre doux":2.20,"Crème fraîche épaisse":1.50,"Crème liquide":1.20,"Emmental":3.50,"Gruyère":4.00,"Comté":5.00,"Camembert":2.20,"Brie":3.00,"Mozzarella":1.80,"Parmesan":4.50,"Reblochon":4.00,"Feta":3.00,"Ricotta":2.00,"Mascarpone":2.50,
+  "Baguette":1.10,"Pain complet":2.00,"Pain de mie":1.80,"Brioche":2.50,"Croissants":3.50,"Pains au chocolat":4.00,"Biscottes":2.00,
+  "Pâtes spaghetti":1.20,"Pâtes penne":1.20,"Riz basmati":2.50,"Quinoa":3.50,"Lentilles vertes":2.00,"Pois chiches":1.80,"Sauce tomate":1.20,"Huile d'olive":5.00,"Moutarde de Dijon":1.80,"Ketchup":1.50,"Mayonnaise":2.00,"Sel fin":0.50,"Sucre blanc":1.20,"Miel":4.00,"Confiture fraise":2.50,"Nutella":4.00,"Farine de blé":1.20,"Chocolat noir":2.50,"Café moulu":4.50,"Thé noir":3.50,"Chips nature":1.80,"Amandes":5.00,"Flocons d'avoine":2.00,"Bouillon de légumes":1.50,"Conserve de thon":1.80,
+  "Eau plate 1,5L":0.40,"Eau gazeuse":0.60,"Jus d'orange":2.50,"Coca-Cola":1.80,"Bière blonde":1.20,"Vin rouge":5.00,"Vin blanc":5.00,"Champagne":18.00,"Lait d'amande":1.80,"Lait de soja":1.50,
+  "Pizza surgelée":3.50,"Frites surgelées":2.50,"Glace vanille":3.50,"Sorbet citron":3.00,
+  "Shampoing":3.50,"Gel douche":2.80,"Dentifrice":2.50,"Déodorant":3.00,"Rasoir":4.00,"Serviettes hygiéniques":3.50,"Couches":14.00,"Mouchoirs":2.00,
+  "Lessive liquide":6.00,"Liquide vaisselle":2.50,"Pastilles lave-vaisselle":8.00,"Javel":1.50,"Essuie-tout":3.50,"Papier toilette":5.00,"Sacs poubelle":3.00,
+  "Lait maternisé":12.00,"Petit pot légumes":1.20,"Couches taille 3":14.00,
+  "Croquettes chien":8.00,"Croquettes chat":6.00,"Litière chat":5.00
+};
+
+function getDefaultPrice(name) {
+  if (DEF_PRICES[name] !== undefined) return DEF_PRICES[name];
+  const s = getSavedPrices(); return s[name] || null;
+}
+function getSavedPrices() { try { return JSON.parse(localStorage.getItem("pf_prices") || "{}"); } catch(e) { return {}; } }
+function savePrice(name, price) { const s = getSavedPrices(); s[name] = parseFloat(price); localStorage.setItem("pf_prices", JSON.stringify(s)); }
+
+// ═══════════════════════════════════════════
+// SUGGESTIONS
+// ═══════════════════════════════════════════
+const PRODUCTS = ["Pomme","Pomme Granny Smith","Pomme Golden","Poire","Poire Williams","Banane","Orange","Orange à jus","Citron","Citron vert","Raisin blanc","Raisin noir","Fraise","Cerise","Pêche","Nectarine","Abricot","Melon","Pastèque","Ananas","Mangue","Kiwi","Framboise","Myrtille","Mûre","Prune","Mirabelle","Figue","Avocat","Clémentine","Mandarine","Pamplemousse","Litchi","Grenade","Carotte","Pomme de terre","Tomate","Tomate cerise","Tomate grappe","Concombre","Courgette","Poivron rouge","Poivron vert","Poivron jaune","Aubergine","Oignon","Oignon rouge","Échalote","Ail","Poireau","Brocoli","Chou-fleur","Chou blanc","Chou rouge","Laitue","Salade verte","Roquette","Mâche","Endive","Épinard","Haricots verts","Petits pois","Maïs","Champignons de Paris","Champignons shiitake","Girolles","Radis","Betterave","Navet","Céleri branche","Fenouil","Asperge verte","Patate douce","Artichaut","Potiron","Butternut","Persil","Basilic","Coriandre","Menthe","Thym","Romarin","Ciboulette","Gingembre","Piment","Poulet entier","Blanc de poulet","Cuisses de poulet","Pilons de poulet","Ailes de poulet","Boeuf haché","Steak haché","Steak","Entrecôte","Faux-filet","Filet de boeuf","Rôti de boeuf","Veau haché","Escalope de veau","Côte de porc","Filet mignon de porc","Rôti de porc","Travers de porc","Agneau haché","Gigot d'agneau","Épaule d'agneau","Dinde entière","Escalope de dinde","Magret de canard","Confit de canard","Lapin","Jambon blanc","Jambon cru","Jambon de Bayonne","Chorizo","Lardons","Bacon","Saucisses de Strasbourg","Merguez","Chipolatas","Boudin noir","Pâté","Rillettes","Foie gras","Saumon frais","Saumon fumé","Thon frais","Thon en boîte","Cabillaud","Truite","Sardines fraîches","Sardines en boîte","Maquereau","Lieu noir","Colin","Merlu","Dorade","Bar","Sole","Anchois","Crevettes roses","Crevettes grises","Gambas","Moules","Huîtres","Saint-Jacques","Calamars","Homard","Langoustines","Crabe","Surimi","Lait demi-écrémé","Lait entier","Lait écrémé","Lait sans lactose","Yaourt nature","Yaourt aux fruits","Yaourt grec","Skyr","Fromage blanc","Petit suisse","Beurre doux","Beurre demi-sel","Margarine","Crème fraîche épaisse","Crème fraîche liquide","Crème liquide","Emmental","Gruyère","Comté","Beaufort","Camembert","Brie","Roquefort","Bleu d'Auvergne","Mozzarella","Burrata","Parmesan","Reblochon","Munster","Cheddar","Gouda","Ricotta","Feta","Mascarpone","Saint-Môret","Kiri","Babybel","Baguette","Pain complet","Pain aux céréales","Pain de mie","Pain de seigle","Pain au levain","Brioche","Croissants","Pains au chocolat","Madeleines","Cookies","Sablés","Biscottes","Crackers","Pâte brisée","Pâte feuilletée","Pâte à pizza","Pâtes spaghetti","Pâtes penne","Pâtes fusilli","Pâtes farfalle","Lasagnes","Gnocchi","Riz basmati","Riz long grain","Riz rond","Riz complet","Boulgour","Semoule","Quinoa","Millet","Sarrasin","Lentilles vertes","Lentilles corail","Pois chiches","Haricots rouges","Haricots blancs","Sauce tomate","Coulis de tomate","Concentré de tomate","Sauce bolognaise","Pesto","Sauce béchamel","Huile d'olive","Huile de tournesol","Huile de colza","Vinaigre de vin","Vinaigre balsamique","Moutarde de Dijon","Moutarde à l'ancienne","Ketchup","Mayonnaise","Sauce soja","Tabasco","Sauce sriracha","Sel fin","Sel de mer","Poivre noir","Paprika","Cumin","Curcuma","Curry","Cannelle","Herbes de Provence","Sucre blanc","Sucre roux","Miel","Sirop d'érable","Confiture fraise","Confiture abricot","Confiture cerise","Confiture framboise","Nutella","Farine de blé","Farine complète","Maïzena","Levure chimique","Chocolat noir","Chocolat au lait","Chocolat pâtissier","Cacao en poudre","Café moulu","Café en grains","Café soluble","Capsules café","Thé noir","Thé vert","Tisane","Verveine","Camomille","Chips nature","Chips paprika","Noix","Amandes","Noisettes","Noix de cajou","Pistaches","Cacahuètes","Graines de sésame","Graines de chia","Céréales petit déjeuner","Muesli","Flocons d'avoine","Granola","Compote pomme","Compote poire","Bouillon de légumes","Bouillon de poulet","Conserve de thon","Conserve de sardines","Tomates pelées","Soupe en brique","Eau plate 1,5L","Eau gazeuse","Jus d'orange","Jus de pomme","Jus de raisin","Jus multifruits","Coca-Cola","Coca-Cola Zero","Pepsi","Sprite","Fanta","Limonade","Orangina","Perrier","Bière blonde","Bière brune","Bière sans alcool","Vin rouge","Vin blanc","Vin rosé","Champagne","Cidre","Pastis","Lait d'amande","Lait de soja","Lait d'avoine","Smoothie","Pizza surgelée","Frites surgelées","Nuggets de poulet","Légumes surgelés","Épinards surgelés","Glace vanille","Glace chocolat","Sorbet citron","Sorbet framboise","Shampoing","Après-shampoing","Gel douche","Savon liquide","Savon solide","Dentifrice","Brosse à dents","Fil dentaire","Déodorant","Rasoir","Mousse à raser","Coton","Coton-tiges","Serviettes hygiéniques","Tampons","Couches","Lingettes","Mouchoirs","Crème solaire","Lessive liquide","Lessive capsules","Assouplissant","Liquide vaisselle","Pastilles lave-vaisselle","Nettoyant WC","Javel","Essuie-tout","Papier toilette","Sacs poubelle","Film alimentaire","Papier aluminium","Éponge","Lait maternisé","Petit pot légumes","Petit pot viande","Petit pot fruits","Compote bébé","Couches taille 1","Couches taille 2","Couches taille 3","Couches taille 4","Couches taille 5","Tétine","Biberon","Croquettes chien","Croquettes chat","Pâtée chien","Pâtée chat","Litière chat","Friandises chien","Friandises chat"];
+
+function getSuggestions(q) {
+  if (!q || q.length < 2) return [];
+  const qn = q.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return PRODUCTS.filter(p => {
+    const pn = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return pn.startsWith(qn) || pn.includes(qn);
+  }).slice(0, 5);
+}
+
+function showSuggestions(q) {
+  const wrap = document.getElementById("suggest-wrap");
+  const list = getSuggestions(q);
+  if (!list.length) { wrap.innerHTML = ""; return; }
+  wrap.innerHTML = '<div class="suggest-list">' + list.map(s => {
+    const cat = detectCat(s);
+    return '<div class="suggest-item" onclick="selectSuggestion(\'' + s.replace(/'/g,"\\'") + '\')">'
+      + '<span class="suggest-cat-icon">' + cat.icon + '</span>'
+      + '<span class="suggest-name">' + esc(s) + '</span>'
+      + '<span class="suggest-cat-label">' + cat.label + '</span></div>';
+  }).join("") + "</div>";
+}
+
+function selectSuggestion(name) {
+  document.getElementById("newItem").value = name;
+  document.getElementById("suggest-wrap").innerHTML = "";
+  const pi = document.getElementById("priceInput");
+  if (pi) { const p = getDefaultPrice(name); pi.value = p ? p.toFixed(2) : ""; }
+  document.getElementById("priceInput").focus();
+}
+
+// ═══════════════════════════════════════════
+// RENDER COURSES
+// ═══════════════════════════════════════════
 function renderCourses() {
   const pending = items.filter(i => !i.checked);
-  const done    = items.filter(i =>  i.checked);
+  const done = items.filter(i => i.checked);
+  const grandTotal = [...pending, ...done].reduce((s, i) => s + (i.price || 0), 0);
 
-  let html = '';
-  if (items.length === 0) {
-    html = `<div class="empty"><span class="empty-icon">🛒</span><h3>Liste vide</h3><p>Ajoute ton premier article.</p></div>`;
+  let html = "";
+  if (!items.length) {
+    html = '<div class="empty"><span class="empty-icon">🛒</span><h3>Liste vide</h3><p>Ajoute ton premier article.</p></div>';
   } else {
-    // Group pending by category
     const groups = {};
     for (const item of pending) {
-      const cat = detectCategory(item.name);
+      const cat = detectCat(item.name);
       if (!groups[cat.id]) groups[cat.id] = { cat, items: [] };
       groups[cat.id].items.push(item);
     }
-    // Sort groups by category order
-    const catOrder = [...CATEGORIES.map(c => c.id), 'autre'];
-    const sorted = catOrder.filter(id => groups[id]).map(id => groups[id]);
-
-    for (const group of sorted) {
-      html += `
-        <div class="cat-section">
-          <div class="cat-header">
-            <span class="cat-icon">${group.cat.icon}</span>
-            <span class="cat-name">${group.cat.label}</span>
-            <span class="cat-count">${group.items.length}</span>
-          </div>
-          <div class="list-wrap"><div class="items-list">${group.items.map(ri).join('')}</div></div>
-        </div>`;
+    const order = [...CATS.map(c => c.id), "autre"];
+    for (const id of order) {
+      if (!groups[id]) continue;
+      const g = groups[id];
+      const ct = g.items.reduce((s, i) => s + (i.price || 0), 0);
+      const pct = grandTotal > 0 && ct > 0 ? Math.round(ct / grandTotal * 100) : 0;
+      html += '<div class="cat-section"><div class="cat-header">'
+        + '<span class="cat-icon">' + g.cat.icon + '</span>'
+        + '<span class="cat-name">' + g.cat.label + '</span>'
+        + '<span class="cat-count">' + g.items.length + '</span>'
+        + (ct > 0 ? '<span class="cat-price">' + fmt(ct) + '</span>' : "")
+        + (pct > 0 ? '<span class="cat-percent">' + pct + '%</span>' : "")
+        + '</div><div class="list-wrap"><div class="items-list">' + g.items.map(renderItem).join("") + '</div></div></div>';
     }
-
-    // Checked items at the bottom (no category)
-    // Total
-    const total = [...pending, ...done].reduce((sum, i) => sum + (i.price || 0), 0);
-    if (total > 0) {
-      const doneTotal = done.reduce((sum, i) => sum + (i.price || 0), 0);
-      html = `<div class="total-bar"><span class="total-label">Total estimé</span><span class="total-amount">${formatPrice(total)}</span></div>` + html;
+    if (done.length) {
+      const dt = done.reduce((s, i) => s + (i.price || 0), 0);
+      const dp = grandTotal > 0 && dt > 0 ? Math.round(dt / grandTotal * 100) : 0;
+      html += '<div class="cat-section"><div class="cat-header">'
+        + '<span class="cat-icon">✅</span><span class="cat-name">Cochés</span>'
+        + '<span class="cat-count">' + done.length + '</span>'
+        + (dt > 0 ? '<span class="cat-price">' + fmt(dt) + '</span>' : "")
+        + (dp > 0 ? '<span class="cat-percent">' + dp + '%</span>' : "")
+        + '</div><div class="list-wrap"><div class="items-list">' + done.map(renderItem).join("") + '</div></div></div>';
+      html += '<div class="vider-wrap"><button class="vider-btn" onclick="clearChecked()">Supprimer les cochés</button><button class="refresh-btn" onclick="resetChecked()">Rafraîchir la liste</button></div>';
     }
-
-    if (done.length > 0) {
-      html += `
-        <div class="cat-section">
-          <div class="cat-header">
-            <span class="cat-icon">✅</span>
-            <span class="cat-name">Cochés</span>
-            <span class="cat-count">${done.length}</span>
-          </div>
-          <div class="list-wrap"><div class="items-list">${done.map(ri).join('')}</div></div>
-        </div>`;
-      html += `<div class="vider-wrap"><button class="vider-btn" onclick="clearChecked()">Supprimer les cochés</button><button class="refresh-btn" onclick="resetChecked()">Rafraîchir la liste</button></div>`;
+    if (grandTotal > 0) {
+      html += '<div class="total-final"><span class="total-final-label">Total estimé</span><span class="total-final-amount">' + fmt(grandTotal) + '</span></div>';
     }
   }
-  document.getElementById('courses-content').innerHTML = html;
+  document.getElementById("courses-content").innerHTML = html;
 }
 
-function ri(item) {
-  const priceStr = item.price ? formatPrice(item.price) : '';
-  return `<div class="item${item.checked?' checked':''}" onclick="toggleItem('${item.id}',${item.checked})">
-    <div class="cb"><svg viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <span class="item-name">${esc(item.name)}</span>
-    ${priceStr ? `<span class="item-price">${priceStr}</span>` : ''}
-    <button class="del" onclick="event.stopPropagation();deleteItem('${item.id}')" aria-label="Supprimer">
-      <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    </button>
-  </div>`;
+function renderItem(item) {
+  return '<div class="item' + (item.checked ? " checked" : "") + '" onclick="toggleItem(\'' + item.id + '\',' + item.checked + ')">'
+    + '<div class="cb"><svg viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
+    + '<span class="item-name">' + esc(item.name) + '</span>'
+    + (item.price ? '<span class="item-price">' + fmt(item.price) + '</span>' : "")
+    + '<button class="del" onclick="event.stopPropagation();deleteItem(\'' + item.id + '\')">'
+    + '<svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>';
 }
 
-// ── TABS ──
+// ═══════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════
 function switchTab(name) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('pane-' + name).classList.add('active');
-  document.getElementById('nav-'  + name).classList.add('active');
+  document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("pane-" + name).classList.add("active");
+  document.getElementById("nav-" + name).classList.add("active");
 }
 
-// ── HELPERS ──
-function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// ═══════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════
+window.addEventListener("DOMContentLoaded", async () => {
+  // Wire up input
+  const ni = document.getElementById("newItem");
+  ni.addEventListener("keydown", e => { if (e.key === "Enter") addItem(); });
+  ni.addEventListener("input", e => showSuggestions(e.target.value));
+  ni.addEventListener("blur", () => setTimeout(() => { document.getElementById("suggest-wrap").innerHTML = ""; }, 200));
 
-function setSync(label, online) {
-  document.getElementById('syncLabel').textContent = label;
-  document.getElementById('dot').className = 'dot' + (online === true ? ' on' : online === false ? ' off' : '');
-}
-
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-
-// ── GLOBALS ──
-window.showJoin      = () => showCard('ob-join');
-window.showCreate    = () => showCard('ob-create');
-window.showEmailForm = () => showCard('ob-email');
-window.sendMagicLink = () => _sendMagicLink();
-window.createAccount = () => createAccount();
-window.joinAccount   = () => joinAccount();
-window.copyCode      = () => copyCode();
-window.clearChecked  = () => clearChecked();
-window.resetChecked  = () => resetChecked();
-window.addItem       = () => addItem();
-window.toggleItem    = (id, checked) => toggleItem(id, checked);
-window.deleteItem    = (id) => deleteItem(id);
-window.selectSuggestion = (name) => selectSuggestion(name);
-window.switchTab     = (name) => switchTab(name);
-
-// ── BOOT ──
-window.addEventListener('DOMContentLoaded', () => {
-  const ni = document.getElementById('newItem');
-  if (ni) {
-    ni.addEventListener('keydown', e => { if (e.key === 'Enter') { document.getElementById('suggest-wrap').innerHTML=''; addItem(); } });
-    ni.addEventListener('focus', () => {
-      const p = getDefaultPrice(ni.value);
-      const pi = document.getElementById('priceInput');
-      if (pi && !pi.value && p) pi.value = p.toFixed(2);
-    });
-    ni.addEventListener('input', e => showSuggestions(e.target.value));
-    ni.addEventListener('blur', () => setTimeout(() => { const w = document.getElementById('suggest-wrap'); if(w) w.innerHTML=''; }, 200));
+  // Check session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    const { data: member } = await sb.from("pf_members").select("*").eq("user_id", session.user.id).single();
+    if (member) { await startApp(member.family_code, member.family_name, member.prenom); return; }
+    showCard("ob-create");
+  } else {
+    showCard("ob-email");
   }
 
-  const code   = localStorage.getItem('pf_code');
-  const family = localStorage.getItem('pf_family');
-  const prenom = localStorage.getItem('pf_prenom');
-
-  if (code && family && prenom) {
-    initApp(code, family, prenom);
-  }
+  // Listen for magic link
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === "SIGNED_IN" && session) {
+      const { data: member } = await sb.from("pf_members").select("*").eq("user_id", session.user.id).single();
+      if (member) { await startApp(member.family_code, member.family_name, member.prenom); }
+      else { showCard("ob-create"); }
+    }
+  });
 });
 </script>
 </body>
