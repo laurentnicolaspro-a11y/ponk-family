@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ponk Family</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg:      #F2F2F7;
+  --surface: #FFFFFF;
+  --green:   #34C759;
+  --green-dk:#248A3D;
+  --black:   #0A0A0A;
+  --text:    #0A0A0A;
+  --muted:   #8E8E93;
+  --border:  rgba(60,60,67,0.12);
+  --red:     #FF3B30;
+  --blue:    #007AFF;
+  --r:       16px;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════
+   ONBOARDING
+══════════════════════════════════════ */
+#onboarding {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--bg);
+}
+
+.ob-logo {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.ob-logo span { color: var(--green); }
+
+.ob-sub {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.ob-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+}
+
+.ob-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.ob-card p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.ob-field {
+  margin-bottom: 12px;
+}
+
+.ob-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+
+.ob-field input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ob-field input:focus { border-color: var(--green); }
+
+.ob-btn {
+  width: 100%;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 13px;
+  padding: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.15s, transform 0.12s;
+  box-shadow: 0 4px 14px rgba(52,199,89,0.35);
+}
+.ob-btn:active { background: var(--green-dk); transform: scale(0.98); }
+
+.ob-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+.ob-divider::before, .ob-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.ob-divider span {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.ob-btn-secondary {
+  width: 100%;
+  background: var(--bg);
+  color: var(--blue);
+  border: 1.5px solid var(--border);
+  border-radius: 13px;
+  padding: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ob-btn-secondary:active { background: #E5E5EA; }
+
+/* ══════════════════════════════════════
+   APP
+══════════════════════════════════════ */
+#app { display: none; flex-direction: column; min-height: 100vh; }
+#app.visible { display: flex; }
+
+/* ── HEADER ── */
+.app-header {
+  background: rgba(242,242,247,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 54px 20px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+.header-title span { color: var(--green); }
+
+.sync-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}
+.dot.on  { background: var(--green); animation: pulse 2.5s ease-in-out infinite; }
+.dot.off { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+/* ── CONTENT ── */
+.tab-content { flex: 1; overflow-y: auto; padding-bottom: 90px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(242,242,247,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  padding: 10px 0 24px;
+  z-index: 30;
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: transform 0.12s;
+}
+.nav-btn:active { transform: scale(0.92); }
+
+.nav-icon {
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-icon svg { width: 24px; height: 24px; }
+
+.nav-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.nav-btn.active .nav-label { color: var(--green); }
+.nav-btn.active .nav-icon svg path,
+.nav-btn.active .nav-icon svg rect,
+.nav-btn.active .nav-icon svg circle { stroke: var(--green); }
+
+/* ══════════════════════════════════════
+   TAB ACCUEIL
+══════════════════════════════════════ */
+.accueil-pad { padding: 20px 16px; }
+
+/* Greeting */
+.greeting-card {
+  background: var(--black);
+  border-radius: 20px;
+  padding: 24px 22px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.greeting-card::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--green);
+  opacity: 0.12;
+}
+.greeting-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+.greeting-msg {
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.greeting-family {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--green);
+  margin-top: 8px;
+}
+
+/* Code partage */
+.share-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 18px 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.share-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+.share-code-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.share-code {
+  flex: 1;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.share-copy-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+  white-space: nowrap;
+}
+.share-copy-btn:active { background: var(--green-dk); transform: scale(0.96); }
+.share-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* Membres */
+.members-card {
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.members-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 14px 16px 8px;
+}
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+.member-row:last-child { border-bottom: none; }
+.member-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+}
+.member-name { font-size: 15px; font-weight: 600; }
+.member-you  { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+/* Météo */
+.meteo-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 14px;
+}
+.meteo-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+.meteo-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.meteo-icon { font-size: 46px; line-height: 1; }
+.meteo-info {}
+.meteo-temp {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.meteo-desc {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 3px;
+  text-transform: capitalize;
+}
+.meteo-city {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+.meteo-loading {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════
+   TAB COURSES
+══════════════════════════════════════ */
+.courses-add {
+  padding: 14px 16px;
+}
+
+.add-bar {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border-radius: 13px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.add-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  min-width: 0;
+}
+.add-bar input::placeholder { color: var(--muted); font-weight: 400; }
+.add-btn {
+  background: var(--green);
+  border: none;
+  width: 52px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.12s;
+}
+.add-btn:active { background: var(--green-dk); transform: scale(0.94); }
+/* ── PRICE INPUT ── */
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 0;
+}
+.price-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 8px 12px;
+  gap: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  flex: 1;
+}
+.price-input-wrap span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.price-input {
+  border: none;
+  outline: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  width: 100%;
+}
+.price-hint {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 4px 16px 0;
+  font-weight: 500;
+}
+
+
+
+/* ── ITEM PRICE ── */
+.item-price {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: right;
+}
+.item.checked .item-price { color: #C7C7CC; }
+
+/* ── SUGGESTIONS ── */
+.suggest-wrap {
+  padding: 0 16px;
+  position: relative;
+}
+.suggest-list {
+  background: var(--surface);
+  border-radius: 13px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin-top: 6px;
+}
+.suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  cursor: pointer;
+  border-bottom: 0.5px solid var(--border);
+  transition: background 0.12s;
+}
+.suggest-item:last-child { border-bottom: none; }
+.suggest-item:active { background: var(--bg); }
+.suggest-cat-icon { font-size: 18px; flex-shrink: 0; }
+.suggest-name { font-size: 15px; font-weight: 600; flex: 1; }
+.suggest-cat-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+
+.list-wrap { padding: 0 16px; }
+.list-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 4px 8px;
+}
+.items-list {
+  background: var(--surface);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: var(--surface);
+  transition: background 0.12s;
+  border-bottom: 0.5px solid var(--border);
+  animation: fadeSlide 0.2s ease both;
+}
+.item:last-child { border-bottom: none; }
+.item:active { background: var(--bg); }
+.item.checked { background: var(--surface); }
+
+@keyframes fadeSlide {
+  from { opacity:0; transform: translateY(5px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.cb {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid #C7C7CC;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.34,1.4,0.64,1);
+}
+.item.checked .cb { background: var(--green); border-color: var(--green); transform: scale(1.05); }
+.cb svg { width: 13px; height: 13px; opacity:0; transform:scale(0.3); transition: all 0.18s cubic-bezier(0.34,1.4,0.64,1); }
+.item.checked .cb svg { opacity:1; transform:scale(1); }
+
+.item-name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.2s;
+  word-break: break-word;
+}
+.item.checked .item-name { color: var(--muted); text-decoration: line-through; text-decoration-color: #C7C7CC; }
+
+.del {
+  background: none; border: none; cursor: pointer;
+  color: #C7C7CC; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; transition: all 0.15s; flex-shrink: 0;
+}
+.del:hover { color: var(--red); background: rgba(255,59,48,0.08); }
+.del svg { width: 14px; height: 14px; }
+/* ── CATEGORIES ── */
+.cat-section { margin-bottom: 4px; }
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px 6px;
+}
+.cat-icon { font-size: 16px; line-height: 1; }
+.cat-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex: 1;
+}
+.cat-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg);
+  border-radius: 20px;
+  padding: 1px 7px;
+}
+.cat-price {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+}
+.cat-percent {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg);
+  border-radius: 20px;
+  padding: 1px 7px;
+}
+
+/* ── TOTAL BAR FINAL ── */
+.total-final {
+  background: var(--black);
+  border-radius: var(--r);
+  margin: 12px 16px 6px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.total-final-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+}
+.total-final-amount {
+  font-size: 22px;
+  font-weight: 800;
+  color: #4ADE80;
+  letter-spacing: -0.5px;
+}
+
+
+.vider-wrap { padding: 10px 16px 16px; display: flex; gap: 10px; }
+.vider-btn {
+  flex: 1;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--red);
+  background: var(--surface);
+  border: none; border-radius: var(--r);
+  padding: 14px; cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  transition: background 0.15s;
+}
+.vider-btn:active { background: var(--bg); }
+.refresh-btn {
+  flex: 1;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--blue);
+  background: var(--surface);
+  border: none; border-radius: var(--r);
+  padding: 14px; cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  transition: background 0.15s;
+}
+.refresh-btn:active { background: var(--bg); }
+
+.empty {
+  text-align: center; padding: 60px 30px;
+}
+.empty-icon { font-size: 52px; display: block; margin-bottom: 14px; }
+.empty h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.empty p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* ══════════════════════════════════════
+   TAB PLANNING
+══════════════════════════════════════ */
+.planning-pad { padding: 20px 16px; }
+
+.planning-coming {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.planning-coming .big { font-size: 46px; margin-bottom: 12px; display: block; }
+.planning-coming h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.planning-coming p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* ══════════════════════════════════════
+   LOADING / TOAST
+══════════════════════════════════════ */
+.loading {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 12px;
+  padding: 60px 20px;
+  color: var(--muted); font-size: 14px; font-weight: 500;
+}
+.spinner {
+  width: 24px; height: 24px;
+  border: 2.5px solid #E5E5EA;
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast {
+  position: fixed; bottom: 90px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: rgba(10,10,10,0.88);
+  backdrop-filter: blur(12px);
+  color: #fff; padding: 11px 22px;
+  border-radius: 20px;
+  font-size: 14px; font-weight: 600;
+  z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1);
+  white-space: nowrap; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ══ ONBOARDING ══ -->
+<div id="onboarding">
+  <div class="ob-logo">Ponk <span>Family</span></div>
+  <div class="ob-sub">Votre espace famille partagé</div>
+
+  <!-- Étape 1 : Créer -->
+  <div class="ob-card" id="ob-create">
+    <h2>Créer mon espace</h2>
+    <p>Renseigne vos informations pour créer votre espace famille.</p>
+    <div class="ob-field">
+      <label>Nom de famille</label>
+      <input type="text" id="ob-family" placeholder="Dupont" autocorrect="off" />
+    </div>
+    <div class="ob-field">
+      <label>Ton prénom</label>
+      <input type="text" id="ob-prenom-create" placeholder="Nicolas" autocorrect="off" />
+    </div>
+    <button class="ob-btn" onclick="createAccount()">Créer mon espace</button>
+    <div class="ob-divider"><span>ou</span></div>
+    <button class="ob-btn-secondary" onclick="showJoin()">Rejoindre avec un code</button>
+  </div>
+
+  <!-- Étape 2 : Rejoindre -->
+  <div class="ob-card" id="ob-join" style="display:none">
+    <h2>Rejoindre un espace</h2>
+    <p>Entre le code partagé par un membre de ta famille.</p>
+    <div class="ob-field">
+      <label>Code famille</label>
+      <input type="text" id="ob-code" placeholder="ABC123" autocorrect="off" autocapitalize="characters" maxlength="6" style="letter-spacing:4px;font-size:20px;font-weight:700;text-transform:uppercase" />
+    </div>
+    <div class="ob-field">
+      <label>Ton prénom</label>
+      <input type="text" id="ob-prenom-join" placeholder="Marie" autocorrect="off" />
+    </div>
+    <button class="ob-btn" onclick="joinAccount()">Rejoindre</button>
+    <div class="ob-divider"><span>ou</span></div>
+    <button class="ob-btn-secondary" onclick="showCreate()">Créer un nouvel espace</button>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <header class="app-header">
+    <div class="header-row">
+      <div class="header-title">Ponk <span>Family</span></div>
+      <div class="sync-badge">
+        <div class="dot" id="dot"></div>
+        <span id="syncLabel">–</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="tab-content">
+    <!-- ACCUEIL -->
+    <div class="tab-pane active" id="pane-accueil">
+      <div class="accueil-pad">
+        <div class="greeting-card">
+          <div class="greeting-name" id="greeting-name">Bonjour</div>
+          <div class="greeting-msg" id="greeting-msg">Bonjour !</div>
+          <div class="greeting-family" id="greeting-family"></div>
+        </div>
+
+        <div class="meteo-card">
+          <div class="meteo-label">Météo</div>
+          <div id="meteo-content"><div class="meteo-loading">Récupération de la météo…</div></div>
+        </div>
+
+        <div class="share-card">
+          <div class="share-label">Code d'invitation</div>
+          <div class="share-code-row">
+            <div class="share-code" id="share-code">–</div>
+            <button class="share-copy-btn" onclick="copyCode()">Copier</button>
+          </div>
+          <div class="share-hint">Partage ce code à ta famille pour qu'ils rejoignent ton espace.</div>
+        </div>
+
+        <div class="members-card">
+          <div class="members-title">Membres</div>
+          <div id="members-list"><div style="padding:14px 16px;font-size:14px;color:var(--muted)">Chargement…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSES -->
+    <div class="tab-pane" id="pane-courses">
+      <div class="courses-add">
+        <div class="add-bar">
+          <input type="text" id="newItem" placeholder="Ajouter un article…" autocomplete="off" autocorrect="off" />
+          <button class="add-btn" onclick="addItem()" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M10 4v12M4 10h12" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="price-row">
+        <div class="price-input-wrap">
+          <span>€</span>
+          <input type="number" class="price-input" id="priceInput" placeholder="Prix estimé" step="0.01" min="0" />
+        </div>
+      </div>
+      <div class="suggest-wrap" id="suggest-wrap"></div>
+      <div id="courses-content">
+        <div class="loading"><div class="spinner"></div>Connexion…</div>
+      </div>
+    </div>
+
+    <!-- PLANNING -->
+    <div class="tab-pane" id="pane-planning">
+      <div class="planning-pad">
+        <div class="planning-coming">
+          <span class="big">📅</span>
+          <h3>Planning bientôt disponible</h3>
+          <p>La fonctionnalité agenda arrive dans la prochaine version de Ponk Family.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-accueil" onclick="switchTab('accueil')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 21V12h6v9" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Accueil</span>
+    </button>
+    <button class="nav-btn" id="nav-courses" onclick="switchTab('courses')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="9" cy="21" r="1" stroke="#8E8E93" stroke-width="1.8"/>
+          <circle cx="20" cy="21" r="1" stroke="#8E8E93" stroke-width="1.8"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.67L23 6H6" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Courses</span>
+    </button>
+    <button class="nav-btn" id="nav-planning" onclick="switchTab('planning')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="4" width="18" height="18" rx="2" stroke="#8E8E93" stroke-width="1.8"/>
+          <path d="M16 2v4M8 2v4M3 10h18" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Planning</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONFIG SUPABASE ───────────────────────────────────────
+const SUPABASE_URL = 'https://TON-PROJET.supabase.co';
+const SUPABASE_KEY = 'TA-CLE-ANON';
+// ──────────────────────────────────────────────────────────
+
+let supabase = null, channel = null, items = [];
+let familyCode = '', familyName = '', myPrenom = '';
+
+// ── ONBOARDING ──
+function showJoin()   { document.getElementById('ob-create').style.display='none'; document.getElementById('ob-join').style.display='block'; }
+function showCreate() { document.getElementById('ob-join').style.display='none';   document.getElementById('ob-create').style.display='block'; }
+
+function generateCode() {
+  return Math.random().toString(36).substring(2,8).toUpperCase();
+}
+
+async function createAccount() {
+  const fn = document.getElementById('ob-family').value.trim();
+  const pr = document.getElementById('ob-prenom-create').value.trim();
+  if (!fn || !pr) { showToast('Remplis tous les champs'); return; }
+
+  const code = generateCode();
+  localStorage.setItem('pf_code',   code);
+  localStorage.setItem('pf_family', fn);
+  localStorage.setItem('pf_prenom', pr);
+  localStorage.setItem('pf_owner',  '1');
+
+  await initApp(code, fn, pr);
+  // Enregistrer le membre dans Supabase
+  await registerMember(code, pr);
+}
+
+async function joinAccount() {
+  const code = document.getElementById('ob-code').value.trim().toUpperCase();
+  const pr   = document.getElementById('ob-prenom-join').value.trim();
+  if (!code || !pr) { showToast('Remplis tous les champs'); return; }
+  if (code.length !== 6) { showToast('Code à 6 caractères'); return; }
+
+  // Récupérer le nom de famille depuis Supabase
+  await loadLib();
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const { data } = await supabase.from('pf_members').select('family_name').eq('family_code', code).limit(1);
+  const fn = data && data.length > 0 ? data[0].family_name : 'Famille';
+
+  localStorage.setItem('pf_code',   code);
+  localStorage.setItem('pf_family', fn);
+  localStorage.setItem('pf_prenom', pr);
+  localStorage.setItem('pf_owner',  '0');
+
+  await initApp(code, fn, pr);
+  await registerMember(code, pr);
+}
+
+async function registerMember(code, prenom) {
+  // Upsert membre (évite les doublons si rechargement)
+  await supabase.from('pf_members').upsert([{
+    family_code: code,
+    prenom: prenom,
+    family_name: localStorage.getItem('pf_family')
+  }], { onConflict: 'family_code,prenom' });
+}
+
+// ── INIT APP ──
+async function initApp(code, fn, prenom) {
+  familyCode = code;
+  familyName = fn;
+  myPrenom   = prenom;
+
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+
+  await loadLib();
+  if (!supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  updateGreeting();
+  updateShareCode();
+  loadMembers();
+  loadWeather();
+  loadItems();
+  subscribeRealtime();
+}
+
+async function loadLib() {
+  return new Promise((res, rej) => {
+    if (window._sbLoaded) return res();
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.3/umd/supabase.min.js';
+    s.onload = () => { window._sbLoaded = true; res(); };
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+// ── GREETING ──
+function updateGreeting() {
+  const h = new Date().getHours();
+  const msg = h < 6 ? 'Bonne nuit' : h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
+  document.getElementById('greeting-name').textContent = myPrenom;
+  document.getElementById('greeting-msg').textContent  = `${msg}, ${myPrenom} !`;
+  document.getElementById('greeting-family').textContent = `Famille ${familyName}`;
+}
+
+// ── SHARE CODE ──
+function updateShareCode() {
+  document.getElementById('share-code').textContent = familyCode;
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(familyCode).then(() => showToast('Code copié !')).catch(() => {
+    // fallback
+    const el = document.createElement('textarea');
+    el.value = familyCode;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('Code copié !');
+  });
+}
+
+// ── MEMBRES ──
+async function loadMembers() {
+  const { data } = await supabase.from('pf_members').select('prenom').eq('family_code', familyCode);
+  const list = document.getElementById('members-list');
+  if (!data || data.length === 0) { list.innerHTML = '<div style="padding:14px 16px;font-size:14px;color:var(--muted)">Aucun membre</div>'; return; }
+  list.innerHTML = data.map(m => `
+    <div class="member-row">
+      <div class="member-avatar">${m.prenom.charAt(0).toUpperCase()}</div>
+      <div>
+        <div class="member-name">${esc(m.prenom)}</div>
+        ${m.prenom === myPrenom ? '<div class="member-you">Toi</div>' : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ── MÉTÉO ──
+function loadWeather() {
+  if (!navigator.geolocation) { document.getElementById('meteo-content').innerHTML = '<div class="meteo-loading">Géolocalisation non disponible</div>'; return; }
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try {
+      const { latitude: lat, longitude: lon } = pos.coords;
+      const res  = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=auto`);
+      const data = await res.json();
+      const temp = Math.round(data.current.temperature_2m);
+      const code = data.current.weathercode;
+      const { icon, desc } = weatherInfo(code);
+
+      // Ville via reverse geocoding
+      let city = '';
+      try {
+        const gr = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+        const gd = await gr.json();
+        city = gd.address.city || gd.address.town || gd.address.village || '';
+      } catch(e) {}
+
+      document.getElementById('meteo-content').innerHTML = `
+        <div class="meteo-main">
+          <div class="meteo-icon">${icon}</div>
+          <div class="meteo-info">
+            <div class="meteo-temp">${temp}°C</div>
+            <div class="meteo-desc">${desc}</div>
+            ${city ? `<div class="meteo-city">${city}</div>` : ''}
+          </div>
+        </div>`;
+    } catch(e) {
+      document.getElementById('meteo-content').innerHTML = '<div class="meteo-loading">Météo indisponible</div>';
+    }
+  }, () => {
+    document.getElementById('meteo-content').innerHTML = '<div class="meteo-loading">Autorise la localisation pour voir la météo</div>';
+  });
+}
+
+function weatherInfo(code) {
+  if (code === 0) return { icon:'☀️', desc:'Ciel dégagé' };
+  if (code <= 2)  return { icon:'🌤️', desc:'Partiellement nuageux' };
+  if (code <= 3)  return { icon:'☁️', desc:'Nuageux' };
+  if (code <= 49) return { icon:'🌫️', desc:'Brouillard' };
+  if (code <= 59) return { icon:'🌦️', desc:'Bruine' };
+  if (code <= 69) return { icon:'🌧️', desc:'Pluie' };
+  if (code <= 79) return { icon:'❄️', desc:'Neige' };
+  if (code <= 82) return { icon:'🌧️', desc:'Averses' };
+  if (code <= 86) return { icon:'🌨️', desc:'Averses de neige' };
+  return { icon:'⛈️', desc:'Orage' };
+}
+
+
+// ── CATEGORIES ──
+const CATEGORIES = [
+  { id: 'fruits-legumes',  label: 'Fruits & Légumes',   icon: '🥦',
+    keys: ['pomme','poire','banane','orange','citron','raisin','fraise','cerise','peche','abricot','melon','pastèque','ananas','mangue','kiwi','framboise','mure','myrtille','prune','figue','datte','noix de coco','avocat','carotte','pomme de terre','tomate','concombre','courgette','poivron','aubergine','oignon','ail','poireau','brocoli','chou','laitue','salade','epinard','haricot','petit pois','maïs','mais','champignon','radis','betterave','navet','celeri','fenouil','artichaut','asperge','patate','legume','fruit','herbe','persil','basilic','coriandre','menthe','thym','romarin','ciboulette'] },
+  { id: 'viande-poisson',  label: 'Viande & Poisson',   icon: '🥩',
+    keys: ['poulet','boeuf','veau','porc','agneau','dinde','canard','lapin','jambon','lardons','bacon','saucisse','merguez','chipolata','steak','filet','escalope','côte','entrecote','roti','viande','poisson','saumon','thon','cabillaud','truite','sardine','crevette','moule','huitre','saint-jacques','dorade','bar','merlu','lieu','colin','calamar','homard','crabe','fruits de mer'] },
+  { id: 'laitier',         label: 'Produits laitiers',  icon: '🥛',
+    keys: ['lait','yaourt','yogourt','fromage','beurre','creme','crème','emmental','gruyere','camembert','brie','roquefort','mozzarella','parmesan','comté','comte','reblochon','munster','ricotta','mascarpone','feta','cottage','fromage blanc','creme fraiche','lait fermenté','kefir'] },
+  { id: 'boulangerie',     label: 'Boulangerie',         icon: '🥖',
+    keys: ['pain','baguette','brioche','croissant','pain de mie','biscotte','crackers','pain grillé','farine','levure','madeleine','gateau','cake','tarte','quiche','pizza','pate','feuilleté'] },
+  { id: 'epicerie',        label: 'Épicerie',            icon: '🥫',
+    keys: ['pates','riz','semoule','quinoa','lentille','pois chiche','haricot sec','boite','conserve','sauce','coulis','concentre','soupe','bouillon','huile','olive','tournesol','vinaigre','moutarde','ketchup','mayonnaise','sel','poivre','sucre','farine','maizena','levure chimique','chocolat','cacao','cafe','the','tisane','confiture','miel','nutella','pate a tartiner','sirop','biscuit','chips','noix','amande','noisette','cacahuete','pistache','cereales','muesli','flocon','compote'] },
+  { id: 'boissons',        label: 'Boissons',            icon: '🥤',
+    keys: ['eau','jus','soda','coca','pepsi','limonade','biere','vin','champagne','cidre','whisky','rhum','vodka','gin','liqueur','aperitif','sirop','lait de coco','lait vegetale','lait vegetal','lait amande','lait soja','lait avoine','smoothie','nectar','litre','bouteille'] },
+  { id: 'surgele',         label: 'Surgelés',            icon: '🧊',
+    keys: ['surgele','surgelé','congele','congelé','glace','sorbet','pizza surgelee','frite','légume surgele','legume surgele','poisson surgele','viande surgelee'] },
+  { id: 'hygiene',         label: 'Hygiène & Beauté',   icon: '🧴',
+    keys: ['shampoing','shampooing','gel douche','savon','dentifrice','brosse a dent','rasoir','mousse a raser','deodorant','parfum','creme hydratante','lotion','coton','coton tige','serviette hygienique','tampon','couche','lingette','mouchoir'] },
+  { id: 'menage',          label: 'Entretien',           icon: '🧹',
+    keys: ['lessive','liquide vaisselle','produit menager','nettoyant','desinfectant','javel','wd40','essuie tout','papier toilette','sac poubelle','eponge','serpillere','balai','aspirateur','produit wc','calgon','assouplissant'] },
+  { id: 'bebe',            label: 'Bébé',                icon: '👶',
+    keys: ['couche','lait maternise','petit pot','compote bebe','biscuit bebe','biberon','tétine','tetine','lingette bebe'] },
+];
+
+function detectCategory(name) {
+  const low = name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  for (const cat of CATEGORIES) {
+    if (cat.keys.some(k => low.includes(k.normalize('NFD').replace(/[̀-ͯ]/g, '')))) {
+      return cat;
+    }
+  }
+  return { id: 'autre', label: 'Autre', icon: '🛒' };
+}
+
+
+// ── PRODUITS ──
+const PRODUCTS = [
+  // Fruits
+  'Pomme','Pomme Granny Smith','Pomme Golden','Pomme Fuji','Poire','Poire Williams',
+  'Banane','Orange','Orange à jus','Citron','Citron vert','Lime','Raisin blanc',
+  'Raisin noir','Fraise','Cerise','Pêche','Nectarine','Abricot','Melon','Pastèque',
+  'Ananas','Mangue','Kiwi','Framboise','Myrtille','Mûre','Prune','Mirabelle','Quetsche',
+  'Figue','Datte','Noix de coco','Litchi','Grenade','Papaye','Goyave','Fruit de la passion',
+  'Physalis','Clémentine','Mandarine','Pamplemousse','Bergamote','Kumquat','Carambole',
+  // Légumes
+  'Avocat','Carotte','Pomme de terre','Pomme de terre à chair ferme','Pomme de terre farineuse',
+  'Tomate','Tomate cerise','Tomate grappe','Tomate coeur de boeuf','Concombre','Courgette',
+  'Poivron rouge','Poivron vert','Poivron jaune','Aubergine','Oignon','Oignon rouge',
+  'Échalote','Ail','Ail en chemise','Poireau','Brocoli','Chou-fleur','Chou blanc',
+  'Chou rouge','Chou de Bruxelles','Chou kale','Laitue','Salade verte','Roquette',
+  'Mâche','Endive','Épinard','Haricots verts','Haricots blancs','Petits pois',
+  'Maïs','Champignons de Paris','Champignons shiitake','Girolles','Cèpes','Pleurotes',
+  'Radis','Betterave','Navet','Céleri branche','Céleri rave','Fenouil','Asperge verte',
+  'Asperge blanche','Patate douce','Artichaut','Potiron','Butternut','Potimarron',
+  'Panais','Topinambour','Bette','Blette','Pak choi','Persil','Basilic','Coriandre',
+  'Menthe','Thym','Romarin','Ciboulette','Estragon','Laurier','Sauge','Origan',
+  'Gingembre','Curcuma frais','Piment','Jalapeño',
+  // Viande
+  'Poulet entier','Blanc de poulet','Cuisses de poulet','Pilons de poulet','Ailes de poulet',
+  'Boeuf haché','Steak haché','Steak','Entrecôte','Faux-filet','Filet de boeuf',
+  'Rôti de boeuf','Bourguignon','Osso bucco','Veau haché','Escalope de veau',
+  'Côte de veau','Blanquette de veau','Porc haché','Côte de porc','Filet mignon de porc',
+  'Rôti de porc','Travers de porc','Joue de porc','Agneau haché','Côtelettes d'agneau',
+  'Gigot d'agneau','Épaule d'agneau','Dinde entière','Escalope de dinde','Blanc de dinde',
+  'Canard','Magret de canard','Confit de canard','Lapin','Jambon blanc','Jambon cru',
+  'Jambon de Bayonne','Prosciutto','Chorizo','Lardons','Bacon','Saucisses de Strasbourg',
+  'Saucisses cocktail','Merguez','Chipolatas','Boudin noir','Boudin blanc','Pâté',
+  'Rillettes','Foie gras','Foie de volaille','Andouillette',
+  // Poisson & Fruits de mer
+  'Saumon frais','Saumon fumé','Thon frais','Thon en boîte','Cabillaud','Truite',
+  'Sardines fraîches','Sardines en boîte','Maquereau','Maquereau fumé','Lieu noir',
+  'Colin','Merlu','Dorade','Bar','Sole','Raie','Lotte','Espadon','Anchois',
+  'Crevettes roses','Crevettes grises','Gambas','Moules','Huîtres','Saint-Jacques',
+  'Calamars','Poulpe','Homard','Langoustines','Crabe','Surimi','Brandade de morue',
+  // Produits laitiers
+  'Lait demi-écrémé','Lait entier','Lait écrémé','Lait sans lactose','Lait UHT',
+  'Yaourt nature','Yaourt aux fruits','Yaourt grec','Yaourt brassé','Yaourt à boire',
+  'Fromage blanc','Fromage blanc 0%','Faisselle','Petit suisse','Skyr',
+  'Beurre doux','Beurre demi-sel','Beurre allégé','Margarine',
+  'Crème fraîche épaisse','Crème fraîche liquide','Crème légère','Crème de soja',
+  'Emmental','Gruyère','Comté','Beaufort','Abondance','Camembert','Brie','Coulommiers',
+  'Roquefort','Bleu d'Auvergne','Fourme d'Ambert','Mozzarella','Burrata','Parmesan',
+  'Pecorino','Reblochon','Munster','Maroilles','Époisses','Livarot','Pont-l'Évêque',
+  'Cheddar','Gouda','Edam','Ricotta','Feta','Mascarpone','Saint-Môret','Kiri',
+  'Vache qui rit','Babybel','Mimolette','Ossau-Iraty','Tome de Savoie',
+  'Crème dessert','Flan','Mousse au chocolat','Île flottante','Riz au lait','Semoule au lait',
+  // Boulangerie & Pâtisserie
+  'Baguette','Pain complet','Pain aux céréales','Pain de mie','Pain de mie complet',
+  'Pain de seigle','Pain au levain','Pain Nordic','Pain sans gluten','Brioche',
+  'Croissants','Pains au chocolat','Pain aux raisins','Chausson aux pommes',
+  'Madeleleines','Financiers','Cookies','Sablés','Petits beurre','Galettes bretonnes',
+  'Biscottes','Crackers','Pain grillé','Gressins','Biscuits apéritif',
+  'Tarte','Quiche','Pâte brisée','Pâte feuilletée','Pâte sablée','Pâte à pizza',
+  // Épicerie salée
+  'Pâtes spaghetti','Pâtes tagliatelles','Pâtes penne','Pâtes fusilli','Pâtes farfalle',
+  'Pâtes rigatoni','Pâtes linguine','Pâtes macaroni','Pâtes coquillettes','Lasagnes',
+  'Gnocchi','Riz basmati','Riz long grain','Riz rond','Riz complet','Riz arborio',
+  'Riz sauvage','Boulgour','Semoule','Quinoa','Millet','Sarrasin','Orge','Épeautre',
+  'Lentilles vertes','Lentilles corail','Lentilles beluga','Pois chiches','Haricots rouges',
+  'Haricots blancs','Flageolets','Fèves','Pois cassés','Soupe de lentilles',
+  'Sauce tomate','Coulis de tomate','Concentré de tomate','Passata','Pulpe de tomate',
+  'Sauce bolognaise','Sauce pesto','Sauce carbonara','Sauce béchamel',
+  'Huile d'olive','Huile de tournesol','Huile de colza','Huile de coco','Huile de sésame',
+  'Vinaigre de vin','Vinaigre balsamique','Vinaigre de cidre','Vinaigre blanc',
+  'Moutarde de Dijon','Moutarde à l'ancienne','Ketchup','Mayonnaise','Sauce soja',
+  'Sauce worcestershire','Tabasco','Sauce sriracha','Sauce barbecue','Sauce teriyaki',
+  'Sel fin','Sel de mer','Fleur de sel','Poivre noir','Poivre blanc','Poivre de Cayenne',
+  'Paprika','Cumin','Coriandre en poudre','Curcuma','Curry','Cannelle','Muscade',
+  'Clou de girofle','Cardamome','Anis étoilé','Herbes de Provence','Bouquet garni',
+  'Sucre blanc','Sucre roux','Sucre glace','Cassonade','Stevia','Miel','Sirop d'érable',
+  'Sirop d'agave','Confiture fraise','Confiture abricot','Confiture cerise',
+  'Confiture framboise','Confiture orange','Marmelade','Pâte à tartiner','Nutella',
+  'Farine de blé','Farine complète','Farine sans gluten','Fécule de maïs','Maïzena',
+  'Levure boulangère','Levure chimique','Bicarbonate','Gélatine','Agar-agar',
+  'Chocolat noir','Chocolat au lait','Chocolat blanc','Chocolat pâtissier','Cacao en poudre',
+  'Café moulu','Café en grains','Café soluble','Dosettes de café','Capsules café',
+  'Thé noir','Thé vert','Thé blanc','Thé rouge','Tisane','Infusion','Verveine','Camomille',
+  'Chips nature','Chips paprika','Chips sel','Crackers apéritif','Tuiles','Popcorn',
+  'Noix','Amandes','Noisettes','Noix de cajou','Pistaches','Cacahuètes','Noix du Brésil',
+  'Noix de macadamia','Graines de tournesol','Graines de courge','Graines de sésame',
+  'Graines de lin','Graines de chia','Graines de pavot',
+  'Céréales petit déjeuner','Muesli','Flocons d'avoine','Corn flakes','Granola',
+  'Compote pomme','Compote poire','Compote fruits','Purée de noisette','Purée d'amande',
+  'Bouillon de légumes','Bouillon de poulet','Bouillon de boeuf','Fumet de poisson',
+  'Conserve de thon','Conserve de sardines','Conserve de maquereaux','Conserve de saumon',
+  'Petits pois en boîte','Maïs en boîte','Tomates pelées','Artichaut en boîte',
+  'Soupe en brique','Velouté de légumes','Soupe de poisson','Pot-au-feu',
+  'Taboulé','Couscous prêt','Quinoa cuit','Riz cuit','Lentilles cuites',
+  // Épicerie sucrée
+  'Biscuits secs','Galettes','Palets bretons','Spéculoos','Palmiers','Langue de chat',
+  'Boudoirs','Gaufrettes','Barquettes','Pim's','Napolitains','Mikado','Oreo',
+  'Bonbons','Caramels','Réglisse','Chamallows','Nougat','Calissons','Berlingots',
+  'Glaces en pot','Bâtonnets glacés','Esquimaux',
+  // Boissons
+  'Eau plate 1,5L','Eau gazeuse','Eau aromatisée','Jus d'orange','Jus de pomme',
+  'Jus de raisin','Jus de tomate','Jus multifruits','Nectar de pêche','Nectar d'abricot',
+  'Coca-Cola','Coca-Cola Zero','Pepsi','Sprite','Fanta','Ice Tea','Schweppes',
+  'Limonade','Orangina','Perrier','San Pellegrino','Bière blonde','Bière brune',
+  'Bière sans alcool','Vin rouge','Vin blanc','Vin rosé','Champagne','Prosecco',
+  'Cidre','Porto','Apéritif','Pastis','Whisky','Rhum','Vodka','Gin','Liqueur',
+  'Lait d'amande','Lait de soja','Lait d'avoine','Lait de coco','Lait de riz',
+  'Smoothie','Jus pressé','Boisson énergisante','Boisson sportive',
+  // Surgelés
+  'Pizza surgelée','Pizza margherita surgelée','Pizza 4 fromages surgelée',
+  'Frites surgelées','Frites au four','Potatoes surgelées','Nuggets de poulet',
+  'Légumes surgelés','Épinards surgelés','Haricots verts surgelés','Petits pois surgelés',
+  'Poisson pané surgelé','Filet de poisson surgelé','Crevettes surgelées',
+  'Lasagnes surgelées','Hachis parmentier surgelé','Gratin surgelé',
+  'Glace vanille','Glace chocolat','Glace fraise','Sorbet citron','Sorbet framboise',
+  'Sorbet mangue','Bac de glace','Esquimaux chocolat',
+  // Hygiène & Beauté
+  'Shampoing','Shampoing sec','Après-shampoing','Masque capillaire','Gel douche',
+  'Savon liquide','Savon solide','Gel nettoyant visage','Démaquillant','Eau micellaire',
+  'Crème hydratante visage','Crème corps','Lait corps','Huile corps','Autobronzant',
+  'Dentifrice','Brosse à dents','Fil dentaire','Bain de bouche','Blanchiment dentaire',
+  'Déodorant','Anti-transpirant','Rasoir','Mousse à raser','Gel à raser','Lame de rasoir',
+  'Épilateur','Crème épilatoire','Cire épilation','Coton','Coton-tiges','Disques démaquillants',
+  'Serviettes hygiéniques','Tampons','Protège-slips','Couches','Couches-culottes',
+  'Lingettes bébé','Lingettes désinfectantes','Mouchoirs','Papier mouchoir',
+  'Crème solaire','Après-soleil','Protection solaire','Insectifuge',
+  // Entretien maison
+  'Lessive liquide','Lessive en poudre','Lessive capsules','Lessive écologique',
+  'Assouplissant','Détachant','Liquide vaisselle','Pastilles lave-vaisselle',
+  'Sel lave-vaisselle','Liquide de rinçage','Nettoyant multi-surfaces','Nettoyant cuisine',
+  'Nettoyant salle de bain','Nettoyant WC','Détartrant','Déboucheur','Javel',
+  'Spray désinfectant','Désodorisant','Diffuseur','Bougies parfumées',
+  'Essuie-tout','Papier toilette','Mouchoirs papier','Sacs poubelle','Sacs congélation',
+  'Film alimentaire','Papier aluminium','Papier cuisson','Éponge','Gratte-éponge',
+  'Serpillère','Balai','Pelle à poussière','Gants ménage','Brosse WC',
+  // Bébé & Enfant
+  'Lait maternisé','Lait 1er âge','Lait 2ème âge','Lait de croissance',
+  'Petit pot légumes','Petit pot viande','Petit pot fruits','Compote bébé',
+  'Biscuits bébé','Céréales bébé','Purée bébé','Soupe bébé',
+  'Couches taille 1','Couches taille 2','Couches taille 3','Couches taille 4',
+  'Couches taille 5','Couches taille 6','Couches-culottes bébé',
+  'Lingettes bébé','Crème change','Liniment','Savon bébé','Shampoing bébé',
+  'Tétine','Biberon','Sucette',
+  // Animalerie
+  'Croquettes chien','Croquettes chat','Pâtée chien','Pâtée chat',
+  'Litière chat','Friandises chien','Friandises chat',
+];
+
+function getSuggestions(query) {
+  if (!query || query.length < 2) return [];
+  const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return PRODUCTS.filter(p => {
+    const pn = p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return pn.startsWith(q) || pn.includes(q);
+  }).slice(0, 5);
+}
+
+function showSuggestions(query) {
+  let wrap = document.getElementById('suggest-wrap');
+  if (!wrap) return;
+  const suggestions = getSuggestions(query);
+  if (suggestions.length === 0) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div class="suggest-list">${suggestions.map(s => {
+    const cat = detectCategory(s);
+    return `<div class="suggest-item" onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')">
+      <span class="suggest-cat-icon">${cat.icon}</span>
+      <span class="suggest-name">${s}</span>
+      <span class="suggest-cat-label">${cat.label}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function selectSuggestion(name) {
+  document.getElementById('newItem').value = name;
+  document.getElementById('suggest-wrap').innerHTML = '';
+  // Pre-fill price
+  const priceInput = document.getElementById('priceInput');
+  if (priceInput) {
+    const p = getDefaultPrice(name);
+    priceInput.value = p ? p.toFixed(2) : '';
+    priceInput.placeholder = p ? 'Prix estimé' : 'Prix estimé';
+  }
+  priceInput && priceInput.focus();
+}
+
+
+// ── PRIX PAR DÉFAUT ──
+const DEFAULT_PRICES = {
+  'Pomme':0.30,'Pomme Granny Smith':0.35,'Pomme Golden':0.30,'Pomme Fuji':0.35,
+  'Poire':0.40,'Poire Williams':0.45,'Banane':0.25,'Orange':0.50,'Orange à jus':0.60,
+  'Citron':0.40,'Citron vert':0.40,'Raisin blanc':2.50,'Raisin noir':2.50,
+  'Fraise':3.50,'Cerise':4.00,'Pêche':0.60,'Nectarine':0.60,'Abricot':0.50,
+  'Melon':2.50,'Pastèque':3.00,'Ananas':2.00,'Mangue':1.50,'Kiwi':0.40,
+  'Framboise':3.50,'Myrtille':3.00,'Prune':0.40,'Avocat':1.20,
+  'Carotte':1.20,'Pomme de terre':1.50,'Tomate':2.00,'Tomate cerise':2.50,
+  'Concombre':0.80,'Courgette':1.00,'Poivron rouge':1.20,'Poivron vert':1.00,
+  'Aubergine':1.20,'Oignon':1.00,'Ail':0.80,'Échalote':1.20,'Poireau':1.50,
+  'Brocoli':1.80,'Chou-fleur':2.00,'Laitue':1.20,'Salade verte':1.00,'Roquette':1.80,
+  'Épinard':2.00,'Haricots verts':2.50,'Petits pois':1.50,'Maïs':1.00,
+  'Champignons de Paris':2.00,'Radis':0.80,'Betterave':1.20,'Céleri branche':1.50,
+  'Fenouil':1.50,'Asperge verte':3.00,'Patate douce':1.80,'Persil':0.60,'Basilic':1.20,
+  'Poulet entier':7.00,'Blanc de poulet':6.00,'Cuisses de poulet':4.00,'Pilons de poulet':3.50,
+  'Boeuf haché':7.00,'Steak haché':7.00,'Steak':10.00,'Entrecôte':14.00,
+  'Filet de boeuf':22.00,'Rôti de boeuf':12.00,'Escalope de veau':12.00,
+  'Côte de porc':8.00,'Filet mignon de porc':10.00,'Rôti de porc':8.00,
+  'Côtelettes d'agneau':14.00,'Gigot d'agneau':18.00,'Dinde entière':14.00,
+  'Escalope de dinde':7.00,'Magret de canard':12.00,'Confit de canard':8.00,
+  'Jambon blanc':2.50,'Jambon cru':3.50,'Jambon de Bayonne':4.00,'Chorizo':3.00,
+  'Lardons':2.00,'Bacon':2.50,'Saucisses de Strasbourg':2.50,'Merguez':3.50,
+  'Chipolatas':3.50,'Boudin noir':3.00,'Pâté':2.50,'Rillettes':2.50,'Foie gras':12.00,
+  'Saumon frais':15.00,'Saumon fumé':5.00,'Thon frais':12.00,'Thon en boîte':1.80,
+  'Cabillaud':14.00,'Truite':10.00,'Sardines fraîches':4.00,'Sardines en boîte':1.50,
+  'Maquereau':5.00,'Maquereau fumé':3.00,'Colin':8.00,'Merlu':8.00,'Dorade':10.00,
+  'Crevettes roses':8.00,'Gambas':12.00,'Moules':3.50,'Huîtres':8.00,
+  'Lait demi-écrémé':1.10,'Lait entier':1.20,'Lait écrémé':1.00,'Lait sans lactose':1.80,
+  'Yaourt nature':1.50,'Yaourt aux fruits':2.00,'Yaourt grec':2.20,'Skyr':2.50,
+  'Fromage blanc':1.50,'Beurre doux':2.20,'Beurre demi-sel':2.20,'Margarine':1.80,
+  'Crème fraîche épaisse':1.50,'Crème fraîche liquide':1.20,'Crème liquide':1.20,
+  'Emmental':3.50,'Gruyère':4.00,'Comté':5.00,'Camembert':2.20,'Brie':3.00,
+  'Mozzarella':1.80,'Parmesan':4.50,'Reblochon':4.00,'Feta':3.00,'Ricotta':2.00,
+  'Mascarpone':2.50,'Saint-Môret':2.50,'Kiri':2.00,'Babybel':3.50,
+  'Crème dessert':1.50,'Flan':1.20,'Riz au lait':1.50,
+  'Baguette':1.10,'Pain complet':2.00,'Pain de mie':1.80,'Brioche':2.50,
+  'Croissants':3.50,'Pains au chocolat':4.00,'Biscottes':2.00,'Crackers':1.80,
+  'Madeleines':2.50,'Cookies':2.50,'Spéculoos':2.00,
+  'Pâtes spaghetti':1.20,'Pâtes penne':1.20,'Pâtes fusilli':1.20,'Pâtes farfalle':1.20,
+  'Lasagnes':1.50,'Gnocchi':2.00,'Riz basmati':2.50,'Riz long grain':1.80,
+  'Quinoa':3.50,'Semoule':1.50,'Boulgour':2.00,'Lentilles vertes':2.00,
+  'Lentilles corail':2.50,'Pois chiches':1.80,'Haricots rouges':1.50,
+  'Sauce tomate':1.20,'Coulis de tomate':1.00,'Concentré de tomate':0.80,
+  'Sauce bolognaise':2.50,'Pesto':3.00,'Sauce béchamel':1.50,
+  'Huile d'olive':5.00,'Huile de tournesol':2.50,'Huile de colza':3.00,
+  'Vinaigre de vin':1.50,'Vinaigre balsamique':3.00,'Moutarde de Dijon':1.80,
+  'Ketchup':1.50,'Mayonnaise':2.00,'Sauce soja':2.50,'Tabasco':3.50,
+  'Sel fin':0.50,'Poivre noir':2.00,'Paprika':1.50,'Cumin':1.50,'Curcuma':1.80,
+  'Curry':1.50,'Cannelle':1.50,'Herbes de Provence':1.50,
+  'Sucre blanc':1.20,'Sucre roux':1.50,'Miel':4.00,'Sirop d'érable':5.50,
+  'Confiture fraise':2.50,'Confiture abricot':2.50,'Nutella':4.00,
+  'Farine de blé':1.20,'Fécule de maïs':1.50,'Levure chimique':1.00,
+  'Chocolat noir':2.50,'Chocolat au lait':2.00,'Chocolat pâtissier':2.80,'Cacao en poudre':3.00,
+  'Café moulu':4.50,'Café en grains':6.00,'Café soluble':5.00,'Capsules café':4.50,
+  'Thé noir':3.50,'Thé vert':3.50,'Tisane':3.00,'Camomille':3.00,
+  'Chips nature':1.80,'Noix':4.00,'Amandes':5.00,'Noisettes':4.50,'Pistaches':5.00,
+  'Cacahuètes':2.00,'Céréales petit déjeuner':3.50,'Muesli':3.00,'Flocons d'avoine':2.00,
+  'Compote pomme':2.00,'Bouillon de légumes':1.50,'Bouillon de poulet':1.50,
+  'Conserve de thon':1.80,'Tomates pelées':1.00,'Soupe en brique':2.00,
+  'Eau plate 1,5L':0.40,'Eau gazeuse':0.60,'Jus d'orange':2.50,'Jus de pomme':2.00,
+  'Coca-Cola':1.80,'Pepsi':1.60,'Sprite':1.60,'Limonade':1.20,'Orangina':1.80,
+  'Bière blonde':1.20,'Vin rouge':5.00,'Vin blanc':5.00,'Vin rosé':5.00,
+  'Champagne':18.00,'Cidre':3.00,'Lait d'amande':1.80,'Lait de soja':1.50,
+  'Lait d'avoine':1.80,'Smoothie':2.50,
+  'Pizza surgelée':3.50,'Frites surgelées':2.50,'Nuggets de poulet':4.00,
+  'Légumes surgelés':2.50,'Glace vanille':3.50,'Glace chocolat':3.50,'Sorbet citron':3.00,
+  'Shampoing':3.50,'Gel douche':2.80,'Savon liquide':2.50,'Dentifrice':2.50,
+  'Déodorant':3.00,'Rasoir':4.00,'Coton':2.00,'Coton-tiges':1.50,
+  'Serviettes hygiéniques':3.50,'Tampons':3.50,'Couches':14.00,'Lingettes':3.00,
+  'Mouchoirs':2.00,'Crème solaire':8.00,
+  'Lessive liquide':6.00,'Lessive capsules':8.00,'Assouplissant':4.00,
+  'Liquide vaisselle':2.50,'Pastilles lave-vaisselle':8.00,'Nettoyant WC':2.50,
+  'Javel':1.50,'Essuie-tout':3.50,'Papier toilette':5.00,'Sacs poubelle':3.00,
+  'Éponge':1.50,'Film alimentaire':2.50,'Papier aluminium':2.50,
+  'Lait maternisé':12.00,'Petit pot légumes':1.20,'Petit pot fruits':1.00,
+  'Compote bébé':2.50,'Biscuits bébé':2.50,'Couches taille 3':14.00,
+  'Croquettes chien':8.00,'Croquettes chat':6.00,'Pâtée chat':3.00,'Litière chat':5.00,
+};
+
+function getDefaultPrice(name) {
+  if (DEFAULT_PRICES[name] !== undefined) return DEFAULT_PRICES[name];
+  // Try saved prices
+  const saved = getSavedPrices();
+  return saved[name] || null;
+}
+
+function getSavedPrices() {
+  try { return JSON.parse(localStorage.getItem('pf_prices') || '{}'); } catch(e) { return {}; }
+}
+
+function savePrice(name, price) {
+  const saved = getSavedPrices();
+  saved[name] = parseFloat(price);
+  localStorage.setItem('pf_prices', JSON.stringify(saved));
+}
+
+function formatPrice(p) {
+  if (!p && p !== 0) return '';
+  return p.toFixed(2).replace('.', ',') + ' €';
+}
+
+// ── COURSES ──
+async function loadItems() {
+  setSync('Connexion…', null);
+  const { data, error } = await supabase.from('pf_courses').select('*').eq('family_code', familyCode).order('created_at', { ascending: true });
+  if (error) { setSync('Erreur', false); return; }
+  items = data || [];
+  renderCourses();
+}
+
+async function addItem() {
+  const input = document.getElementById('newItem');
+  const name  = input.value.trim();
+  if (!name) return;
+  input.value = '';
+  const { error } = await supabase.from('pf_courses').insert([{ name, checked: false, family_code: familyCode }]);
+  if (error) { showToast('Erreur ajout'); console.error(error); }
+}
+
+async function toggleItem(id, checked) {
+  const { error } = await supabase.from('pf_courses').update({ checked: !checked }).eq('id', id);
+  if (error) console.error(error);
+}
+
+async function deleteItem(id) {
+  const { error } = await supabase.from('pf_courses').delete().eq('id', id);
+  if (error) console.error(error);
+}
+
+async function clearChecked() {
+  const ids = items.filter(i => i.checked).map(i => i.id);
+  if (!ids.length) return;
+  const { error } = await supabase.from('pf_courses').delete().in('id', ids);
+  if (error) console.error(error);
+}
+
+async function resetChecked() {
+  const ids = items.filter(i => i.checked).map(i => i.id);
+  if (!ids.length) return;
+  const { error } = await supabase.from('pf_courses').update({ checked: false }).in('id', ids);
+  if (error) console.error(error);
+  else showToast('Liste remise à zéro');
+}
+
+function subscribeRealtime() {
+  if (channel) supabase.removeChannel(channel);
+  channel = supabase.channel('pf-' + familyCode)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'pf_courses', filter: `family_code=eq.${familyCode}` }, handleChange)
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED') setSync('En direct', true);
+      if (status === 'CLOSED')     setSync('Déconnecté', false);
+    });
+}
+
+function handleChange({ eventType, new: n, old: o }) {
+  if (eventType === 'INSERT') { if (!items.find(i => i.id === n.id)) items.push(n); }
+  else if (eventType === 'UPDATE') { const idx = items.findIndex(i => i.id === n.id); if (idx !== -1) items[idx] = n; }
+  else if (eventType === 'DELETE') { items = items.filter(i => i.id !== o.id); }
+  renderCourses();
+}
+
+function renderCourses() {
+  const pending = items.filter(i => !i.checked);
+  const done    = items.filter(i =>  i.checked);
+
+  let html = '';
+  if (items.length === 0) {
+    html = `<div class="empty"><span class="empty-icon">🛒</span><h3>Liste vide</h3><p>Ajoute ton premier article.</p></div>`;
+  } else {
+    // Group pending by category
+    const groups = {};
+    for (const item of pending) {
+      const cat = detectCategory(item.name);
+      if (!groups[cat.id]) groups[cat.id] = { cat, items: [] };
+      groups[cat.id].items.push(item);
+    }
+    // Sort groups by category order
+    const catOrder = [...CATEGORIES.map(c => c.id), 'autre'];
+    const sorted = catOrder.filter(id => groups[id]).map(id => groups[id]);
+
+    for (const group of sorted) {
+      html += `
+        <div class="cat-section">
+          <div class="cat-header">
+            <span class="cat-icon">${group.cat.icon}</span>
+            <span class="cat-name">${group.cat.label}</span>
+            <span class="cat-count">${group.items.length}</span>
+          </div>
+          <div class="list-wrap"><div class="items-list">${group.items.map(ri).join('')}</div></div>
+        </div>`;
+    }
+
+    // Checked items at the bottom (no category)
+    // Total
+    const total = [...pending, ...done].reduce((sum, i) => sum + (i.price || 0), 0);
+    if (total > 0) {
+      const doneTotal = done.reduce((sum, i) => sum + (i.price || 0), 0);
+      html = `<div class="total-bar"><span class="total-label">Total estimé</span><span class="total-amount">${formatPrice(total)}</span></div>` + html;
+    }
+
+    if (done.length > 0) {
+      html += `
+        <div class="cat-section">
+          <div class="cat-header">
+            <span class="cat-icon">✅</span>
+            <span class="cat-name">Cochés</span>
+            <span class="cat-count">${done.length}</span>
+          </div>
+          <div class="list-wrap"><div class="items-list">${done.map(ri).join('')}</div></div>
+        </div>`;
+      html += `<div class="vider-wrap"><button class="vider-btn" onclick="clearChecked()">Supprimer les cochés</button><button class="refresh-btn" onclick="resetChecked()">Rafraîchir la liste</button></div>`;
+    }
+  }
+  document.getElementById('courses-content').innerHTML = html;
+}
+
+function ri(item) {
+  const priceStr = item.price ? formatPrice(item.price) : '';
+  return `<div class="item${item.checked?' checked':''}" onclick="toggleItem('${item.id}',${item.checked})">
+    <div class="cb"><svg viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span class="item-name">${esc(item.name)}</span>
+    ${priceStr ? `<span class="item-price">${priceStr}</span>` : ''}
+    <button class="del" onclick="event.stopPropagation();deleteItem('${item.id}')" aria-label="Supprimer">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>`;
+}
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + name).classList.add('active');
+  document.getElementById('nav-'  + name).classList.add('active');
+}
+
+// ── HELPERS ──
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setSync(label, online) {
+  document.getElementById('syncLabel').textContent = label;
+  document.getElementById('dot').className = 'dot' + (online === true ? ' on' : online === false ? ' off' : '');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── BOOT ──
+window.addEventListener('DOMContentLoaded', () => {
+  const ni = document.getElementById('newItem');
+  if (ni) {
+    ni.addEventListener('keydown', e => { if (e.key === 'Enter') { document.getElementById('suggest-wrap').innerHTML=''; addItem(); } });
+    ni.addEventListener('focus', () => {
+      const p = getDefaultPrice(ni.value);
+      const pi = document.getElementById('priceInput');
+      if (pi && !pi.value && p) pi.value = p.toFixed(2);
+    });
+    ni.addEventListener('input', e => showSuggestions(e.target.value));
+    ni.addEventListener('blur', () => setTimeout(() => { const w = document.getElementById('suggest-wrap'); if(w) w.innerHTML=''; }, 200));
+  }
+
+  const code   = localStorage.getItem('pf_code');
+  const family = localStorage.getItem('pf_family');
+  const prenom = localStorage.getItem('pf_prenom');
+
+  if (code && family && prenom) {
+    initApp(code, family, prenom);
+  }
+});
+</script>
+</body>
+</html>
