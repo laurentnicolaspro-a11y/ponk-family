@@ -778,8 +778,26 @@ body {
   <div class="ob-logo">Ponk <span>Family</span></div>
   <div class="ob-sub">Votre espace famille partagé</div>
 
+  <!-- Étape 0 : Email -->
+  <div class="ob-card" id="ob-email">
+    <h2>Connexion</h2>
+    <p>Entre ton adresse email pour recevoir un lien de connexion magique.</p>
+    <div class="ob-field">
+      <label>Adresse email</label>
+      <input type="email" id="ob-email-input" placeholder="nicolas@exemple.fr" autocorrect="off" autocapitalize="off" />
+    </div>
+    <button class="ob-btn" onclick="sendMagicLink()">Recevoir le lien</button>
+  </div>
+
+  <!-- Étape 0b : Email envoyé -->
+  <div class="ob-card" id="ob-sent" style="display:none">
+    <h2>📬 Vérifie tes emails !</h2>
+    <p>Un lien de connexion a été envoyé à <strong id="ob-sent-email"></strong>.<br><br>Clique sur le lien pour continuer.</p>
+    <button class="ob-btn-secondary" onclick="showEmailForm()">Changer d'email</button>
+  </div>
+
   <!-- Étape 1 : Créer -->
-  <div class="ob-card" id="ob-create">
+  <div class="ob-card" id="ob-create" style="display:none">
     <h2>Créer mon espace</h2>
     <p>Renseigne vos informations pour créer votre espace famille.</p>
     <div class="ob-field">
@@ -960,13 +978,7 @@ async function createAccount() {
   if (!fn || !pr) { showToast('Remplis tous les champs'); return; }
 
   const code = generateCode();
-  localStorage.setItem('pf_code',   code);
-  localStorage.setItem('pf_family', fn);
-  localStorage.setItem('pf_prenom', pr);
-  localStorage.setItem('pf_owner',  '1');
-
   await initApp(code, fn, pr);
-  // Enregistrer le membre dans Supabase
   await registerMember(code, pr);
 }
 
@@ -976,28 +988,23 @@ async function joinAccount() {
   if (!code || !pr) { showToast('Remplis tous les champs'); return; }
   if (code.length !== 6) { showToast('Code à 6 caractères'); return; }
 
-  // Récupérer le nom de famille depuis Supabase
-  await loadLib();
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data } = await supabase.from('pf_members').select('family_name').eq('family_code', code).limit(1);
-  const fn = data && data.length > 0 ? data[0].family_name : 'Famille';
-
-  localStorage.setItem('pf_code',   code);
-  localStorage.setItem('pf_family', fn);
-  localStorage.setItem('pf_prenom', pr);
-  localStorage.setItem('pf_owner',  '0');
+  if (!data || data.length === 0) { showToast('Code famille introuvable'); return; }
+  const fn = data[0].family_name;
 
   await initApp(code, fn, pr);
   await registerMember(code, pr);
 }
 
 async function registerMember(code, prenom) {
-  // Upsert membre (évite les doublons si rechargement)
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id || null;
   await supabase.from('pf_members').upsert([{
     family_code: code,
     prenom: prenom,
-    family_name: localStorage.getItem('pf_family')
-  }], { onConflict: 'family_code,prenom' });
+    family_name: familyName,
+    user_id: userId
+  }], { onConflict: 'user_id' });
 }
 
 // ── INIT APP ──
@@ -1008,9 +1015,6 @@ async function initApp(code, fn, prenom) {
 
   document.getElementById('onboarding').style.display = 'none';
   document.getElementById('app').classList.add('visible');
-
-  await loadLib();
-  if (!supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   updateGreeting();
   updateShareCode();
