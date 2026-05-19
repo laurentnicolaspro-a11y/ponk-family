@@ -937,8 +937,18 @@ let supabase = null, channel = null, items = [];
 let familyCode = '', familyName = '', myPrenom = '';
 
 // ── ONBOARDING ──
-function showJoin()   { document.getElementById('ob-create').style.display='none'; document.getElementById('ob-join').style.display='block'; }
-function showCreate() { document.getElementById('ob-join').style.display='none';   document.getElementById('ob-create').style.display='block'; }
+window.showJoin   = function() { document.getElementById('ob-create').style.display='none'; document.getElementById('ob-join').style.display='block'; }
+window.showCreate = function() { document.getElementById('ob-join').style.display='none';   document.getElementById('ob-create').style.display='block'; }
+window.createAccount = async function() { return createAccount(); }
+window.joinAccount   = async function() { return joinAccount(); }
+window.copyCode      = function() { return copyCode(); }
+window.clearChecked  = function() { return clearChecked(); }
+window.resetChecked  = function() { return resetChecked(); }
+window.addItem       = function() { return addItem(); }
+window.toggleItem    = function(id, checked) { return toggleItem(id, checked); }
+window.deleteItem    = function(id) { return deleteItem(id); }
+window.selectSuggestion = function(name) { return selectSuggestion(name); }
+window.switchTab     = function(name) { return switchTab(name); }
 
 function generateCode() {
   return Math.random().toString(36).substring(2,8).toUpperCase();
