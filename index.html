@@ -172,52 +172,70 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   <div class="ob-logo">Ponk <span>Family</span></div>
   <div class="ob-sub">Votre espace famille partagé</div>
 
-  <div class="ob-card" id="ob-email">
+  <!-- LOGIN -->
+  <div class="ob-card" id="ob-login">
     <h2>Connexion</h2>
-    <p>Entre ton adresse email pour recevoir un lien de connexion.</p>
+    <p>Connecte-toi à ton espace famille.</p>
     <div class="ob-field">
-      <label>Adresse email</label>
-      <input type="email" id="ob-email-input" placeholder="nicolas@exemple.fr" autocorrect="off" autocapitalize="off" />
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="nicolas@exemple.fr" autocorrect="off" autocapitalize="off" />
     </div>
-    <button class="ob-btn" onclick="sendMagicLink()">Recevoir le lien</button>
+    <div class="ob-field">
+      <label>Mot de passe</label>
+      <input type="password" id="login-password" placeholder="••••••••" />
+    </div>
+    <button class="ob-btn" onclick="login()">Se connecter</button>
+    <div class="ob-divider"><span>ou</span></div>
+    <button class="ob-btn-secondary" onclick="showCard('ob-register')">Créer un compte</button>
   </div>
 
-  <div class="ob-card" id="ob-sent" style="display:none">
-    <h2>📬 Vérifie tes emails !</h2>
-    <p>Un lien de connexion a été envoyé à <strong id="ob-sent-email"></strong>.<br><br>Clique sur le lien dans l'email pour continuer.</p>
-    <button class="ob-btn-secondary" onclick="showCard('ob-email')">Changer d'email</button>
+  <!-- REGISTER -->
+  <div class="ob-card" id="ob-register" style="display:none">
+    <h2>Créer un compte</h2>
+    <p>Crée ton espace famille ou rejoins-en un.</p>
+    <div class="ob-field">
+      <label>Email</label>
+      <input type="email" id="reg-email" placeholder="nicolas@exemple.fr" autocorrect="off" autocapitalize="off" />
+    </div>
+    <div class="ob-field">
+      <label>Mot de passe</label>
+      <input type="password" id="reg-password" placeholder="Minimum 6 caractères" />
+    </div>
+    <div class="ob-field">
+      <label>Ton prénom</label>
+      <input type="text" id="reg-prenom" placeholder="Nicolas" autocorrect="off" />
+    </div>
+    <div class="ob-divider"><span>Créer ou rejoindre</span></div>
+    <div style="display:flex;gap:10px">
+      <button class="ob-btn" style="margin-top:0;flex:1" onclick="register('create')">Créer ma famille</button>
+      <button class="ob-btn-secondary" style="flex:1" onclick="showCard('ob-join')">Rejoindre</button>
+    </div>
+    <div class="ob-divider"><span>ou</span></div>
+    <button class="ob-btn-secondary" onclick="showCard('ob-login')">Déjà un compte</button>
   </div>
 
+  <!-- REGISTER + NOM FAMILLE -->
   <div class="ob-card" id="ob-create" style="display:none">
-    <h2>Créer mon espace</h2>
-    <p>Renseigne vos informations pour créer votre espace famille.</p>
+    <h2>Nom de votre famille</h2>
+    <p>Comment s'appelle votre famille ?</p>
     <div class="ob-field">
       <label>Nom de famille</label>
       <input type="text" id="ob-family" placeholder="Dupont" autocorrect="off" />
     </div>
-    <div class="ob-field">
-      <label>Ton prénom</label>
-      <input type="text" id="ob-prenom-create" placeholder="Nicolas" autocorrect="off" />
-    </div>
     <button class="ob-btn" onclick="createAccount()">Créer mon espace</button>
-    <div class="ob-divider"><span>ou</span></div>
-    <button class="ob-btn-secondary" onclick="showCard('ob-join')">Rejoindre avec un code</button>
   </div>
 
+  <!-- JOIN -->
   <div class="ob-card" id="ob-join" style="display:none">
     <h2>Rejoindre un espace</h2>
-    <p>Entre le code partagé par un membre de ta famille.</p>
+    <p>Entre le code partagé par ta famille.</p>
     <div class="ob-field">
       <label>Code famille</label>
       <input type="text" id="ob-code" placeholder="ABC123" autocorrect="off" autocapitalize="characters" maxlength="6" style="letter-spacing:4px;font-size:20px;font-weight:700;text-transform:uppercase" />
     </div>
-    <div class="ob-field">
-      <label>Ton prénom</label>
-      <input type="text" id="ob-prenom-join" placeholder="Marie" autocorrect="off" />
-    </div>
     <button class="ob-btn" onclick="joinAccount()">Rejoindre</button>
     <div class="ob-divider"><span>ou</span></div>
-    <button class="ob-btn-secondary" onclick="showCard('ob-create')">Créer un nouvel espace</button>
+    <button class="ob-btn-secondary" onclick="showCard('ob-register')">Retour</button>
   </div>
 </div>
 
@@ -341,50 +359,57 @@ function setSync(label, state) {
 // ONBOARDING HELPERS
 // ═══════════════════════════════════════════
 function showCard(id) {
-  ["ob-email","ob-sent","ob-create","ob-join"].forEach(c => {
+  ["ob-login","ob-register","ob-create","ob-join"].forEach(c => {
     const el = document.getElementById(c);
     if (el) el.style.display = c === id ? "block" : "none";
   });
 }
 
-async function sendMagicLink() {
-  const email = document.getElementById("ob-email-input").value.trim();
-  if (!email) { toast("Entre ton email"); return; }
-  const { error } = await sb.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: "https://ponk-family.vercel.app" }
-  });
-  if (error) { toast("Erreur : " + error.message); return; }
-  document.getElementById("ob-sent-email").textContent = email;
-  showCard("ob-sent");
+// Temp storage between register steps
+let _regEmail = "", _regPassword = "", _regPrenom = "";
+
+async function login() {
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  if (!email || !password) { toast("Remplis tous les champs"); return; }
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { toast("Email ou mot de passe incorrect"); return; }
+  // onAuthStateChange will handle the rest
+}
+
+async function register(action) {
+  const email = document.getElementById("reg-email").value.trim();
+  const password = document.getElementById("reg-password").value;
+  const prenom = document.getElementById("reg-prenom").value.trim();
+  if (!email || !password || !prenom) { toast("Remplis tous les champs"); return; }
+  if (password.length < 6) { toast("Mot de passe : 6 caractères minimum"); return; }
+  _regEmail = email; _regPassword = password; _regPrenom = prenom;
+  if (action === "create") { showCard("ob-create"); }
+  else { showCard("ob-join"); }
 }
 
 async function createAccount() {
   const fn = document.getElementById("ob-family").value.trim();
-  const pr = document.getElementById("ob-prenom-create").value.trim();
-  if (!fn || !pr) { toast("Remplis tous les champs"); return; }
+  if (!fn) { toast("Entre le nom de ta famille"); return; }
+  const { data, error } = await sb.auth.signUp({ email: _regEmail, password: _regPassword });
+  if (error) { toast("Erreur : " + error.message); return; }
+  const userId = data.user?.id;
   const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-  await saveMember(code, fn, pr);
-  await startApp(code, fn, pr);
+  await sb.from("pf_members").insert([{ family_code: code, family_name: fn, prenom: _regPrenom, user_id: userId }]);
+  await sb.auth.signInWithPassword({ email: _regEmail, password: _regPassword });
 }
 
 async function joinAccount() {
   const code = document.getElementById("ob-code").value.trim().toUpperCase();
-  const pr = document.getElementById("ob-prenom-join").value.trim();
-  if (!code || !pr) { toast("Remplis tous les champs"); return; }
-  if (code.length !== 6) { toast("Code à 6 caractères"); return; }
+  if (!code || code.length !== 6) { toast("Code à 6 caractères"); return; }
   const { data } = await sb.from("pf_members").select("family_name").eq("family_code", code).limit(1);
-  if (!data || data.length === 0) { toast("Code famille introuvable"); return; }
-  await saveMember(code, data[0].family_name, pr);
-  await startApp(code, data[0].family_name, pr);
-}
-
-async function saveMember(code, fn, pr) {
-  const { data: { session } } = await sb.auth.getSession();
-  const userId = session?.user?.id || null;
-  await sb.from("pf_members").upsert([{
-    family_code: code, family_name: fn, prenom: pr, user_id: userId
-  }], { onConflict: "user_id" });
+  if (!data || !data.length) { toast("Code famille introuvable"); return; }
+  const fn = data[0].family_name;
+  const { data: authData, error } = await sb.auth.signUp({ email: _regEmail, password: _regPassword });
+  if (error) { toast("Erreur : " + error.message); return; }
+  const userId = authData.user?.id;
+  await sb.from("pf_members").insert([{ family_code: code, family_name: fn, prenom: _regPrenom, user_id: userId }]);
+  await sb.auth.signInWithPassword({ email: _regEmail, password: _regPassword });
 }
 
 // ═══════════════════════════════════════════
@@ -679,23 +704,23 @@ window.addEventListener("DOMContentLoaded", async () => {
   ni.addEventListener("input", e => showSuggestions(e.target.value));
   ni.addEventListener("blur", () => setTimeout(() => { document.getElementById("suggest-wrap").innerHTML = ""; }, 200));
 
-  // Listen for auth changes FIRST (catches magic link redirect)
+  // Auth state listener
   sb.auth.onAuthStateChange(async (event, session) => {
-    if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED") && session) {
+    if (event === "SIGNED_IN" && session) {
       const { data: member } = await sb.from("pf_members").select("*").eq("user_id", session.user.id).single();
       if (member) { await startApp(member.family_code, member.family_name, member.prenom); }
       else { showCard("ob-create"); }
     }
   });
 
-  // Then check existing session
+  // Check existing session
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     const { data: member } = await sb.from("pf_members").select("*").eq("user_id", session.user.id).single();
     if (member) { await startApp(member.family_code, member.family_name, member.prenom); return; }
-    showCard("ob-create");
+    showCard("ob-register");
   } else {
-    showCard("ob-email");
+    showCard("ob-login");
   }
 });
 </script>
