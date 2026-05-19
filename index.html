@@ -472,7 +472,8 @@ async function addItem() {
   if (pi && pi.value) savePrice(name, pi.value);
   input.value = ""; if (pi) pi.value = "";
   document.getElementById("suggest-wrap").innerHTML = "";
-  await sb.from("pf_courses").insert([{ name, checked: false, family_code: familyCode, price }]);
+  const { error } = await sb.from("pf_courses").insert([{ name, checked: false, family_code: familyCode, price }]);
+  if (error) { toast("Erreur : " + error.message); console.error("addItem error:", error); }
 }
 
 async function toggleItem(id, checked) { await sb.from("pf_courses").update({ checked: !checked }).eq("id", id); }
@@ -678,7 +679,16 @@ window.addEventListener("DOMContentLoaded", async () => {
   ni.addEventListener("input", e => showSuggestions(e.target.value));
   ni.addEventListener("blur", () => setTimeout(() => { document.getElementById("suggest-wrap").innerHTML = ""; }, 200));
 
-  // Check session
+  // Listen for auth changes FIRST (catches magic link redirect)
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED") && session) {
+      const { data: member } = await sb.from("pf_members").select("*").eq("user_id", session.user.id).single();
+      if (member) { await startApp(member.family_code, member.family_name, member.prenom); }
+      else { showCard("ob-create"); }
+    }
+  });
+
+  // Then check existing session
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     const { data: member } = await sb.from("pf_members").select("*").eq("user_id", session.user.id).single();
@@ -687,15 +697,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   } else {
     showCard("ob-email");
   }
-
-  // Listen for magic link
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === "SIGNED_IN" && session) {
-      const { data: member } = await sb.from("pf_members").select("*").eq("user_id", session.user.id).single();
-      if (member) { await startApp(member.family_code, member.family_name, member.prenom); }
-      else { showCard("ob-create"); }
-    }
-  });
 });
 </script>
 </body>
