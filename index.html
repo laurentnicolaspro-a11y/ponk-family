@@ -962,7 +962,11 @@ function showCard(id) {
   });
 }
 
-async function sendMagicLink() {
+window.showJoin      = function() { showCard("ob-join"); }
+window.showCreate    = function() { showCard("ob-create"); }
+window.showEmailForm = function() { showCard("ob-email"); }
+
+async function _sendMagicLink() {
   const email = document.getElementById('ob-email-input').value.trim();
   if (!email) { showToast('Entre ton email'); return; }
   await loadLib();
@@ -979,7 +983,7 @@ async function sendMagicLink() {
 window.showJoin         = function() { showCard('ob-join'); }
 window.showCreate       = function() { showCard('ob-create'); }
 window.showEmailForm    = function() { showCard('ob-email'); }
-window.sendMagicLink    = async function() { return sendMagicLink(); }
+window.sendMagicLink    = async function() { return _sendMagicLink(); }
 window.createAccount    = async function() { return createAccount(); }
 window.joinAccount      = async function() { return joinAccount(); }
 window.copyCode         = function() { return copyCode(); }
@@ -1800,6 +1804,23 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+
+// ── GLOBALS ──
+window.showJoin      = () => showCard('ob-join');
+window.showCreate    = () => showCard('ob-create');
+window.showEmailForm = () => showCard('ob-email');
+window.sendMagicLink = () => _sendMagicLink();
+window.createAccount = () => createAccount();
+window.joinAccount   = () => joinAccount();
+window.copyCode      = () => copyCode();
+window.clearChecked  = () => clearChecked();
+window.resetChecked  = () => resetChecked();
+window.addItem       = () => addItem();
+window.toggleItem    = (id, checked) => toggleItem(id, checked);
+window.deleteItem    = (id) => deleteItem(id);
+window.selectSuggestion = (name) => selectSuggestion(name);
+window.switchTab     = (name) => switchTab(name);
 
 // ── BOOT ──
 window.addEventListener('DOMContentLoaded', () => {
