@@ -384,7 +384,8 @@ async function register(action) {
 
   // Créer le compte Supabase maintenant
   const { data, error } = await sb.auth.signUp({ email, password });
-  if (error) { toast("Erreur : " + error.message); return; }
+  console.log("signUp response:", JSON.stringify({ data, error }));
+  if (error) { toast("Erreur : " + error.message + " | " + (error.status || "") + " | " + JSON.stringify(error)); console.error("signUp error full:", error); return; }
   _userId = data.user?.id;
   _regPrenom = prenom;
 
