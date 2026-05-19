@@ -770,6 +770,7 @@ body {
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1052,13 +1053,10 @@ async function initApp(code, fn, prenom) {
 }
 
 async function loadLib() {
-  return new Promise((res, rej) => {
-    if (window._sbLoaded) return res();
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.3/umd/supabase.min.js';
-    s.onload = () => { window._sbLoaded = true; res(); };
-    s.onerror = rej;
-    document.head.appendChild(s);
+  return new Promise((res) => {
+    if (window.supabase) return res();
+    // already loaded via <script> tag in head
+    res();
   });
 }
 
