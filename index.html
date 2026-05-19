@@ -365,8 +365,7 @@ function showCard(id) {
   });
 }
 
-// Temp storage between register steps
-let _regEmail = "", _regPassword = "", _regPrenom = "";
+let _userId = null, _regPrenom = "";
 
 async function login() {
   const email = document.getElementById("login-email").value.trim();
@@ -374,7 +373,6 @@ async function login() {
   if (!email || !password) { toast("Remplis tous les champs"); return; }
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) { toast("Email ou mot de passe incorrect"); return; }
-  // onAuthStateChange will handle the rest
 }
 
 async function register(action) {
@@ -383,7 +381,13 @@ async function register(action) {
   const prenom = document.getElementById("reg-prenom").value.trim();
   if (!email || !password || !prenom) { toast("Remplis tous les champs"); return; }
   if (password.length < 6) { toast("Mot de passe : 6 caractères minimum"); return; }
-  _regEmail = email; _regPassword = password; _regPrenom = prenom;
+
+  // Créer le compte Supabase maintenant
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error) { toast("Erreur : " + error.message); return; }
+  _userId = data.user?.id;
+  _regPrenom = prenom;
+
   if (action === "create") { showCard("ob-create"); }
   else { showCard("ob-join"); }
 }
@@ -391,25 +395,29 @@ async function register(action) {
 async function createAccount() {
   const fn = document.getElementById("ob-family").value.trim();
   if (!fn) { toast("Entre le nom de ta famille"); return; }
-  const { data, error } = await sb.auth.signUp({ email: _regEmail, password: _regPassword });
-  if (error) { toast("Erreur : " + error.message); return; }
-  const userId = data.user?.id;
+  if (!_userId) { toast("Erreur session, recommence"); showCard("ob-register"); return; }
   const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-  await sb.from("pf_members").insert([{ family_code: code, family_name: fn, prenom: _regPrenom, user_id: userId }]);
-  await sb.auth.signInWithPassword({ email: _regEmail, password: _regPassword });
+  const { error } = await sb.from("pf_members").insert([{ family_code: code, family_name: fn, prenom: _regPrenom, user_id: _userId }]);
+  if (error) { toast("Erreur : " + error.message); return; }
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    await startApp(code, fn, _regPrenom);
+  }
 }
 
 async function joinAccount() {
   const code = document.getElementById("ob-code").value.trim().toUpperCase();
   if (!code || code.length !== 6) { toast("Code à 6 caractères"); return; }
+  if (!_userId) { toast("Erreur session, recommence"); showCard("ob-register"); return; }
   const { data } = await sb.from("pf_members").select("family_name").eq("family_code", code).limit(1);
   if (!data || !data.length) { toast("Code famille introuvable"); return; }
   const fn = data[0].family_name;
-  const { data: authData, error } = await sb.auth.signUp({ email: _regEmail, password: _regPassword });
+  const { error } = await sb.from("pf_members").insert([{ family_code: code, family_name: fn, prenom: _regPrenom, user_id: _userId }]);
   if (error) { toast("Erreur : " + error.message); return; }
-  const userId = authData.user?.id;
-  await sb.from("pf_members").insert([{ family_code: code, family_name: fn, prenom: _regPrenom, user_id: userId }]);
-  await sb.auth.signInWithPassword({ email: _regEmail, password: _regPassword });
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    await startApp(code, fn, _regPrenom);
+  }
 }
 
 // ═══════════════════════════════════════════
