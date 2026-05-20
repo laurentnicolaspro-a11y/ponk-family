@@ -895,6 +895,26 @@ function initDevoirs() {
 // ════════════════════════════════
 // ÉVEIL
 // ════════════════════════════════
+const EVEIL_ALIASES = {
+  'chat': ['cha','chats','shah'],
+  'gris': ['gri','grey','grise'],
+  'vert': ['verre','verts','ver','vair'],
+  'bleu': ['bleus','bleue'],
+  'rose': ['roze','ros'],
+  'noir': ['noire','noirs'],
+  'blanc': ['blanche','blancs'],
+  'deux': ['de','deu'],
+  'six': ['si','cis'],
+  'dix': ['di','dis'],
+  'un': ['une','on','hun'],
+  'cerise': ['cerise','srise'],
+  'poire': ['poires','poivre'],
+  'coeur': ['coeur','coeure','ker'],
+  'etoile': ['etoiles','etoille'],
+  'carre': ['carres','caret'],
+  'ovale': ['oval'],
+}
+
 const EVEIL_DATA = {
   animaux: [
     {mot:'chien',emoji:'🐶'},{mot:'chat',emoji:'🐱'},{mot:'cheval',emoji:'🐴'},
@@ -1044,7 +1064,8 @@ function startMicEveil() {
   eveilRecognition = new SR()
   eveilRecognition.lang = 'fr-FR'
   eveilRecognition.interimResults = false
-  eveilRecognition.maxAlternatives = 3
+  eveilRecognition.maxAlternatives = 5
+  eveilRecognition.continuous = false
 
   const btn = document.getElementById('eveil-mic-btn')
   btn.style.background = '#FF3B30'
@@ -1056,9 +1077,18 @@ function startMicEveil() {
     btn.style.background = 'var(--green)'
     btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> Appuie et parle'
 
-    const mot = eveilCards[eveilIndex].mot.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    const motRaw = eveilCards[eveilIndex].mot.toLowerCase()
+    const mot = motRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    const aliases = (EVEIL_ALIASES[motRaw] || []).map(a => a.normalize('NFD').replace(/[\u0300-\u036f]/g,''))
     const alts = Array.from(e.results[0]).map(r => r.transcript.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim())
-    const ok = alts.some(a => a.includes(mot) || mot.includes(a))
+    const ok = alts.some(a => {
+      const aClean = a.replace(/\s+/g,'')
+      return aClean === mot
+        || aClean.includes(mot)
+        || mot.includes(aClean)
+        || aliases.some(alias => aClean === alias || aClean.includes(alias))
+        || (mot.length <= 4 && (aClean.startsWith(mot.slice(0,3)) || mot.startsWith(aClean.slice(0,3))))
+    })
 
     if (ok) eveilSuccess()
     else eveilFail()
