@@ -98,6 +98,16 @@ function copyCode() {
   navigator.clipboard.writeText(FC).then(() => toast('Code copié !')).catch(() => toast(FC))
 }
 
+function shareInvite() {
+  const url = 'https://ponk-family.vercel.app'
+  const text = 'Rejoins notre espace famille Ponk Family ! Code : ' + FC + '\n' + url
+  if (navigator.share) {
+    navigator.share({ title: 'Ponk Family', text })
+  } else {
+    navigator.clipboard.writeText(text).then(() => toast('Lien copié !')).catch(() => toast(text))
+  }
+}
+
 function logout() {
   if (!confirm('Se déconnecter ?')) return
   localStorage.removeItem('pf_code')
@@ -495,6 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-show-create').addEventListener('click', showCreate)
   document.getElementById('btn-copy').addEventListener('click', copyCode)
   document.getElementById('btn-logout').addEventListener('click', logout)
+  document.getElementById('btn-share').addEventListener('click', shareInvite)
   document.getElementById('btn-add').addEventListener('click', addItem)
 
   // Nav buttons
