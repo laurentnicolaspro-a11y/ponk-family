@@ -1054,6 +1054,15 @@ function showEveilScore() {
   speakWord('Bravo ! Tu as reussi ' + eveilScore + ' sur ' + eveilCards.length)
 }
 
+function resetMicBtn() {
+  eveilListening = false
+  const btn = document.getElementById('eveil-mic-btn')
+  if (btn) {
+    btn.style.background = 'var(--green)'
+    btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> Appuie et parle'
+  }
+}
+
 function startMicEveil() {
   if (eveilListening) return
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -1072,11 +1081,18 @@ function startMicEveil() {
   btn.textContent = '🎙️ En écoute…'
   eveilListening = true
 
-  eveilRecognition.onresult = e => {
-    eveilListening = false
-    btn.style.background = 'var(--green)'
-    btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> Appuie et parle'
+  // Timeout de sécurité — débloque après 6 secondes
+  const timeout = setTimeout(() => {
+    if (eveilListening) {
+      try { eveilRecognition.stop() } catch(e) {}
+      resetMicBtn()
+      eveilFail()
+    }
+  }, 6000)
 
+  eveilRecognition.onresult = e => {
+    clearTimeout(timeout)
+    resetMicBtn()
     const motRaw = eveilCards[eveilIndex].mot.toLowerCase()
     const mot = motRaw.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     const aliases = (EVEIL_ALIASES[motRaw] || []).map(a => a.normalize('NFD').replace(/[\u0300-\u036f]/g,''))
@@ -1089,15 +1105,21 @@ function startMicEveil() {
         || aliases.some(alias => aClean === alias || aClean.includes(alias))
         || (mot.length <= 4 && (aClean.startsWith(mot.slice(0,3)) || mot.startsWith(aClean.slice(0,3))))
     })
-
     if (ok) eveilSuccess()
     else eveilFail()
   }
 
+  eveilRecognition.onend = () => {
+    clearTimeout(timeout)
+    if (eveilListening) {
+      resetMicBtn()
+      eveilFail()
+    }
+  }
+
   eveilRecognition.onerror = () => {
-    eveilListening = false
-    btn.style.background = 'var(--green)'
-    btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> Appuie et parle'
+    clearTimeout(timeout)
+    resetMicBtn()
     eveilFail()
   }
 
