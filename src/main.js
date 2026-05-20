@@ -552,6 +552,7 @@ function switchTab(name) {
   document.getElementById('pane-' + name).classList.add('active')
   document.getElementById('nav-' + name).classList.add('active')
   if (name === 'accueil') loadMembers()
+  if (name === 'calendrier') loadCalEvents()
 }
 
 // ════════════════════════════════
@@ -579,6 +580,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ni.addEventListener('keydown', e => { if (e.key === 'Enter') addItem() })
   ni.addEventListener('input', e => showSuggestions(e.target.value))
   ni.addEventListener('blur', () => setTimeout(() => { document.getElementById('suggest').innerHTML = '' }, 200))
+
+  // Init calendar UI
+  initCalendar()
 
   // Check localStorage
   const code = localStorage.getItem('pf_code')
