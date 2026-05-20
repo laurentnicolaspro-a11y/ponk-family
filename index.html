@@ -124,6 +124,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .item.done .item-nm { color: var(--muted); text-decoration: line-through; text-decoration-color: #C7C7CC; }
 .item-price { font-size: 12px; font-weight: 600; color: var(--muted); flex-shrink: 0; }
 .item.done .item-price { color: #C7C7CC; }
+.editable-price { cursor: pointer; border-bottom: 1px dashed var(--muted); }
+.editable-price:hover { color: var(--green); border-bottom-color: var(--green); }
+.no-price { color: var(--muted); font-size: 11px; border-bottom-style: dotted; }
 .del { background: none; border: none; cursor: pointer; color: #C7C7CC; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
 .del:active { color: var(--red); }
 .del svg { width: 14px; height: 14px; }
