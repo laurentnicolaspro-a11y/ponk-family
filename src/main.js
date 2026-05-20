@@ -716,119 +716,18 @@ function initCalendar() {
 const GEMINI_KEY = 'AIzaSyBkko2MmIT4DwnEzlbYnKrWU_1cnXrRRA8'
 
 const CHAPITRES = {
-  "CP":  ["Numeration jusqu a 30","Additions simples","Soustractions simples","Formes geometriques","Mesures de longueur"],
-  "CE1": ["Numeration jusqu a 100","Tables d addition","Introduction multiplication","Mesures","Geometrie plane"],
-  "CE2": ["Tables de multiplication","Divisions simples","Fractions simples","Perimetre","Problemes"],
+  "CP":  ["Addition jusqu a 20","Soustraction jusqu a 20","Numeration jusqu a 30","Formes geometriques","Comparaison de nombres"],
+  "CE1": ["Addition a retenue","Soustraction a retenue","Tables de multiplication","Mesures de longueur","Problemes simples"],
+  "CE2": ["Tables de multiplication","Division simple","Fractions simples","Perimetre","Problemes a etapes"],
   "CM1": ["Fractions","Nombres decimaux","Aire et perimetre","Angles","Proportionnalite"],
-  "CM2": ["Multiplications de decimaux","Fractions avancees","Volume","Statistiques","Pourcentages"],
-  "6eme":["Fractions","Nombres relatifs","Statistiques","Geometrie dans l espace","Proportionnalite"],
+  "CM2": ["Multiplication de decimaux","Fractions avancees","Volume","Statistiques","Pourcentages"],
+  "6eme":["Fractions","Nombres relatifs","Statistiques","Proportionnalite","Geometrie dans l espace"],
   "5eme":["Calcul litteral","Probabilites","Theoreme de Pythagore","Fractions et decimaux","Symetrie"],
   "4eme":["Equations","Puissances","Trigonometrie","Statistiques","Geometrie"],
-  "3eme":["Fonctions","Theoreme de Thales","Statistiques avancees","Equations du second degre","Geometrie dans l espace"],
+  "3eme":["Fonctions","Theoreme de Thales","Statistiques avancees","Equations","Geometrie dans l espace"]
 }
 
 let devClasse = '', devChapitre = '', devExercicesData = []
-
-function initDevoirs() {
-  // Étape 1 : classe
-  document.querySelectorAll('.dev-card[data-classe]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      devClasse = btn.dataset.classe
-      showDevStep('chapitre')
-    })
-  })
-
-  // Étape 2 : chapitre
-  document.getElementById('dev-back-classe')?.addEventListener('click', () => showDevStep('classe'))
-  document.getElementById('dev-chapitre-custom-btn')?.addEventListener('click', () => {
-    const val = document.getElementById('dev-chapitre-custom').value.trim()
-    if (!val) return
-    devChapitre = val
-    showDevStep('contenu')
-    genLecon()
-  })
-  document.getElementById('dev-chapitre-custom')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('dev-chapitre-custom-btn').click()
-  })
-
-  // Étape 3 : contenu
-  document.getElementById('dev-back-chapitre')?.addEventListener('click', () => showDevStep('chapitre'))
-  document.getElementById('dev-btn-exercices')?.addEventListener('click', () => {
-    showDevTab('exercices')
-    if (!devExercicesData.length) genExercices()
-  })
-  document.getElementById('dev-btn-corriger')?.addEventListener('click', corrigerExercices)
-  document.getElementById('dev-btn-retry')?.addEventListener('click', () => {
-    devExercicesData = []
-    document.getElementById('dev-score').style.display = 'none'
-    document.getElementById('dev-btn-corriger').style.display = 'none'
-    document.getElementById('dev-exercices-content').innerHTML = '<div class="loading"><div class="spinner"></div>Génération des exercices…</div>'
-    genExercices()
-  })
-
-  // Tabs
-  document.getElementById('dev-tab-lecon')?.addEventListener('click', () => showDevTab('lecon'))
-  document.getElementById('dev-tab-exercices')?.addEventListener('click', () => {
-    showDevTab('exercices')
-    if (!devExercicesData.length) genExercices()
-  })
-}
-
-function showDevStep(step) {
-  document.getElementById('dev-step-classe').style.display = step === 'classe' ? 'block' : 'none'
-  document.getElementById('dev-step-chapitre').style.display = step === 'chapitre' ? 'block' : 'none'
-  document.getElementById('dev-step-contenu').style.display = step === 'contenu' ? 'block' : 'none'
-
-  if (step === 'chapitre') {
-    document.getElementById('dev-chapitre-title').textContent = 'Chapitres — ' + devClasse
-    document.getElementById('dev-chapitre-custom').value = ''
-    const list = document.getElementById('dev-chapitres-list')
-    const chaps = CHAPITRES[devClasse.replace('è','e').replace('é','e')] || []
-    list.innerHTML = chaps.map(c => `<button class="dev-card" data-chap="${esc(c)}">${esc(c)}</button>`).join('')
-    list.querySelectorAll('.dev-card[data-chap]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        devChapitre = btn.dataset.chap
-        showDevStep('contenu')
-        genLecon()
-      })
-    })
-  }
-
-  if (step === 'contenu') {
-    document.getElementById('dev-contenu-title').textContent = devChapitre
-    document.getElementById('dev-contenu-sub').textContent = 'Maths · ' + devClasse
-    showDevTab('lecon')
-    devExercicesData = []
-    document.getElementById('dev-score').style.display = 'none'
-    document.getElementById('dev-btn-corriger').style.display = 'none'
-  }
-}
-
-function showDevTab(tab) {
-  const leconPanel = document.getElementById('dev-lecon-panel')
-  const exPanel = document.getElementById('dev-exercices-panel')
-  const tabLecon = document.getElementById('dev-tab-lecon')
-  const tabEx = document.getElementById('dev-tab-exercices')
-  if (tab === 'lecon') {
-    leconPanel.style.display = 'block'
-    exPanel.style.display = 'none'
-    tabLecon.classList.add('active')
-    tabEx.classList.remove('active')
-    tabLecon.style.background = 'var(--surface)'
-    tabLecon.style.color = 'var(--text)'
-    tabEx.style.background = 'transparent'
-    tabEx.style.color = 'var(--muted)'
-  } else {
-    leconPanel.style.display = 'none'
-    exPanel.style.display = 'block'
-    tabEx.classList.add('active')
-    tabLecon.classList.remove('active')
-    tabEx.style.background = 'var(--surface)'
-    tabEx.style.color = 'var(--text)'
-    tabLecon.style.background = 'transparent'
-    tabLecon.style.color = 'var(--muted)'
-  }
-}
 
 async function callGemini(prompt) {
   const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=' + GEMINI_KEY, {
@@ -837,63 +736,55 @@ async function callGemini(prompt) {
     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
   })
   const data = await res.json()
+  if (data.error) throw new Error(data.error.message)
   return data.candidates?.[0]?.content?.parts?.[0]?.text || ''
 }
 
-async function genLecon() {
+async function startGenLecon() {
   const el = document.getElementById('dev-lecon-content')
-  el.innerHTML = '<div class="loading"><div class="spinner"></div>Génération de la leçon…</div>'
-  const prompt = "Tu es un professeur des ecoles francais. Genere une lecon claire et simple sur le chapitre \"" + devChapitre + "\" pour un eleve de " + devClasse + ". La lecon doit contenir : un titre, la definition ou regle principale en gras, 2-3 exemples concrets avec des calculs, un encadre A retenir a la fin. Format HTML simple avec h3, p, strong, ul, li. Pas de CSS inline. Adapte le niveau a " + devClasse + ".";
-  const _prompt = prompt
-
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Generation en cours...</div>'
   try {
-    const lecon = await callGemini(_prompt)
-    el.innerHTML = lecon
+    const p = "Tu es un professeur. Genere une lecon sur " + devChapitre + " pour un eleve de " + devClasse + ". Contenu HTML uniquement : titre h3, regle principale en strong, 2 exemples, encadre a retenir. Pas de CSS inline."
+    const lecon = await callGemini(p)
+    el.innerHTML = lecon || '<p>Reponse vide, reessaie.</p>'
   } catch(e) {
-    el.innerHTML = '<p style="color:var(--red)">Erreur de génération. Vérifie ta connexion.</p>'
+    el.innerHTML = '<p style="color:var(--red)">Erreur : ' + e.message + '</p><button onclick="startGenLecon()" style="margin-top:10px;background:var(--green);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:inherit;cursor:pointer;font-weight:700">Reessayer</button>'
   }
 }
 
-async function genExercices() {
+async function startGenExercices() {
+  devExercicesData = []
   const el = document.getElementById('dev-exercices-content')
-  el.innerHTML = '<div class="loading"><div class="spinner"></div>Génération des exercices…</div>'
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Generation des exercices...</div>'
   document.getElementById('dev-btn-corriger').style.display = 'none'
   document.getElementById('dev-score').style.display = 'none'
-
-  const _prompt2 = "Genere 5 exercices de maths sur " + devChapitre + " pour un eleve de " + devClasse + ". Reponds en JSON uniquement, tableau de 5 objets avec les proprietes question et reponse. Reponse courte.";
-
-
   try {
-    const raw = await callGemini(_prompt2)
-    const clean = raw.replace(/\`\`\`json/g,'').replace(/\`\`\`/g,'').trim()
-    devExercicesData = JSON.parse(clean)
+    const p = "Genere 5 exercices de mathematiques sur " + devChapitre + " pour un eleve de " + devClasse + ". Reponds UNIQUEMENT avec un tableau JSON. Format : [{"question":"...","reponse":"..."}]. Rien d autre que le JSON."
+    const raw = await callGemini(p)
+    const start = raw.indexOf('[')
+    const end = raw.lastIndexOf(']') + 1
+    devExercicesData = JSON.parse(raw.slice(start, end))
     renderExercices()
   } catch(e) {
-    el.innerHTML = '<p style="color:var(--red)">Erreur de génération. Réessaie.</p>'
+    el.innerHTML = '<p style="color:var(--red)">Erreur : ' + e.message + '</p><button onclick="startGenExercices()" style="margin-top:10px;background:var(--green);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:inherit;cursor:pointer;font-weight:700">Reessayer</button>'
   }
 }
 
 function renderExercices() {
   const el = document.getElementById('dev-exercices-content')
-  el.innerHTML = devExercicesData.map((ex, i) => `
-    <div style="background:var(--surface);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.07)">
-      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">${i+1}. ${esc(ex.question)}</div>
-      <input type="text" class="dev-answer" data-index="${i}" placeholder="Ta réponse…" autocorrect="off"
-        style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--text);outline:none;box-sizing:border-box"/>
-    </div>`).join('')
+  el.innerHTML = devExercicesData.map((ex, i) => '<div style="background:var(--surface);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.07)"><div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">' + (i+1) + '. ' + esc(ex.question) + '</div><input type="text" class="dev-answer" data-index="' + i + '" data-reponse="' + esc(ex.reponse) + '" placeholder="Ta reponse..." autocorrect="off" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--text);outline:none;box-sizing:border-box"/></div>').join('')
   document.getElementById('dev-btn-corriger').style.display = 'block'
 }
 
 function corrigerExercices() {
   let score = 0
-  document.querySelectorAll('.dev-answer').forEach((input, i) => {
-    const ex = devExercicesData[i]
-    const userAnswer = input.value.trim().toLowerCase().replace(/\s/g,'')
-    const correctAnswer = String(ex.reponse).toLowerCase().replace(/\s/g,'')
-    const correct = userAnswer === correctAnswer
-    if (correct) score++
-    input.style.border = correct ? '2px solid var(--green)' : '2px solid var(--red)'
-    input.value = correct ? input.value : input.value + ' (Réponse : ' + ex.reponse + ')'
+  document.querySelectorAll('.dev-answer').forEach(input => {
+    const user = input.value.trim().toLowerCase().replace(/\s/g,'')
+    const correct = input.dataset.reponse.toLowerCase().replace(/\s/g,'')
+    const ok = user === correct
+    if (ok) score++
+    input.style.border = ok ? '2px solid var(--green)' : '2px solid var(--red)'
+    if (!ok) input.value = input.value + ' (Reponse : ' + input.dataset.reponse + ')'
     input.disabled = true
   })
   document.getElementById('dev-btn-corriger').style.display = 'none'
@@ -901,8 +792,80 @@ function corrigerExercices() {
   document.getElementById('dev-score-val').textContent = score + ' / ' + devExercicesData.length
 }
 
+function showDevStep(step) {
+  document.getElementById('dev-step-classe').style.display = step === 'classe' ? 'block' : 'none'
+  document.getElementById('dev-step-chapitre').style.display = step === 'chapitre' ? 'block' : 'none'
+  document.getElementById('dev-step-contenu').style.display = step === 'contenu' ? 'block' : 'none'
+
+  if (step === 'chapitre') {
+    document.getElementById('dev-chapitre-title').textContent = 'Chapitres - ' + devClasse
+    document.getElementById('dev-chapitre-custom').value = ''
+    const list = document.getElementById('dev-chapitres-list')
+    const key = devClasse.replace('e','e').replace('6eme','6eme').replace('5eme','5eme').replace('4eme','4eme').replace('3eme','3eme')
+    const chaps = CHAPITRES[devClasse.replace('è','e').replace('é','e')] || CHAPITRES[key] || []
+    list.innerHTML = chaps.map(c => '<button class="dev-card" data-chap="' + esc(c) + '">' + esc(c) + '</button>').join('')
+    list.querySelectorAll('.dev-card[data-chap]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        devChapitre = btn.dataset.chap
+        showDevStep('contenu')
+      })
+    })
+  }
+
+  if (step === 'contenu') {
+    document.getElementById('dev-contenu-title').textContent = devChapitre
+    document.getElementById('dev-contenu-sub').textContent = 'Maths - ' + devClasse
+    showDevTab('lecon')
+    devExercicesData = []
+    document.getElementById('dev-score').style.display = 'none'
+    document.getElementById('dev-btn-corriger').style.display = 'none'
+    document.getElementById('dev-lecon-content').innerHTML = '<button onclick="startGenLecon()" style="width:100%;background:var(--green);color:white;border:none;border-radius:12px;padding:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Generer la lecon</button>'
+    document.getElementById('dev-exercices-content').innerHTML = '<button onclick="startGenExercices()" style="width:100%;background:var(--blue);color:white;border:none;border-radius:12px;padding:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Generer les exercices</button>'
+  }
+}
+
+function showDevTab(tab) {
+  const lp = document.getElementById('dev-lecon-panel')
+  const ep = document.getElementById('dev-exercices-panel')
+  const tl = document.getElementById('dev-tab-lecon')
+  const te = document.getElementById('dev-tab-exercices')
+  if (tab === 'lecon') {
+    lp.style.display = 'block'; ep.style.display = 'none'
+    tl.style.background = 'var(--surface)'; tl.style.color = 'var(--text)'
+    te.style.background = 'transparent'; te.style.color = 'var(--muted)'
+  } else {
+    lp.style.display = 'none'; ep.style.display = 'block'
+    te.style.background = 'var(--surface)'; te.style.color = 'var(--text)'
+    tl.style.background = 'transparent'; tl.style.color = 'var(--muted)'
+  }
+}
+
+function initDevoirs() {
+  document.querySelectorAll('.dev-card[data-classe]').forEach(btn => {
+    btn.addEventListener('click', () => { devClasse = btn.dataset.classe; showDevStep('chapitre') })
+  })
+  document.getElementById('dev-back-classe')?.addEventListener('click', () => showDevStep('classe'))
+  document.getElementById('dev-back-chapitre')?.addEventListener('click', () => showDevStep('chapitre'))
+  document.getElementById('dev-chapitre-custom-btn')?.addEventListener('click', () => {
+    const val = document.getElementById('dev-chapitre-custom').value.trim()
+    if (!val) return
+    devChapitre = val
+    showDevStep('contenu')
+  })
+  document.getElementById('dev-chapitre-custom')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('dev-chapitre-custom-btn').click()
+  })
+  document.getElementById('dev-btn-exercices')?.addEventListener('click', () => { showDevTab('exercices') })
+  document.getElementById('dev-btn-corriger')?.addEventListener('click', corrigerExercices)
+  document.getElementById('dev-btn-retry')?.addEventListener('click', () => { showDevTab('exercices'); startGenExercices() })
+  document.getElementById('dev-tab-lecon')?.addEventListener('click', () => showDevTab('lecon'))
+  document.getElementById('dev-tab-exercices')?.addEventListener('click', () => showDevTab('exercices'))
+}
+
+
 window.startGenLecon = () => startGenLecon()
-window.genExercices = () => genExercices()
+window.startGenExercices = () => startGenExercices()
+window.corrigerExercices = () => corrigerExercices()
 
 // BOOT
 // ════════════════════════════════
