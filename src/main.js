@@ -745,8 +745,18 @@ async function startGenLecon() {
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Generation en cours...</div>'
   try {
     const p = "Tu es un professeur. Genere une lecon sur " + devChapitre + " pour un eleve de " + devClasse + ". Contenu HTML uniquement : titre h3, regle principale en strong, 2 exemples, encadre a retenir. Pas de CSS inline."
-    const lecon = await callGemini(p)
-    el.innerHTML = lecon || '<p>Reponse vide, reessaie.</p>'
+    const raw = await callGemini(p)
+    const lecon = raw
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[hul]|<\/[hul])/gm, '')
+    el.innerHTML = '<p>' + lecon + '</p>' || '<p>Reponse vide, reessaie.</p>'
   } catch(e) {
     el.innerHTML = '<p style="color:var(--red)">Erreur : ' + e.message + '</p><button onclick="startGenLecon()" style="margin-top:10px;background:var(--green);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:inherit;cursor:pointer;font-weight:700">Reessayer</button>'
   }
@@ -772,7 +782,10 @@ async function startGenExercices() {
 
 function renderExercices() {
   const el = document.getElementById('dev-exercices-content')
-  el.innerHTML = devExercicesData.map((ex, i) => '<div style="background:var(--surface);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.07)"><div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">' + (i+1) + '. ' + esc(ex.question) + '</div><input type="text" class="dev-answer" data-index="' + i + '" data-reponse="' + esc(ex.reponse) + '" placeholder="Ta reponse..." autocorrect="off" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--text);outline:none;box-sizing:border-box"/></div>').join('')
+  el.innerHTML = devExercicesData.map((ex, i) => {
+    const rep = String(ex.reponse || ex.réponse || ex.answer || ex.solution || ex.result || ex.response || '')
+    return '<div style="background:var(--surface);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.07)"><div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">' + (i+1) + '. ' + esc(ex.question) + '</div><input type="text" class="dev-answer" data-index="' + i + '" data-reponse="' + esc(rep) + '" placeholder="Ta reponse..." autocorrect="off" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--text);outline:none;box-sizing:border-box"/></div>'
+  }).join('')
   document.getElementById('dev-btn-corriger').style.display = 'block'
 }
 
