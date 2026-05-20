@@ -769,11 +769,16 @@ async function startGenExercices() {
   document.getElementById('dev-btn-corriger').style.display = 'none'
   document.getElementById('dev-score').style.display = 'none'
   try {
-    const p = "Genere 5 exercices de mathematiques sur " + devChapitre + " pour un eleve de " + devClasse + ". Reponds UNIQUEMENT avec un tableau JSON. Uniquement le JSON, rien d autre."
+    const p = "Genere 5 exercices de mathematiques sur " + devChapitre + " pour un eleve de " + devClasse + ". Tu dois repondre UNIQUEMENT avec un tableau JSON valide de 5 objets. Chaque objet DOIT avoir exactement deux proprietes : question (string contenant la question) et reponse (string contenant la reponse courte). Exemple : [{"question":"Combien font 3+4 ?","reponse":"7"},{"question":"Combien font 5+2 ?","reponse":"7"}]. Rien d autre que le JSON."
     const raw = await callGemini(p)
+    console.log('Gemini raw:', raw)
     const start = raw.indexOf('[')
     const end = raw.lastIndexOf(']') + 1
-    devExercicesData = JSON.parse(raw.slice(start, end))
+    const parsed = JSON.parse(raw.slice(start, end))
+    devExercicesData = parsed.map(ex => ({
+      question: ex.question || ex.Question || ex.enonce || ex.probleme || Object.values(ex)[0] || 'Question',
+      reponse: ex.reponse || ex.réponse || ex.answer || ex.solution || ex.result || ex.Reponse || Object.values(ex)[1] || ''
+    }))
     renderExercices()
   } catch(e) {
     el.innerHTML = '<p style="color:var(--red)">Erreur : ' + e.message + '</p><button onclick="startGenExercices()" style="margin-top:10px;background:var(--green);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:inherit;cursor:pointer;font-weight:700">Reessayer</button>'
@@ -876,6 +881,201 @@ function initDevoirs() {
 }
 
 
+
+// ════════════════════════════════
+// ÉVEIL
+// ════════════════════════════════
+const EVEIL_DATA = {
+  animaux: [
+    {mot:'chien',emoji:'🐶'},{mot:'chat',emoji:'🐱'},{mot:'cheval',emoji:'🐴'},
+    {mot:'vache',emoji:'🐮'},{mot:'mouton',emoji:'🐑'},{mot:'canard',emoji:'🦆'},
+    {mot:'lapin',emoji:'🐰'},{mot:'cochon',emoji:'🐷'},{mot:'poule',emoji:'🐔'},
+    {mot:'grenouille',emoji:'🐸'},{mot:'lion',emoji:'🦁'},{mot:'tigre',emoji:'🐯'},
+    {mot:'elephant',emoji:'🐘'},{mot:'girafe',emoji:'🦒'},{mot:'singe',emoji:'🐵'},
+    {mot:'ours',emoji:'🐻'},{mot:'loup',emoji:'🐺'},{mot:'renard',emoji:'🦊'},
+    {mot:'dauphin',emoji:'🐬'},{mot:'pingouin',emoji:'🐧'},{mot:'serpent',emoji:'🐍'},
+    {mot:'tortue',emoji:'🐢'},{mot:'crocodile',emoji:'🐊'},{mot:'zebre',emoji:'🦓'},
+    {mot:'panda',emoji:'🐼'},{mot:'koala',emoji:'🐨'},{mot:'hibou',emoji:'🦉'},
+    {mot:'perroquet',emoji:'🦜'},{mot:'abeille',emoji:'🐝'},{mot:'papillon',emoji:'🦋'}
+  ],
+  couleurs: [
+    {mot:'rouge',emoji:'🟥'},{mot:'bleu',emoji:'🟦'},{mot:'vert',emoji:'🟩'},
+    {mot:'jaune',emoji:'🟨'},{mot:'orange',emoji:'🟧'},{mot:'violet',emoji:'🟪'},
+    {mot:'rose',emoji:'🩷'},{mot:'noir',emoji:'⬛'},{mot:'blanc',emoji:'⬜'},
+    {mot:'gris',emoji:'🩶'}
+  ],
+  formes: [
+    {mot:'cercle',emoji:'⭕'},{mot:'carre',emoji:'🟦'},{mot:'triangle',emoji:'🔺'},
+    {mot:'rectangle',emoji:'▬'},{mot:'etoile',emoji:'⭐'},{mot:'coeur',emoji:'❤️'},
+    {mot:'losange',emoji:'🔷'},{mot:'ovale',emoji:'🥚'}
+  ],
+  fruits: [
+    {mot:'pomme',emoji:'🍎'},{mot:'banane',emoji:'🍌'},{mot:'fraise',emoji:'🍓'},
+    {mot:'orange',emoji:'🍊'},{mot:'raisin',emoji:'🍇'},{mot:'cerise',emoji:'🍒'},
+    {mot:'poire',emoji:'🍐'},{mot:'pasteque',emoji:'🍉'},{mot:'ananas',emoji:'🍍'},
+    {mot:'mangue',emoji:'🥭'},{mot:'kiwi',emoji:'🥝'},{mot:'citron',emoji:'🍋'},
+    {mot:'peche',emoji:'🍑'},{mot:'framboise',emoji:'🍓'},{mot:'melon',emoji:'🍈'},
+    {mot:'myrtille',emoji:'🫐'},{mot:'noix de coco',emoji:'🥥'},{mot:'avocat',emoji:'🥑'},
+    {mot:'figue',emoji:'🍈'},{mot:'prune',emoji:'🍑'}
+  ],
+  chiffres: [
+    {mot:'un',emoji:'1️⃣'},{mot:'deux',emoji:'2️⃣'},{mot:'trois',emoji:'3️⃣'},
+    {mot:'quatre',emoji:'4️⃣'},{mot:'cinq',emoji:'5️⃣'},{mot:'six',emoji:'6️⃣'},
+    {mot:'sept',emoji:'7️⃣'},{mot:'huit',emoji:'8️⃣'},{mot:'neuf',emoji:'9️⃣'},
+    {mot:'dix',emoji:'🔟'}
+  ]
+}
+
+const THEME_LABELS = {
+  animaux:'🐾 Animaux', couleurs:'🎨 Couleurs',
+  formes:'⭐ Formes', fruits:'🍎 Fruits', chiffres:'🔢 Chiffres'
+}
+
+let eveilTheme = '', eveilCards = [], eveilIndex = 0, eveilScore = 0
+let eveilRecognition = null, eveilSecondChance = false, eveilListening = false
+
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+function startEveil(theme) {
+  eveilTheme = theme
+  const all = EVEIL_DATA[theme]
+  eveilCards = theme === 'chiffres' ? shuffle(all) : shuffle(all).slice(0, 10)
+  eveilIndex = 0
+  eveilScore = 0
+  eveilSecondChance = false
+
+  document.getElementById('eveil-step-theme').style.display = 'none'
+  document.getElementById('eveil-step-jeu').style.display = 'block'
+  document.getElementById('eveil-score').style.display = 'none'
+  document.getElementById('eveil-theme-label').textContent = THEME_LABELS[theme]
+  document.getElementById('eveil-mic-btn').style.display = 'flex'
+
+  showEveilCard()
+}
+
+function showEveilCard() {
+  const card = eveilCards[eveilIndex]
+  document.getElementById('eveil-progress').textContent = (eveilIndex + 1) + ' / ' + eveilCards.length
+  document.getElementById('eveil-emoji').textContent = card.emoji
+  document.getElementById('eveil-mot-reveal').style.opacity = '0'
+  document.getElementById('eveil-mot-reveal').textContent = card.mot
+  document.getElementById('eveil-feedback').textContent = ''
+  document.getElementById('eveil-card').style.background = 'var(--surface)'
+  eveilSecondChance = false
+}
+
+function speakWord(word) {
+  const utter = new SpeechSynthesisUtterance(word)
+  utter.lang = 'fr-FR'
+  utter.rate = 0.85
+  speechSynthesis.speak(utter)
+}
+
+function eveilSuccess() {
+  eveilScore++
+  document.getElementById('eveil-feedback').textContent = '✅ Bravo !'
+  document.getElementById('eveil-card').style.background = '#E8F7F0'
+  document.getElementById('eveil-mot-reveal').style.opacity = '1'
+  speakWord('Bravo !')
+  setTimeout(() => {
+    eveilIndex++
+    if (eveilIndex >= eveilCards.length) {
+      showEveilScore()
+    } else {
+      showEveilCard()
+    }
+  }, 1500)
+}
+
+function eveilFail() {
+  if (!eveilSecondChance) {
+    eveilSecondChance = true
+    document.getElementById('eveil-feedback').textContent = '❌ Essaie encore !'
+    document.getElementById('eveil-card').style.background = '#FFF0F0'
+    document.getElementById('eveil-mot-reveal').style.opacity = '1'
+    speakWord(eveilCards[eveilIndex].mot)
+  } else {
+    document.getElementById('eveil-feedback').textContent = '➡️ ' + eveilCards[eveilIndex].mot
+    speakWord(eveilCards[eveilIndex].mot)
+    setTimeout(() => {
+      eveilIndex++
+      if (eveilIndex >= eveilCards.length) {
+        showEveilScore()
+      } else {
+        showEveilCard()
+      }
+    }, 2000)
+  }
+}
+
+function showEveilScore() {
+  document.getElementById('eveil-mic-btn').style.display = 'none'
+  document.getElementById('eveil-score').style.display = 'block'
+  document.getElementById('eveil-score-val').textContent = eveilScore + ' / ' + eveilCards.length
+  speakWord('Bravo ! Tu as reussi ' + eveilScore + ' sur ' + eveilCards.length)
+}
+
+function startMicEveil() {
+  if (eveilListening) return
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    toast('Micro non supporté sur ce navigateur')
+    return
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition
+  eveilRecognition = new SR()
+  eveilRecognition.lang = 'fr-FR'
+  eveilRecognition.interimResults = false
+  eveilRecognition.maxAlternatives = 3
+
+  const btn = document.getElementById('eveil-mic-btn')
+  btn.style.background = '#FF3B30'
+  btn.textContent = '🎙️ En écoute…'
+  eveilListening = true
+
+  eveilRecognition.onresult = e => {
+    eveilListening = false
+    btn.style.background = 'var(--green)'
+    btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> Appuie et parle'
+
+    const mot = eveilCards[eveilIndex].mot.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    const alts = Array.from(e.results[0]).map(r => r.transcript.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim())
+    const ok = alts.some(a => a.includes(mot) || mot.includes(a))
+
+    if (ok) eveilSuccess()
+    else eveilFail()
+  }
+
+  eveilRecognition.onerror = () => {
+    eveilListening = false
+    btn.style.background = 'var(--green)'
+    btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg> Appuie et parle'
+    eveilFail()
+  }
+
+  eveilRecognition.start()
+}
+
+function initEveil() {
+  document.querySelectorAll('.dev-card[data-theme]').forEach(btn => {
+    btn.addEventListener('click', () => startEveil(btn.dataset.theme))
+  })
+  document.getElementById('eveil-back')?.addEventListener('click', () => {
+    if (eveilRecognition) eveilRecognition.abort()
+    eveilListening = false
+    document.getElementById('eveil-step-jeu').style.display = 'none'
+    document.getElementById('eveil-step-theme').style.display = 'block'
+  })
+  document.getElementById('eveil-mic-btn')?.addEventListener('click', startMicEveil)
+  document.getElementById('eveil-retry')?.addEventListener('click', () => startEveil(eveilTheme))
+}
+
 window.startGenLecon = () => startGenLecon()
 window.startGenExercices = () => startGenExercices()
 window.corrigerExercices = () => corrigerExercices()
@@ -898,6 +1098,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('nav-courses').addEventListener('click', () => switchTab('courses'))
   document.getElementById('nav-calendrier').addEventListener('click', () => switchTab('calendrier'))
   document.getElementById('nav-devoirs').addEventListener('click', () => switchTab('devoirs'))
+  document.getElementById('nav-eveil').addEventListener('click', () => switchTab('eveil'))
 
   // Input
   const ni = document.getElementById('new-item')
@@ -909,6 +1110,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initCalendar()
   // Init devoirs
   initDevoirs()
+  // Init eveil
+  initEveil()
 
   // Check localStorage
   const code = localStorage.getItem('pf_code')
