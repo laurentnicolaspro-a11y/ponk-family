@@ -759,7 +759,7 @@ async function startGenExercices() {
   document.getElementById('dev-btn-corriger').style.display = 'none'
   document.getElementById('dev-score').style.display = 'none'
   try {
-    const p = "Genere 5 exercices de mathematiques sur " + devChapitre + " pour un eleve de " + devClasse + ". Reponds UNIQUEMENT avec un tableau JSON. Format : [{"question":"...","reponse":"..."}]. Rien d autre que le JSON."
+    const p = "Genere 5 exercices de mathematiques sur " + devChapitre + " pour un eleve de " + devClasse + ". Reponds UNIQUEMENT avec un tableau JSON. Uniquement le JSON, rien d autre."
     const raw = await callGemini(p)
     const start = raw.indexOf('[')
     const end = raw.lastIndexOf(']') + 1
