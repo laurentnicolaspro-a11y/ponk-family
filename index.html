@@ -205,6 +205,16 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .dev-back-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; width: 36px; height: 36px; font-size: 20px; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .dev-tab-btn.active { background: var(--surface) !important; color: var(--text) !important; }
 
+/* ── LECON CONTENT ── */
+#dev-lecon-content h1, #dev-lecon-content h2, #dev-lecon-content h3 { font-size: 17px; font-weight: 800; color: var(--text); margin: 14px 0 8px; letter-spacing: -0.3px; }
+#dev-lecon-content p { font-size: 14px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+#dev-lecon-content strong, #dev-lecon-content b { font-weight: 700; color: var(--black); }
+#dev-lecon-content ul, #dev-lecon-content ol { padding-left: 20px; margin-bottom: 10px; }
+#dev-lecon-content li { font-size: 14px; line-height: 1.7; margin-bottom: 4px; }
+#dev-lecon-content blockquote { background: #E8F7F0; border-left: 4px solid var(--green); border-radius: 0 12px 12px 0; padding: 12px 16px; margin: 12px 0; font-size: 14px; color: var(--text); }
+#dev-lecon-content hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+#dev-lecon-content code { background: var(--bg); border-radius: 6px; padding: 2px 6px; font-size: 13px; font-family: monospace; }
+
 /* ── TOAST ── */
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(80px); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); color: #fff; padding: 11px 22px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1); white-space: nowrap; pointer-events: none; }
 .toast.show { transform: translateX(-50%) translateY(0); }
@@ -452,7 +462,8 @@ document.addEventListener('focusin', e => {
 
       </div>
     </div>
-  </div>
+  
+    </div>
 
   <nav class="bottom-nav">
     <button class="nav-btn active" id="nav-accueil">
@@ -471,7 +482,63 @@ document.addEventListener('focusin', e => {
       <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/></svg></div>
       <span class="nav-label">Devoirs</span>
     </button>
+    <button class="nav-btn" id="nav-eveil">
+      <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#8E8E93" stroke-width="1.8"/><path d="M9 9l1.5 1.5L12 9l1.5 1.5L15 9M9 14h6" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <span class="nav-label">Éveil</span>
+    </button>
   </nav>
+</div>
+
+<div class="tab-pane" id="pane-eveil" style="display:none">
+  <div class="dev-wrap">
+
+    <!-- Choix thème -->
+    <div id="eveil-step-theme">
+      <div class="dev-step-title">Choisir un thème</div>
+      <div class="dev-grid" style="grid-template-columns:1fr 1fr">
+        <button class="dev-card" data-theme="animaux" style="font-size:28px;padding:20px 8px">🐾<div style="font-size:13px;margin-top:6px;font-weight:700">Animaux</div></button>
+        <button class="dev-card" data-theme="couleurs" style="font-size:28px;padding:20px 8px">🎨<div style="font-size:13px;margin-top:6px;font-weight:700">Couleurs</div></button>
+        <button class="dev-card" data-theme="formes" style="font-size:28px;padding:20px 8px">⭐<div style="font-size:13px;margin-top:6px;font-weight:700">Formes</div></button>
+        <button class="dev-card" data-theme="fruits" style="font-size:28px;padding:20px 8px">🍎<div style="font-size:13px;margin-top:6px;font-weight:700">Fruits</div></button>
+        <button class="dev-card" data-theme="chiffres" style="font-size:28px;padding:20px 8px;grid-column:1/-1">🔢<div style="font-size:13px;margin-top:6px;font-weight:700">Chiffres</div></button>
+      </div>
+    </div>
+
+    <!-- Jeu -->
+    <div id="eveil-step-jeu" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <button class="dev-back-btn" id="eveil-back">‹</button>
+        <div>
+          <div class="dev-step-title" style="margin-bottom:0" id="eveil-theme-label"></div>
+          <div style="font-size:12px;color:var(--muted)" id="eveil-progress"></div>
+        </div>
+      </div>
+
+      <!-- Carte -->
+      <div id="eveil-card" style="background:var(--surface);border-radius:24px;padding:40px 20px;text-align:center;box-shadow:0 2px 20px rgba(0,0,0,0.08);margin-bottom:24px;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.3s">
+        <div id="eveil-emoji" style="font-size:100px;line-height:1.1;margin-bottom:16px"></div>
+        <div id="eveil-mot-reveal" style="font-size:28px;font-weight:800;color:var(--text);opacity:0;transition:opacity 0.3s"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div id="eveil-feedback" style="text-align:center;font-size:20px;font-weight:700;margin-bottom:16px;min-height:32px"></div>
+
+      <!-- Bouton micro -->
+      <button id="eveil-mic-btn" style="width:100%;background:var(--green);color:white;border:none;border-radius:20px;padding:20px;font-family:inherit;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 14px rgba(52,199,89,0.3)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+        Appuie et parle
+      </button>
+
+      <!-- Score final -->
+      <div id="eveil-score" style="display:none;background:var(--black);border-radius:20px;padding:24px;text-align:center;margin-top:16px">
+        <div style="font-size:48px;margin-bottom:8px">🎉</div>
+        <div style="font-size:32px;font-weight:800;color:#4ADE80" id="eveil-score-val"></div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-top:4px">bonnes réponses</div>
+        <button id="eveil-retry" style="margin-top:16px;background:var(--green);color:white;border:none;border-radius:12px;padding:12px 28px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer">Rejouer</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
