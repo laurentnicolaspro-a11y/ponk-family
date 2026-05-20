@@ -14,7 +14,7 @@
   --black: #0A0A0A; --text: #0A0A0A; --muted: #8E8E93; --border: rgba(60,60,67,0.12);
   --red: #FF3B30; --blue: #007AFF; --r: 16px;
 }
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
 * { scrollbar-width: none; -ms-overflow-style: none; }
 *::-webkit-scrollbar { display: none; }
@@ -43,7 +43,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 /* ── APP ── */
 #app { display: none; flex-direction: column; height: 100%; }
 #app.visible { display: flex; }
-.app-header { background: rgba(242,242,247,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 54px 20px 14px; position: sticky; top: 0; z-index: 20; border-bottom: 0.5px solid var(--border); }
+.app-header { background: rgba(242,242,247,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 16px 20px 14px; position: sticky; top: 0; z-index: 20; border-bottom: 0.5px solid var(--border); }
 .header-row { display: flex; align-items: center; justify-content: space-between; }
 .header-title { font-size: 28px; font-weight: 800; letter-spacing: -0.8px; }
 .header-title span { color: var(--green); }
@@ -434,7 +434,7 @@ document.addEventListener('focusin', e => {
 
         <!-- ÉTAPE 1 : Classe -->
         <div id="dev-step-classe">
-          <div class="dev-step-title">Choisir la classe</div>
+          <div class="dev-step-title" style="color:var(--green)">Choisir la classe</div>
           <div class="dev-grid">
             <button class="dev-card" data-classe="CP">CP</button>
             <button class="dev-card" data-classe="CE1">CE1</button>
