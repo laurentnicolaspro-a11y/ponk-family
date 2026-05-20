@@ -118,7 +118,7 @@ function renderMembers() {
         <div class="member-row">
           <div class="member-av">${esc(m.prenom[0].toUpperCase())}</div>
           <div style="flex:1"><div class="member-name">${esc(m.prenom)}</div></div>
-          ${editMembers && m.prenom !== ME
+          ${editMembers
             ? `<button class="del-member" data-prenom="${esc(m.prenom)}"
                 style="background:#FFF0F0;border:none;cursor:pointer;color:#FF3B30;font-size:18px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">×</button>`
             : ''}
@@ -218,6 +218,7 @@ async function updateQty(id, delta) {
 }
 
 function editPrice(el) {
+  // If it's a no-price element, just open editor - don't block toggle for items with price
   const id = el.dataset.id
   const currentPrice = el.dataset.price || ''
   const input = document.createElement('input')
@@ -416,8 +417,7 @@ function renderCourses() {
     </div>
     <div class="items-wrap"><div class="items-list">${done.map(renderItem).join('')}</div></div>
     <div class="btns-wrap">
-      <button class="btn-red" id="btn-clear">Supprimer les cochés</button>
-      <button class="btn-blue" id="btn-reset">Rafraîchir la liste</button>
+      <button class="btn-blue" id="btn-reset" style="flex:1">Rafraîchir la liste</button>
     </div>`
   }
 
@@ -433,20 +433,20 @@ function renderCourses() {
   // Wire dynamic buttons via event delegation on courses-content
   const cc = document.getElementById('courses-content')
   cc.addEventListener('click', e => {
-    const btnClear = e.target.closest('#btn-clear')
     const btnReset = e.target.closest('#btn-reset')
     const del = e.target.closest('.del')
     const qtyMinus = e.target.closest('.qty-minus')
     const qtyPlus = e.target.closest('.qty-plus')
     const priceEl = e.target.closest('.editable-price')
     const item = e.target.closest('.item')
-    if (btnClear) { clearChecked(); return }
     if (btnReset) { resetChecked(); return }
     if (del) { e.stopPropagation(); deleteItem(del.dataset.id); return }
     if (qtyMinus) { e.stopPropagation(); updateQty(qtyMinus.dataset.id, -1); return }
     if (qtyPlus) { e.stopPropagation(); updateQty(qtyPlus.dataset.id, 1); return }
+    const addPriceEl = e.target.closest('.add-price')
+    if (addPriceEl) { e.stopPropagation(); editPrice(addPriceEl); return }
     if (priceEl) { e.stopPropagation(); editPrice(priceEl); return }
-    if (item && !e.target.closest('.qty-ctrl')) { toggleItem(item.dataset.id, item.dataset.checked === 'true') }
+    if (item && !e.target.closest('.qty-ctrl') && !e.target.closest('.editable-price') && !e.target.closest('.add-price')) { toggleItem(item.dataset.id, item.dataset.checked === 'true') }
   })
 }
 
@@ -455,7 +455,7 @@ function renderItem(item) {
   const totalPrice = item.price ? item.price * qty : null
   const priceDisplay = totalPrice
     ? `<span class="item-price editable-price" data-id="${item.id}" data-price="${item.price || ''}">${fmt(totalPrice)}</span>`
-    : `<span class="item-price editable-price no-price" data-id="${item.id}" data-price="">+prix</span>`
+    : `<span class="item-price no-price add-price" data-id="${item.id}">+prix</span>`
   return `<div class="item${item.checked ? ' done' : ''}" data-id="${item.id}" data-checked="${item.checked}">
     <div class="cb"><svg viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <span class="item-nm">${esc(item.name)}</span>
