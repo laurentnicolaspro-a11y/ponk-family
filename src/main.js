@@ -860,8 +860,8 @@ async function genExercices() {
   document.getElementById('dev-btn-corriger').style.display = 'none'
   document.getElementById('dev-score').style.display = 'none'
 
-  const prompt = "Tu es un professeur des ecoles francais. Genere 5 exercices de maths sur \"" + devChapitre + "\" pour un eleve de " + devClasse + ". Reponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, format exact : [{"question": "...", "reponse": "...", "type": "texte"}]. Les questions doivent etre adaptees au niveau " + devClasse + ". La reponse doit etre courte (nombre ou mot). 5 exercices exactement.";
-  const _prompt2 = prompt
+  const _prompt2 = "Genere 5 exercices de maths sur " + devChapitre + " pour un eleve de " + devClasse + ". Reponds en JSON uniquement, tableau de 5 objets avec les proprietes question et reponse. Reponse courte.";
+
 
   try {
     const raw = await callGemini(_prompt2)
