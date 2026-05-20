@@ -27,8 +27,10 @@ function toast(msg) {
 }
 
 function setSync(label, on) {
-  document.getElementById('sync-label').textContent = label
-  document.getElementById('dot').className = 'dot' + (on === true ? ' on' : on === false ? ' off' : '')
+  const el = document.getElementById('sync-label')
+  const dot = document.getElementById('dot')
+  if (el) el.textContent = label
+  if (dot) dot.className = 'dot' + (on === true ? ' on' : on === false ? ' off' : '')
 }
 
 // ════════════════════════════════
@@ -90,7 +92,6 @@ function startApp(code, fn, pr) {
   loadMembers()
   loadWeather()
   loadItems()
-  subscribeRT()
 }
 
 function copyCode() {
@@ -203,11 +204,13 @@ async function addItem() {
   ni.value = ''; pi.value = ''
   document.getElementById('suggest').innerHTML = ''
   const { error } = await sb.from('pf_courses').insert([{ name, checked: false, family_code: FC, price, quantity: 1 }])
-  if (error) toast('Erreur : ' + error.message)
+  if (error) { toast('Erreur : ' + error.message); return }
+  await loadItems()
 }
 
 async function toggleItem(id, checked) {
   await sb.from('pf_courses').update({ checked: !checked }).eq('id', id)
+  await loadItems()
 }
 
 async function updateQty(id, delta) {
@@ -215,6 +218,7 @@ async function updateQty(id, delta) {
   if (!item) return
   const newQty = Math.max(1, (item.quantity || 1) + delta)
   await sb.from('pf_courses').update({ quantity: newQty }).eq('id', id)
+  await loadItems()
 }
 
 function editPrice(el) {
@@ -235,6 +239,7 @@ function editPrice(el) {
     const newPrice = input.value ? parseFloat(input.value) : null
     await sb.from('pf_courses').update({ price: newPrice }).eq('id', id)
     if (newPrice) savePrice(items.find(i => i.id === id)?.name || '', newPrice)
+    await loadItems()
   }
   input.addEventListener('blur', confirmEdit)
   input.addEventListener('keydown', e => { if (e.key === 'Enter') { input.blur() } })
@@ -242,42 +247,25 @@ function editPrice(el) {
 
 async function deleteItem(id) {
   await sb.from('pf_courses').delete().eq('id', id)
+  await loadItems()
 }
 
 async function clearChecked() {
   const ids = items.filter(i => i.checked).map(i => i.id)
   if (!ids.length) return
   await sb.from('pf_courses').delete().in('id', ids)
+  await loadItems()
 }
 
 async function resetChecked() {
   const ids = items.filter(i => i.checked).map(i => i.id)
   if (!ids.length) return
   await sb.from('pf_courses').update({ checked: false }).in('id', ids)
+  await loadItems()
   toast('Liste remise à zéro')
 }
 
-function subscribeRT() {
-  if (chan) sb.removeChannel(chan)
-  chan = sb.channel('pf-' + FC)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'pf_members', filter: 'family_code=eq.' + FC },
-      ({ eventType: ev, new: n, old: o }) => {
-        if (ev === 'INSERT') { if (!members.find(m => m.prenom === n.prenom)) members.push(n) }
-        else if (ev === 'DELETE') { members = members.filter(m => m.prenom !== o.prenom) }
-        renderMembers()
-      })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'pf_courses', filter: 'family_code=eq.' + FC },
-      ({ eventType: ev, new: n, old: o }) => {
-        if (ev === 'INSERT') { if (!items.find(i => i.id === n.id)) items.push(n) }
-        else if (ev === 'UPDATE') { const x = items.findIndex(i => i.id === n.id); if (x !== -1) items[x] = n }
-        else if (ev === 'DELETE') { items = items.filter(i => i.id !== o.id) }
-        renderCourses()
-      })
-    .subscribe(s => {
-      if (s === 'SUBSCRIBED') setSync('En direct', true)
-      if (s === 'CLOSED') setSync('Déconnecté', false)
-    })
-}
+
 
 // ════════════════════════════════
 // CATÉGORIES
@@ -485,6 +473,7 @@ function switchTab(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'))
   document.getElementById('pane-' + name).classList.add('active')
   document.getElementById('nav-' + name).classList.add('active')
+  if (name === 'accueil') loadMembers()
 }
 
 // ════════════════════════════════
