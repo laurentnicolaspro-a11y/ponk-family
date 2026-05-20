@@ -105,36 +105,40 @@ async function loadMembers() {
 }
 
 function renderMembers() {
-  const titleEl = document.querySelector('.members-title')
-  if (editMembers) {
-    titleEl.innerHTML = 'Membres <button id="btn-done-edit" style="float:right;background:none;border:none;color:var(--green);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">Terminer</button>'
-    document.getElementById('btn-done-edit').addEventListener('click', () => { editMembers = false; renderMembers() })
-  } else {
-    titleEl.innerHTML = 'Membres <button id="btn-edit-members" style="float:right;background:none;border:none;color:var(--blue);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">Modifier</button>'
-    document.getElementById('btn-edit-members').addEventListener('click', () => { editMembers = true; renderMembers() })
-  }
-
-  document.getElementById('members-list').innerHTML = members.map(m =>
-    `<div class="member-row">
-      <div class="member-av">${esc(m.prenom[0].toUpperCase())}</div>
-      <div style="flex:1">
-        <div class="member-name">${esc(m.prenom)}</div>
-        
-      </div>
-      ${editMembers && m.prenom !== ME ? `<button class="del-member" data-prenom="${esc(m.prenom)}" style="background:none;border:none;cursor:pointer;color:#FF3B30;font-size:22px;padding:4px 10px;line-height:1;">×</button>` : ''}
+  const membersCard = document.querySelector('.members-card')
+  membersCard.innerHTML = `
+    <div class="members-title" style="display:flex;align-items:center;justify-content:space-between">
+      <span>Membres</span>
+      <button id="btn-toggle-edit" style="background:none;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;color:${editMembers ? 'var(--green)' : 'var(--blue)'}">
+        ${editMembers ? 'Terminer' : 'Modifier'}
+      </button>
+    </div>
+    <div id="members-list">
+      ${members.map(m => `
+        <div class="member-row">
+          <div class="member-av">${esc(m.prenom[0].toUpperCase())}</div>
+          <div style="flex:1"><div class="member-name">${esc(m.prenom)}</div></div>
+          ${editMembers && m.prenom !== ME
+            ? `<button class="del-member" data-prenom="${esc(m.prenom)}"
+                style="background:#FFF0F0;border:none;cursor:pointer;color:#FF3B30;font-size:18px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">×</button>`
+            : ''}
+        </div>`).join('')}
     </div>`
-  ).join('')
 
-  if (editMembers) {
-    document.querySelectorAll('.del-member').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const prenom = btn.dataset.prenom
-        if (!confirm('Supprimer ' + prenom + ' ?')) return
-        await sb.from('pf_members').delete().eq('family_code', FC).eq('prenom', btn.dataset.prenom)
-        await loadMembers()
-      })
+  document.getElementById('btn-toggle-edit').addEventListener('click', () => {
+    editMembers = !editMembers
+    renderMembers()
+  })
+
+  document.querySelectorAll('.del-member').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const prenom = btn.dataset.prenom
+      if (!confirm('Supprimer ' + prenom + ' ?')) return
+      await sb.from('pf_members').delete().eq('family_code', FC).eq('prenom', prenom)
+      members = members.filter(m => m.prenom !== prenom)
+      renderMembers()
     })
-  }
+  })
 }
 
 // ════════════════════════════════
