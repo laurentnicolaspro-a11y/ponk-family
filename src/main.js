@@ -901,6 +901,9 @@ function corrigerExercices() {
   document.getElementById('dev-score-val').textContent = score + ' / ' + devExercicesData.length
 }
 
+window.startGenLecon = () => startGenLecon()
+window.genExercices = () => genExercices()
+
 // BOOT
 // ════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
