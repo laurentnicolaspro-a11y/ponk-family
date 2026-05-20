@@ -217,13 +217,69 @@ async function addItem() {
   const pi = document.getElementById('price-input')
   const name = ni.value.trim()
   if (!name) return
-  const price = pi.value ? parseFloat(pi.value) : (defPrice(name) || null)
-  if (pi.value) savePrice(name, pi.value)
+
+  // Detect category
+  const cat = detectCat(name)
+  
+  // Estimate price
+  let price = null
+  if (pi.value) {
+    price = parseFloat(pi.value)
+    savePrice(name, pi.value)
+  } else {
+    price = defPrice(name) || estimatePriceByCat(cat.id)
+  }
+
   ni.value = ''; pi.value = ''
   document.getElementById('suggest').innerHTML = ''
+
+  // If category is "Autre", ask user to pick category
+  if (cat.id === 'au') {
+    askCategory(name, price)
+    return
+  }
+
   const { error } = await sb.from('pf_courses').insert([{ name, checked: false, family_code: FC, price, quantity: 1 }])
   if (error) { toast('Erreur : ' + error.message); return }
   await loadItems()
+}
+
+function estimatePriceByCat(catId) {
+  const catKeys = CATS.find(c => c.id === catId)?.keys || []
+  const prices = Object.entries(DEF).filter(([name]) => {
+    const n = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    return catKeys.some(k => n.includes(k.normalize('NFD').replace(/[\u0300-\u036f]/g, '')))
+  }).map(([, p]) => p)
+  if (!prices.length) return null
+  return Math.round(prices.reduce((a, b) => a + b, 0) / prices.length * 100) / 100
+}
+
+function askCategory(name, price) {
+  // Show category picker modal
+  const modal = document.createElement('div')
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;display:flex;align-items:flex-end;justify-content:center'
+  modal.innerHTML = `
+    <div style="background:white;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px">
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px">Catégorie pour "${name}"</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">On n'a pas reconnu ce produit. Choisis sa catégorie :</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${CATS.map(c => `<button data-cat="${c.id}" style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;text-align:left">
+          ${c.icon} ${c.label}
+        </button>`).join('')}
+      </div>
+    </div>`
+  document.body.appendChild(modal)
+  modal.querySelectorAll('button[data-cat]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const catId = btn.dataset.cat
+      const estimatedPrice = price || estimatePriceByCat(catId)
+      document.body.removeChild(modal)
+      const { error } = await sb.from('pf_courses').insert([{ name, checked: false, family_code: FC, price: estimatedPrice, quantity: 1, category: catId }])
+      if (error) { toast('Erreur : ' + error.message); return }
+      await loadItems()
+    })
+  })
+  modal.addEventListener('click', e => { if (e.target === modal) document.body.removeChild(modal) })
 }
 
 async function toggleItem(id, checked) {
@@ -302,7 +358,11 @@ const CATS = [
   { id:'an', label:'Animaux', icon:'🐾', keys:['croquette','patee chien','patee chat','litiere','friandise chien','friandise chat'] },
 ]
 
-function detectCat(name) {
+function detectCat(name, storedCat) {
+  if (storedCat) {
+    const found = CATS.find(c => c.id === storedCat)
+    if (found) return found
+  }
   const n = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   for (const c of CATS) {
     if (c.keys.some(k => n.includes(k.normalize('NFD').replace(/[\u0300-\u036f]/g, '')))) return c
@@ -397,7 +457,7 @@ function renderCourses() {
   let html = ''
   const groups = {}
   for (const item of pending) {
-    const cat = detectCat(item.name)
+    const cat = detectCat(item.name, item.category)
     if (!groups[cat.id]) groups[cat.id] = { cat, items: [] }
     groups[cat.id].items.push(item)
   }
