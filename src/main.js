@@ -98,7 +98,7 @@ function copyCode() {
 }
 
 async function loadMembers() {
-  const { data } = await sb.from('pf_members').select('id,prenom').eq('family_code', FC)
+  const { data } = await sb.from('pf_members').select('prenom').eq('family_code', FC)
   if (!data) return
   members = data
   renderMembers()
@@ -121,7 +121,7 @@ function renderMembers() {
         <div class="member-name">${esc(m.prenom)}</div>
         
       </div>
-      ${editMembers && m.prenom !== ME ? `<button class="del-member" data-id="${m.id}" data-prenom="${esc(m.prenom)}" style="background:none;border:none;cursor:pointer;color:#FF3B30;font-size:20px;padding:4px 8px;font-weight:300;">×</button>` : ''}
+      ${editMembers && m.prenom !== ME ? `<button class="del-member" data-prenom="${esc(m.prenom)}" style="background:none;border:none;cursor:pointer;color:#FF3B30;font-size:22px;padding:4px 10px;line-height:1;">×</button>` : ''}
     </div>`
   ).join('')
 
@@ -130,7 +130,7 @@ function renderMembers() {
       btn.addEventListener('click', async () => {
         const prenom = btn.dataset.prenom
         if (!confirm('Supprimer ' + prenom + ' ?')) return
-        await sb.from('pf_members').delete().eq('id', btn.dataset.id)
+        await sb.from('pf_members').delete().eq('family_code', FC).eq('prenom', btn.dataset.prenom)
         await loadMembers()
       })
     })
@@ -198,12 +198,19 @@ async function addItem() {
   if (pi.value) savePrice(name, pi.value)
   ni.value = ''; pi.value = ''
   document.getElementById('suggest').innerHTML = ''
-  const { error } = await sb.from('pf_courses').insert([{ name, checked: false, family_code: FC, price }])
+  const { error } = await sb.from('pf_courses').insert([{ name, checked: false, family_code: FC, price, quantity: 1 }])
   if (error) toast('Erreur : ' + error.message)
 }
 
 async function toggleItem(id, checked) {
   await sb.from('pf_courses').update({ checked: !checked }).eq('id', id)
+}
+
+async function updateQty(id, delta) {
+  const item = items.find(i => i.id === id)
+  if (!item) return
+  const newQty = Math.max(1, (item.quantity || 1) + delta)
+  await sb.from('pf_courses').update({ quantity: newQty }).eq('id', id)
 }
 
 async function deleteItem(id) {
@@ -297,17 +304,25 @@ function getSuggestions(q) {
 }
 
 function showSuggestions(q) {
+  if (!q || q.length < 2) { document.getElementById('suggest').innerHTML = ''; return }
   const list = getSuggestions(q)
-  if (!list.length) { document.getElementById('suggest').innerHTML = ''; return }
+  const customItem = `<div class="sug-item sug-custom" data-name="${esc(q)}" style="border-top: 1px solid var(--border)">
+    <span class="sug-icon">✏️</span>
+    <span class="sug-name">Ajouter "<strong>${esc(q)}</strong>"</span>
+  </div>`
+
   document.getElementById('suggest').innerHTML =
-    '<div class="suggest-list">' + list.map(s => {
+    '<div class="suggest-list">' +
+    list.map(s => {
       const c = detectCat(s)
       return `<div class="sug-item" data-name="${esc(s)}">
         <span class="sug-icon">${c.icon}</span>
         <span class="sug-name">${esc(s)}</span>
         <span class="sug-cat">${c.label}</span>
       </div>`
-    }).join('') + '</div>'
+    }).join('') +
+    customItem +
+    '</div>'
 
   document.querySelectorAll('.sug-item').forEach(el => {
     el.addEventListener('click', () => {
@@ -317,7 +332,11 @@ function showSuggestions(q) {
       const pi = document.getElementById('price-input')
       const p = defPrice(name)
       pi.value = p ? p.toFixed(2) : ''
-      pi.focus()
+      if (el.classList.contains('sug-custom')) {
+        addItem()
+      } else {
+        pi.focus()
+      }
     })
   })
 }
@@ -390,20 +409,31 @@ function renderCourses() {
   cc.addEventListener('click', e => {
     const btnClear = e.target.closest('#btn-clear')
     const btnReset = e.target.closest('#btn-reset')
-    const item = e.target.closest('.item')
     const del = e.target.closest('.del')
+    const qtyMinus = e.target.closest('.qty-minus')
+    const qtyPlus = e.target.closest('.qty-plus')
+    const item = e.target.closest('.item')
     if (btnClear) { clearChecked(); return }
     if (btnReset) { resetChecked(); return }
     if (del) { e.stopPropagation(); deleteItem(del.dataset.id); return }
-    if (item && !e.target.closest('.del')) { toggleItem(item.dataset.id, item.dataset.checked === 'true') }
+    if (qtyMinus) { e.stopPropagation(); updateQty(qtyMinus.dataset.id, -1); return }
+    if (qtyPlus) { e.stopPropagation(); updateQty(qtyPlus.dataset.id, 1); return }
+    if (item && !e.target.closest('.qty-ctrl')) { toggleItem(item.dataset.id, item.dataset.checked === 'true') }
   })
 }
 
 function renderItem(item) {
+  const qty = item.quantity || 1
+  const totalPrice = item.price ? item.price * qty : null
   return `<div class="item${item.checked ? ' done' : ''}" data-id="${item.id}" data-checked="${item.checked}">
     <div class="cb"><svg viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <span class="item-nm">${esc(item.name)}</span>
-    ${item.price ? `<span class="item-price">${fmt(item.price)}</span>` : ''}
+    <div class="qty-ctrl" data-id="${item.id}">
+      <button class="qty-btn qty-minus" data-id="${item.id}">−</button>
+      <span class="qty-val">${qty}</span>
+      <button class="qty-btn qty-plus" data-id="${item.id}">+</button>
+    </div>
+    ${totalPrice ? `<span class="item-price">${fmt(totalPrice)}</span>` : ''}
     <button class="del" data-id="${item.id}">
       <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
