@@ -216,8 +216,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 #dev-lecon-content code { background: var(--bg); border-radius: 6px; padding: 2px 6px; font-size: 13px; font-family: monospace; }
 
 /* ── TOAST ── */
-.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(80px); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); color: #fff; padding: 11px 22px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1); white-space: nowrap; pointer-events: none; }
-.toast.show { transform: translateX(-50%) translateY(0); }
+.toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(120px); background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); color: #fff; padding: 11px 22px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1); white-space: nowrap; pointer-events: none; opacity: 0; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 </style>
 <script>
 document.addEventListener('focusin', e => {
