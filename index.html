@@ -127,6 +127,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .del { background: none; border: none; cursor: pointer; color: #C7C7CC; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
 .del:active { color: var(--red); }
 .del svg { width: 14px; height: 14px; }
+.qty-ctrl { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.qty-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; line-height: 1; }
+.qty-btn:active { background: var(--border); }
+.item.done .qty-btn { color: var(--muted); border-color: var(--border); }
+.qty-val { font-size: 14px; font-weight: 700; color: var(--text); min-width: 18px; text-align: center; }
+.item.done .qty-val { color: var(--muted); }
 .total-bar { background: var(--black); border-radius: var(--r); margin: 12px 16px 4px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; }
 .total-label { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); }
 .total-amount { font-size: 22px; font-weight: 800; color: #4ADE80; letter-spacing: -0.5px; }
