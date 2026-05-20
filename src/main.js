@@ -98,6 +98,14 @@ function copyCode() {
   navigator.clipboard.writeText(FC).then(() => toast('Code copié !')).catch(() => toast(FC))
 }
 
+function logout() {
+  if (!confirm('Se déconnecter ?')) return
+  localStorage.removeItem('pf_code')
+  localStorage.removeItem('pf_family')
+  localStorage.removeItem('pf_prenom')
+  location.reload()
+}
+
 async function loadMembers() {
   const { data } = await sb.from('pf_members').select('prenom').eq('family_code', FC)
   if (!data) return
@@ -486,6 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-show-join').addEventListener('click', showJoin)
   document.getElementById('btn-show-create').addEventListener('click', showCreate)
   document.getElementById('btn-copy').addEventListener('click', copyCode)
+  document.getElementById('btn-logout').addEventListener('click', logout)
   document.getElementById('btn-add').addEventListener('click', addItem)
 
   // Nav buttons
