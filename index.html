@@ -13,7 +13,9 @@
   --black: #0A0A0A; --text: #0A0A0A; --muted: #8E8E93; --border: rgba(60,60,67,0.12);
   --red: #FF3B30; --blue: #007AFF; --r: 16px;
 }
-body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow: hidden; }
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
 
 /* ── ONBOARDING ── */
 #onboarding { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; }
