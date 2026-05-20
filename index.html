@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ponk Family</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -53,7 +53,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .tab-pane.active { display: block; }
 
 /* ── BOTTOM NAV ── */
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(242,242,247,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid var(--border); display: flex; padding: 10px 0 24px; z-index: 30; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(242,242,247,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid var(--border); display: flex; padding: 10px 0 env(safe-area-inset-bottom, 16px); z-index: 30; }
 .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 4px 0; }
 .nav-btn:active { opacity: 0.6; }
 .nav-icon svg { width: 24px; height: 24px; }
@@ -207,10 +207,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   <header class="app-header">
     <div class="header-row">
       <div class="header-title">Ponk <span>Family</span></div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="sync-badge"><div class="dot" id="dot"></div><span id="sync-label">–</span></div>
-        <button id="btn-logout" style="background:none;border:none;cursor:pointer;color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;">Quitter</button>
-      </div>
+      <button id="btn-logout" style="background:none;border:none;cursor:pointer;color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;">Quitter</button>
     </div>
   </header>
 
@@ -231,7 +228,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           <div class="card-label">Code d'invitation</div>
           <div class="code-row">
             <div class="code-val" id="code-display">–</div>
-            <button class="copy-btn" id="btn-copy">Copier</button>
+            <div style="display:flex;gap:8px">
+              <button class="copy-btn" id="btn-copy">Copier</button>
+              <button class="copy-btn" id="btn-share" style="background:var(--blue)">Inviter</button>
+            </div>
           </div>
           <div class="code-hint">Partage ce code à ta famille pour qu'ils rejoignent ton espace.</div>
         </div>
