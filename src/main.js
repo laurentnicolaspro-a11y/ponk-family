@@ -703,6 +703,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ni.addEventListener('input', e => showSuggestions(e.target.value))
   ni.addEventListener('blur', () => setTimeout(() => { document.getElementById('suggest').innerHTML = '' }, 200))
 
+  // Init calendar
+  initCalendar()
+
   // Check localStorage
   const code = localStorage.getItem('pf_code')
   const fn   = localStorage.getItem('pf_family')
