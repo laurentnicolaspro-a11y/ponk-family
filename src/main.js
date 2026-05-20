@@ -769,7 +769,7 @@ async function startGenExercices() {
   document.getElementById('dev-btn-corriger').style.display = 'none'
   document.getElementById('dev-score').style.display = 'none'
   try {
-    const p = "Genere 5 exercices de mathematiques sur " + devChapitre + " pour un eleve de " + devClasse + ". Tu dois repondre UNIQUEMENT avec un tableau JSON valide de 5 objets. Chaque objet DOIT avoir exactement deux proprietes : question (string contenant la question) et reponse (string contenant la reponse courte). Exemple : [{"question":"Combien font 3+4 ?","reponse":"7"},{"question":"Combien font 5+2 ?","reponse":"7"}]. Rien d autre que le JSON."
+    const p = "Genere 5 exercices de mathematiques sur " + devChapitre + " pour un eleve de " + devClasse + ". Reponds UNIQUEMENT avec un tableau JSON de 5 objets avec les proprietes question et reponse. Rien d autre."
     const raw = await callGemini(p)
     console.log('Gemini raw:', raw)
     const start = raw.indexOf('[')
