@@ -594,7 +594,16 @@ function openCalModal(date) {
   document.getElementById('ev-title').value = ''
   document.getElementById('ev-date').value = date || ''
   document.getElementById('ev-time').value = ''
-  document.getElementById('ev-who').value = ''
+  // Populate who select with members
+  const sel = document.getElementById('ev-who')
+  sel.innerHTML = '<option value="Toute la famille">Toute la famille</option>'
+  members.forEach(m => {
+    const opt = document.createElement('option')
+    opt.value = m.prenom
+    opt.textContent = m.prenom
+    sel.appendChild(opt)
+  })
+  sel.value = 'Toute la famille'
   setCalColor('#007AFF')
   document.getElementById('cal-modal').style.display = 'flex'
 }
