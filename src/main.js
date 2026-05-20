@@ -716,15 +716,15 @@ function initCalendar() {
 const GEMINI_KEY = 'AIzaSyBkko2MmIT4DwnEzlbYnKrWU_1cnXrRRA8'
 
 const CHAPITRES = {
-  'CP':  ['Numération jusqu'à 30','Additions simples','Soustractions simples','Formes géométriques','Mesures de longueur'],
-  'CE1': ['Numération jusqu'à 100','Tables d'addition','Introduction multiplication','Mesures','Géométrie plane'],
-  'CE2': ['Tables de multiplication','Divisions simples','Fractions simples','Périmètre','Problèmes'],
-  'CM1': ['Fractions','Nombres décimaux','Aire et périmètre','Angles','Proportionnalité'],
-  'CM2': ['Multiplications de décimaux','Fractions avancées','Volume','Statistiques','Pourcentages'],
-  '6ème':['Fractions','Nombres relatifs','Statistiques','Géométrie dans l'espace','Proportionnalité'],
-  '5ème':['Calcul littéral','Probabilités','Théorème de Pythagore','Fractions et décimaux','Symétrie'],
-  '4ème':['Équations','Puissances','Trigonométrie','Statistiques','Géométrie'],
-  '3ème':['Fonctions','Théorème de Thalès','Statistiques avancées','Équations du second degré','Géométrie dans l'espace'],
+  "CP":  ["Numeration jusqu a 30","Additions simples","Soustractions simples","Formes geometriques","Mesures de longueur"],
+  "CE1": ["Numeration jusqu a 100","Tables d addition","Introduction multiplication","Mesures","Geometrie plane"],
+  "CE2": ["Tables de multiplication","Divisions simples","Fractions simples","Perimetre","Problemes"],
+  "CM1": ["Fractions","Nombres decimaux","Aire et perimetre","Angles","Proportionnalite"],
+  "CM2": ["Multiplications de decimaux","Fractions avancees","Volume","Statistiques","Pourcentages"],
+  "6eme":["Fractions","Nombres relatifs","Statistiques","Geometrie dans l espace","Proportionnalite"],
+  "5eme":["Calcul litteral","Probabilites","Theoreme de Pythagore","Fractions et decimaux","Symetrie"],
+  "4eme":["Equations","Puissances","Trigonometrie","Statistiques","Geometrie"],
+  "3eme":["Fonctions","Theoreme de Thales","Statistiques avancees","Equations du second degre","Geometrie dans l espace"],
 }
 
 let devClasse = '', devChapitre = '', devExercicesData = []
@@ -783,7 +783,7 @@ function showDevStep(step) {
     document.getElementById('dev-chapitre-title').textContent = 'Chapitres — ' + devClasse
     document.getElementById('dev-chapitre-custom').value = ''
     const list = document.getElementById('dev-chapitres-list')
-    const chaps = CHAPITRES[devClasse] || []
+    const chaps = CHAPITRES[devClasse.replace('è','e').replace('é','e')] || []
     list.innerHTML = chaps.map(c => `<button class="dev-card" data-chap="${esc(c)}">${esc(c)}</button>`).join('')
     list.querySelectorAll('.dev-card[data-chap]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -843,16 +843,11 @@ async function callGemini(prompt) {
 async function genLecon() {
   const el = document.getElementById('dev-lecon-content')
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Génération de la leçon…</div>'
-  const prompt = `Tu es un professeur des écoles français. Génère une leçon claire et simple sur le chapitre "${devChapitre}" pour un élève de ${devClasse}.
-La leçon doit contenir :
-- Un titre
-- La définition ou règle principale (en gras)
-- 2-3 exemples concrets avec des calculs
-- Un encadré "À retenir" à la fin
-Format HTML simple avec <h3>, <p>, <strong>, <ul>, <li>. Pas de CSS inline. Adapte le niveau à ${devClasse}.`
+  const prompt = "Tu es un professeur des ecoles francais. Genere une lecon claire et simple sur le chapitre \"" + devChapitre + "\" pour un eleve de " + devClasse + ". La lecon doit contenir : un titre, la definition ou regle principale en gras, 2-3 exemples concrets avec des calculs, un encadre A retenir a la fin. Format HTML simple avec h3, p, strong, ul, li. Pas de CSS inline. Adapte le niveau a " + devClasse + ".";
+  const _prompt = prompt
 
   try {
-    const lecon = await callGemini(prompt)
+    const lecon = await callGemini(_prompt)
     el.innerHTML = lecon
   } catch(e) {
     el.innerHTML = '<p style="color:var(--red)">Erreur de génération. Vérifie ta connexion.</p>'
@@ -865,16 +860,11 @@ async function genExercices() {
   document.getElementById('dev-btn-corriger').style.display = 'none'
   document.getElementById('dev-score').style.display = 'none'
 
-  const prompt = `Tu es un professeur des écoles français. Génère 5 exercices de maths sur "${devChapitre}" pour un élève de ${devClasse}.
-Réponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, format exact :
-[
-  {"question": "...", "reponse": "...", "type": "texte"},
-  {"question": "...", "reponse": "...", "type": "texte"}
-]
-Les questions doivent être adaptées au niveau ${devClasse}. La réponse doit être courte (nombre ou mot). 5 exercices exactement.`
+  const prompt = "Tu es un professeur des ecoles francais. Genere 5 exercices de maths sur \"" + devChapitre + "\" pour un eleve de " + devClasse + ". Reponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, format exact : [{"question": "...", "reponse": "...", "type": "texte"}]. Les questions doivent etre adaptees au niveau " + devClasse + ". La reponse doit etre courte (nombre ou mot). 5 exercices exactement.";
+  const _prompt2 = prompt
 
   try {
-    const raw = await callGemini(prompt)
+    const raw = await callGemini(_prompt2)
     const clean = raw.replace(/\`\`\`json/g,'').replace(/\`\`\`/g,'').trim()
     devExercicesData = JSON.parse(clean)
     renderExercices()
