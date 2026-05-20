@@ -260,6 +260,12 @@ async function resetChecked() {
 function subscribeRT() {
   if (chan) sb.removeChannel(chan)
   chan = sb.channel('pf-' + FC)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'pf_members', filter: 'family_code=eq.' + FC },
+      ({ eventType: ev, new: n, old: o }) => {
+        if (ev === 'INSERT') { if (!members.find(m => m.prenom === n.prenom)) members.push(n) }
+        else if (ev === 'DELETE') { members = members.filter(m => m.prenom !== o.prenom) }
+        renderMembers()
+      })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'pf_courses', filter: 'family_code=eq.' + FC },
       ({ eventType: ev, new: n, old: o }) => {
         if (ev === 'INSERT') { if (!items.find(i => i.id === n.id)) items.push(n) }
@@ -440,7 +446,7 @@ function renderCourses() {
     const priceEl = e.target.closest('.editable-price')
     const item = e.target.closest('.item')
     if (btnReset) { resetChecked(); return }
-    if (del) { e.stopPropagation(); deleteItem(del.dataset.id); return }
+    if (del) { e.stopPropagation(); e.preventDefault(); deleteItem(del.dataset.id); return }
     if (qtyMinus) { e.stopPropagation(); updateQty(qtyMinus.dataset.id, -1); return }
     if (qtyPlus) { e.stopPropagation(); updateQty(qtyPlus.dataset.id, 1); return }
     const addPriceEl = e.target.closest('.add-price')
@@ -466,7 +472,7 @@ function renderItem(item) {
     </div>
     ${priceDisplay}
     <button class="del" data-id="${item.id}">
-      <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 16 16" fill="none" style="pointer-events:none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
   </div>`
 }
