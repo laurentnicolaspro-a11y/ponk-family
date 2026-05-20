@@ -709,6 +709,208 @@ function initCalendar() {
   renderCal()
 }
 
+
+// ════════════════════════════════
+// DEVOIRS
+// ════════════════════════════════
+const GEMINI_KEY = 'AIzaSyBkko2MmIT4DwnEzlbYnKrWU_1cnXrRRA8'
+
+const CHAPITRES = {
+  'CP':  ['Numération jusqu'à 30','Additions simples','Soustractions simples','Formes géométriques','Mesures de longueur'],
+  'CE1': ['Numération jusqu'à 100','Tables d'addition','Introduction multiplication','Mesures','Géométrie plane'],
+  'CE2': ['Tables de multiplication','Divisions simples','Fractions simples','Périmètre','Problèmes'],
+  'CM1': ['Fractions','Nombres décimaux','Aire et périmètre','Angles','Proportionnalité'],
+  'CM2': ['Multiplications de décimaux','Fractions avancées','Volume','Statistiques','Pourcentages'],
+  '6ème':['Fractions','Nombres relatifs','Statistiques','Géométrie dans l'espace','Proportionnalité'],
+  '5ème':['Calcul littéral','Probabilités','Théorème de Pythagore','Fractions et décimaux','Symétrie'],
+  '4ème':['Équations','Puissances','Trigonométrie','Statistiques','Géométrie'],
+  '3ème':['Fonctions','Théorème de Thalès','Statistiques avancées','Équations du second degré','Géométrie dans l'espace'],
+}
+
+let devClasse = '', devChapitre = '', devExercicesData = []
+
+function initDevoirs() {
+  // Étape 1 : classe
+  document.querySelectorAll('.dev-card[data-classe]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      devClasse = btn.dataset.classe
+      showDevStep('chapitre')
+    })
+  })
+
+  // Étape 2 : chapitre
+  document.getElementById('dev-back-classe')?.addEventListener('click', () => showDevStep('classe'))
+  document.getElementById('dev-chapitre-custom-btn')?.addEventListener('click', () => {
+    const val = document.getElementById('dev-chapitre-custom').value.trim()
+    if (!val) return
+    devChapitre = val
+    showDevStep('contenu')
+    genLecon()
+  })
+  document.getElementById('dev-chapitre-custom')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('dev-chapitre-custom-btn').click()
+  })
+
+  // Étape 3 : contenu
+  document.getElementById('dev-back-chapitre')?.addEventListener('click', () => showDevStep('chapitre'))
+  document.getElementById('dev-btn-exercices')?.addEventListener('click', () => {
+    showDevTab('exercices')
+    if (!devExercicesData.length) genExercices()
+  })
+  document.getElementById('dev-btn-corriger')?.addEventListener('click', corrigerExercices)
+  document.getElementById('dev-btn-retry')?.addEventListener('click', () => {
+    devExercicesData = []
+    document.getElementById('dev-score').style.display = 'none'
+    document.getElementById('dev-btn-corriger').style.display = 'none'
+    document.getElementById('dev-exercices-content').innerHTML = '<div class="loading"><div class="spinner"></div>Génération des exercices…</div>'
+    genExercices()
+  })
+
+  // Tabs
+  document.getElementById('dev-tab-lecon')?.addEventListener('click', () => showDevTab('lecon'))
+  document.getElementById('dev-tab-exercices')?.addEventListener('click', () => {
+    showDevTab('exercices')
+    if (!devExercicesData.length) genExercices()
+  })
+}
+
+function showDevStep(step) {
+  document.getElementById('dev-step-classe').style.display = step === 'classe' ? 'block' : 'none'
+  document.getElementById('dev-step-chapitre').style.display = step === 'chapitre' ? 'block' : 'none'
+  document.getElementById('dev-step-contenu').style.display = step === 'contenu' ? 'block' : 'none'
+
+  if (step === 'chapitre') {
+    document.getElementById('dev-chapitre-title').textContent = 'Chapitres — ' + devClasse
+    document.getElementById('dev-chapitre-custom').value = ''
+    const list = document.getElementById('dev-chapitres-list')
+    const chaps = CHAPITRES[devClasse] || []
+    list.innerHTML = chaps.map(c => `<button class="dev-card" data-chap="${esc(c)}">${esc(c)}</button>`).join('')
+    list.querySelectorAll('.dev-card[data-chap]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        devChapitre = btn.dataset.chap
+        showDevStep('contenu')
+        genLecon()
+      })
+    })
+  }
+
+  if (step === 'contenu') {
+    document.getElementById('dev-contenu-title').textContent = devChapitre
+    document.getElementById('dev-contenu-sub').textContent = 'Maths · ' + devClasse
+    showDevTab('lecon')
+    devExercicesData = []
+    document.getElementById('dev-score').style.display = 'none'
+    document.getElementById('dev-btn-corriger').style.display = 'none'
+  }
+}
+
+function showDevTab(tab) {
+  const leconPanel = document.getElementById('dev-lecon-panel')
+  const exPanel = document.getElementById('dev-exercices-panel')
+  const tabLecon = document.getElementById('dev-tab-lecon')
+  const tabEx = document.getElementById('dev-tab-exercices')
+  if (tab === 'lecon') {
+    leconPanel.style.display = 'block'
+    exPanel.style.display = 'none'
+    tabLecon.classList.add('active')
+    tabEx.classList.remove('active')
+    tabLecon.style.background = 'var(--surface)'
+    tabLecon.style.color = 'var(--text)'
+    tabEx.style.background = 'transparent'
+    tabEx.style.color = 'var(--muted)'
+  } else {
+    leconPanel.style.display = 'none'
+    exPanel.style.display = 'block'
+    tabEx.classList.add('active')
+    tabLecon.classList.remove('active')
+    tabEx.style.background = 'var(--surface)'
+    tabEx.style.color = 'var(--text)'
+    tabLecon.style.background = 'transparent'
+    tabLecon.style.color = 'var(--muted)'
+  }
+}
+
+async function callGemini(prompt) {
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_KEY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  })
+  const data = await res.json()
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+}
+
+async function genLecon() {
+  const el = document.getElementById('dev-lecon-content')
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Génération de la leçon…</div>'
+  const prompt = `Tu es un professeur des écoles français. Génère une leçon claire et simple sur le chapitre "${devChapitre}" pour un élève de ${devClasse}.
+La leçon doit contenir :
+- Un titre
+- La définition ou règle principale (en gras)
+- 2-3 exemples concrets avec des calculs
+- Un encadré "À retenir" à la fin
+Format HTML simple avec <h3>, <p>, <strong>, <ul>, <li>. Pas de CSS inline. Adapte le niveau à ${devClasse}.`
+
+  try {
+    const lecon = await callGemini(prompt)
+    el.innerHTML = lecon
+  } catch(e) {
+    el.innerHTML = '<p style="color:var(--red)">Erreur de génération. Vérifie ta connexion.</p>'
+  }
+}
+
+async function genExercices() {
+  const el = document.getElementById('dev-exercices-content')
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Génération des exercices…</div>'
+  document.getElementById('dev-btn-corriger').style.display = 'none'
+  document.getElementById('dev-score').style.display = 'none'
+
+  const prompt = `Tu es un professeur des écoles français. Génère 5 exercices de maths sur "${devChapitre}" pour un élève de ${devClasse}.
+Réponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, format exact :
+[
+  {"question": "...", "reponse": "...", "type": "texte"},
+  {"question": "...", "reponse": "...", "type": "texte"}
+]
+Les questions doivent être adaptées au niveau ${devClasse}. La réponse doit être courte (nombre ou mot). 5 exercices exactement.`
+
+  try {
+    const raw = await callGemini(prompt)
+    const clean = raw.replace(/\`\`\`json/g,'').replace(/\`\`\`/g,'').trim()
+    devExercicesData = JSON.parse(clean)
+    renderExercices()
+  } catch(e) {
+    el.innerHTML = '<p style="color:var(--red)">Erreur de génération. Réessaie.</p>'
+  }
+}
+
+function renderExercices() {
+  const el = document.getElementById('dev-exercices-content')
+  el.innerHTML = devExercicesData.map((ex, i) => `
+    <div style="background:var(--surface);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">${i+1}. ${esc(ex.question)}</div>
+      <input type="text" class="dev-answer" data-index="${i}" placeholder="Ta réponse…" autocorrect="off"
+        style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--text);outline:none;box-sizing:border-box"/>
+    </div>`).join('')
+  document.getElementById('dev-btn-corriger').style.display = 'block'
+}
+
+function corrigerExercices() {
+  let score = 0
+  document.querySelectorAll('.dev-answer').forEach((input, i) => {
+    const ex = devExercicesData[i]
+    const userAnswer = input.value.trim().toLowerCase().replace(/\s/g,'')
+    const correctAnswer = String(ex.reponse).toLowerCase().replace(/\s/g,'')
+    const correct = userAnswer === correctAnswer
+    if (correct) score++
+    input.style.border = correct ? '2px solid var(--green)' : '2px solid var(--red)'
+    input.value = correct ? input.value : input.value + ' (Réponse : ' + ex.reponse + ')'
+    input.disabled = true
+  })
+  document.getElementById('dev-btn-corriger').style.display = 'none'
+  document.getElementById('dev-score').style.display = 'block'
+  document.getElementById('dev-score-val').textContent = score + ' / ' + devExercicesData.length
+}
+
 // BOOT
 // ════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
@@ -736,6 +938,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Init calendar
   initCalendar()
+  // Init devoirs
+  initDevoirs()
 
   // Check localStorage
   const code = localStorage.getItem('pf_code')
