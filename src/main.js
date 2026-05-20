@@ -142,12 +142,19 @@ function renderMembers() {
                 style="background:#FFF0F0;border:none;cursor:pointer;color:#FF3B30;font-size:18px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">×</button>`
             : ''}
         </div>`).join('')}
+      ${editMembers ? `<div style="padding:12px 16px;border-top:0.5px solid var(--border)">
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="new-member-input" placeholder="Prénom du membre…" autocorrect="off"
+            style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--text);outline:none;font-family:inherit" />
+          <button id="new-member-btn"
+            style="background:var(--green);border:none;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:white;font-size:22px;font-weight:300;line-height:1">+</button>
+        </div>
+      </div>` : ''}
     </div>`
 
   document.getElementById('btn-toggle-edit').addEventListener('click', () => {
     editMembers = !editMembers
     renderMembers()
-    // Re-wire after render
   })
 
   document.querySelectorAll('.del-member').forEach(btn => {
@@ -158,6 +165,21 @@ function renderMembers() {
       await loadMembers()
     })
   })
+
+  if (editMembers) {
+    const input = document.getElementById('new-member-input')
+    const btn = document.getElementById('new-member-btn')
+    if (btn) btn.addEventListener('click', async () => {
+      const prenom = input ? input.value.trim() : ''
+      if (!prenom) return
+      await sb.from('pf_members').insert([{ family_code: FC, family_name: FN, prenom }])
+      if (input) input.value = ''
+      await loadMembers()
+    })
+    if (input) input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('new-member-btn')?.click()
+    })
+  }
 }
 
 // ════════════════════════════════
