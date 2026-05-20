@@ -556,6 +556,128 @@ function switchTab(name) {
 }
 
 // ════════════════════════════════
+
+// ════════════════════════════════
+// CALENDRIER
+// ════════════════════════════════
+let calYear = new Date().getFullYear()
+let calMonth = new Date().getMonth()
+let calSelected = null
+let calColor = '#007AFF'
+let calEvents = []
+
+async function loadCalEvents() {
+  if (!FC) return
+  const { data } = await sb.from('pf_cal_events').select('*').eq('family_code', FC).order('date', { ascending: true })
+  calEvents = data || []
+  renderCal()
+}
+
+async function saveCalEvent() {
+  const title = document.getElementById('ev-title').value.trim()
+  const date = document.getElementById('ev-date').value
+  const time = document.getElementById('ev-time').value
+  const who = document.getElementById('ev-who').value.trim() || 'Toute la famille'
+  if (!title || !date) { toast('Remplis le titre et la date'); return }
+  await sb.from('pf_cal_events').insert([{ title, date, time, who, color: calColor, family_code: FC }])
+  closeCalModal()
+  await loadCalEvents()
+}
+
+async function deleteCalEvent(id) {
+  if (!confirm('Supprimer cet événement ?')) return
+  await sb.from('pf_cal_events').delete().eq('id', id)
+  await loadCalEvents()
+}
+
+function openCalModal(date) {
+  document.getElementById('ev-title').value = ''
+  document.getElementById('ev-date').value = date || ''
+  document.getElementById('ev-time').value = ''
+  document.getElementById('ev-who').value = ''
+  setCalColor('#007AFF')
+  document.getElementById('cal-modal').style.display = 'flex'
+}
+
+function closeCalModal() {
+  document.getElementById('cal-modal').style.display = 'none'
+}
+
+function setCalColor(c) {
+  calColor = c
+  document.querySelectorAll('.color-opt').forEach(el => {
+    el.classList.toggle('selected', el.dataset.color === c)
+  })
+}
+
+function renderCal() {
+  const monthNames = ['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre']
+  const label = document.getElementById('cal-month-label')
+  if (label) label.textContent = monthNames[calMonth] + ' ' + calYear
+  const grid = document.getElementById('cal-grid')
+  if (!grid) return
+  grid.innerHTML = ''
+  const today = new Date()
+  const firstDay = new Date(calYear, calMonth, 1).getDay()
+  const offset = firstDay === 0 ? 6 : firstDay - 1
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
+  const prevDays = new Date(calYear, calMonth, 0).getDate()
+  for (let i = offset - 1; i >= 0; i--) {
+    grid.innerHTML += '<div class="cal-day other-month"><div class="cal-day-num">' + (prevDays - i) + '</div></div>'
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0')
+    const evs = calEvents.filter(e => e.date === dateStr)
+    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()
+    const isSel = calSelected === dateStr
+    const dots = evs.slice(0,3).map(e => '<div class="cal-dot" style="background:' + (isSel ? 'rgba(255,255,255,0.8)' : e.color) + '"></div>').join('')
+    grid.innerHTML += '<div class="cal-day' + (isToday ? ' today' : '') + (isSel ? ' selected' : '') + '" data-date="' + dateStr + '"><div class="cal-day-num">' + d + '</div><div class="cal-dots">' + dots + '</div></div>'
+  }
+  grid.querySelectorAll('.cal-day[data-date]').forEach(el => {
+    el.addEventListener('click', () => {
+      calSelected = calSelected === el.dataset.date ? null : el.dataset.date
+      const t = document.getElementById('cal-events-title')
+      if (t) t.textContent = calSelected ? new Date(calSelected + 'T12:00:00').toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long'}) : 'Evenements a venir'
+      renderCal()
+    })
+  })
+  renderCalEvents()
+}
+
+function renderCalEvents() {
+  const list = document.getElementById('cal-events-list')
+  if (!list) return
+  const todayStr = new Date().toISOString().split('T')[0]
+  const filtered = calSelected ? calEvents.filter(e => e.date === calSelected) : calEvents.filter(e => e.date >= todayStr).slice(0,6)
+  if (!filtered.length) { list.innerHTML = '<div class="cal-empty">Aucun evenement</div>'; return }
+  list.innerHTML = filtered.map(e => {
+    const d = new Date(e.date + 'T12:00:00')
+    const lbl = calSelected ? '' : d.toLocaleDateString('fr-FR', {weekday:'short',day:'numeric',month:'short'}) + ' · '
+    return '<div class="cal-event-row"><div class="cal-event-stripe" style="background:' + e.color + '"></div><div class="cal-event-info"><div class="cal-event-title">' + esc(e.title) + '</div><div class="cal-event-meta">' + lbl + (e.time ? e.time + ' · ' : '') + esc(e.who) + '</div></div><button class="cal-event-del" data-id="' + e.id + '">&times;</button></div>'
+  }).join('')
+  list.querySelectorAll('.cal-event-del').forEach(btn => {
+    btn.addEventListener('click', () => deleteCalEvent(btn.dataset.id))
+  })
+}
+
+function initCalendar() {
+  const prev = document.getElementById('cal-prev')
+  const next = document.getElementById('cal-next')
+  if (prev) prev.addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear-- } calSelected = null; renderCal() })
+  if (next) next.addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++ } calSelected = null; renderCal() })
+  const addBtn = document.getElementById('cal-add-btn')
+  if (addBtn) addBtn.addEventListener('click', () => openCalModal(calSelected || ''))
+  const saveBtn = document.getElementById('ev-save-btn')
+  if (saveBtn) saveBtn.addEventListener('click', saveCalEvent)
+  const cancelBtn = document.getElementById('ev-cancel-btn')
+  if (cancelBtn) cancelBtn.addEventListener('click', closeCalModal)
+  const modal = document.getElementById('cal-modal')
+  if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeCalModal() })
+  document.querySelectorAll('.color-opt').forEach(el => el.addEventListener('click', () => setCalColor(el.dataset.color)))
+  setCalColor('#007AFF')
+  renderCal()
+}
+
 // BOOT
 // ════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
