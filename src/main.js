@@ -1,0 +1,428 @@
+import { createClient } from '@supabase/supabase-js'
+
+// ════════════════════════════════
+// CONFIG
+// ════════════════════════════════
+const SB_URL = "https://qxsojquzoifvsarmktvk.supabase.co"
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4c29qcXV6b2lmdnNhcm1rdHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMDc1NTIsImV4cCI6MjA5NDc4MzU1Mn0.C6snaKaQmENwSKczZbwWU3nMGCgWs6fDNTajWcwqTDQ"
+const sb = createClient(SB_URL, SB_KEY)
+
+// ════════════════════════════════
+// STATE
+// ════════════════════════════════
+let FC = '', FN = '', ME = '', items = [], chan = null
+
+// ════════════════════════════════
+// UTILS
+// ════════════════════════════════
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+const fmt = p => p ? Number(p).toFixed(2).replace('.',',') + ' €' : ''
+
+function toast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.classList.add('show')
+  clearTimeout(t._t)
+  t._t = setTimeout(() => t.classList.remove('show'), 2500)
+}
+
+function setSync(label, on) {
+  document.getElementById('sync-label').textContent = label
+  document.getElementById('dot').className = 'dot' + (on === true ? ' on' : on === false ? ' off' : '')
+}
+
+// ════════════════════════════════
+// ONBOARDING
+// ════════════════════════════════
+function showCreate() {
+  document.getElementById('card-create').style.display = 'block'
+  document.getElementById('card-join').style.display = 'none'
+}
+
+function showJoin() {
+  document.getElementById('card-create').style.display = 'none'
+  document.getElementById('card-join').style.display = 'block'
+}
+
+async function doCreate() {
+  const fn = document.getElementById('inp-family').value.trim()
+  const pr = document.getElementById('inp-prenom-create').value.trim()
+  if (!fn || !pr) { toast('Remplis tous les champs'); return }
+  toast('Création en cours…')
+  const code = Math.random().toString(36).substring(2,8).toUpperCase()
+  const { error } = await sb.from('pf_members').insert([{ family_code: code, family_name: fn, prenom: pr }])
+  if (error) { toast('Erreur : ' + error.message); return }
+  localStorage.setItem('pf_code', code)
+  localStorage.setItem('pf_family', fn)
+  localStorage.setItem('pf_prenom', pr)
+  startApp(code, fn, pr)
+}
+
+async function doJoin() {
+  const code = document.getElementById('inp-code').value.trim().toUpperCase()
+  const pr = document.getElementById('inp-prenom-join').value.trim()
+  if (!code || !pr) { toast('Remplis tous les champs'); return }
+  if (code.length !== 6) { toast('Code à 6 caractères'); return }
+  toast('Connexion en cours…')
+  const { data, error } = await sb.from('pf_members').select('family_name').eq('family_code', code).limit(1)
+  if (error || !data || !data.length) { toast('Code famille introuvable'); return }
+  const fn = data[0].family_name
+  await sb.from('pf_members').insert([{ family_code: code, family_name: fn, prenom: pr }])
+  localStorage.setItem('pf_code', code)
+  localStorage.setItem('pf_family', fn)
+  localStorage.setItem('pf_prenom', pr)
+  startApp(code, fn, pr)
+}
+
+// ════════════════════════════════
+// APP
+// ════════════════════════════════
+function startApp(code, fn, pr) {
+  FC = code; FN = fn; ME = pr
+  document.getElementById('onboarding').classList.remove('visible')
+  document.getElementById('app').classList.add('visible')
+  const h = new Date().getHours()
+  const msg = h < 6 ? 'Bonne nuit' : h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir'
+  document.getElementById('g-name').textContent = pr
+  document.getElementById('g-msg').textContent = msg + ', ' + pr + ' !'
+  document.getElementById('g-family').textContent = 'Famille ' + fn
+  document.getElementById('code-display').textContent = code
+  loadMembers()
+  loadWeather()
+  loadItems()
+  subscribeRT()
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(FC).then(() => toast('Code copié !')).catch(() => toast(FC))
+}
+
+async function loadMembers() {
+  const { data } = await sb.from('pf_members').select('prenom').eq('family_code', FC)
+  if (!data) return
+  document.getElementById('members-list').innerHTML = data.map(m =>
+    `<div class="member-row">
+      <div class="member-av">${esc(m.prenom[0].toUpperCase())}</div>
+      <div>
+        <div class="member-name">${esc(m.prenom)}</div>
+        ${m.prenom === ME ? '<div class="member-you">Toi</div>' : ''}
+      </div>
+    </div>`
+  ).join('')
+}
+
+// ════════════════════════════════
+// MÉTÉO
+// ════════════════════════════════
+function loadWeather() {
+  if (!navigator.geolocation) return
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try {
+      const { latitude: lat, longitude: lon } = pos.coords
+      const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=auto`)
+      const d = await r.json()
+      const temp = Math.round(d.current.temperature_2m)
+      const wi = winfo(d.current.weathercode)
+      let city = ''
+      try {
+        const g = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+        const gd = await g.json()
+        city = gd.address.city || gd.address.town || gd.address.village || ''
+      } catch(e) {}
+      document.getElementById('meteo').innerHTML = `
+        <div class="meteo-row">
+          <div class="meteo-icon">${wi.icon}</div>
+          <div>
+            <div class="meteo-temp">${temp}°C</div>
+            <div class="meteo-desc">${wi.desc}</div>
+            ${city ? `<div class="meteo-city">${esc(city)}</div>` : ''}
+          </div>
+        </div>`
+    } catch(e) {}
+  }, () => {})
+}
+
+function winfo(c) {
+  if (c===0) return {icon:'☀️',desc:'Ciel dégagé'}
+  if (c<=2)  return {icon:'🌤️',desc:'Partiellement nuageux'}
+  if (c<=3)  return {icon:'☁️',desc:'Nuageux'}
+  if (c<=49) return {icon:'🌫️',desc:'Brouillard'}
+  if (c<=69) return {icon:'🌧️',desc:'Pluie'}
+  if (c<=79) return {icon:'❄️',desc:'Neige'}
+  return {icon:'⛈️',desc:'Orage'}
+}
+
+// ════════════════════════════════
+// COURSES
+// ════════════════════════════════
+async function loadItems() {
+  setSync('Connexion…', null)
+  const { data, error } = await sb.from('pf_courses').select('*').eq('family_code', FC).order('created_at', { ascending: true })
+  if (error) { setSync('Erreur', false); return }
+  items = data || []
+  renderCourses()
+}
+
+async function addItem() {
+  const ni = document.getElementById('new-item')
+  const pi = document.getElementById('price-input')
+  const name = ni.value.trim()
+  if (!name) return
+  const price = pi.value ? parseFloat(pi.value) : (defPrice(name) || null)
+  if (pi.value) savePrice(name, pi.value)
+  ni.value = ''; pi.value = ''
+  document.getElementById('suggest').innerHTML = ''
+  const { error } = await sb.from('pf_courses').insert([{ name, checked: false, family_code: FC, price }])
+  if (error) toast('Erreur : ' + error.message)
+}
+
+async function toggleItem(id, checked) {
+  await sb.from('pf_courses').update({ checked: !checked }).eq('id', id)
+}
+
+async function deleteItem(id) {
+  await sb.from('pf_courses').delete().eq('id', id)
+}
+
+async function clearChecked() {
+  const ids = items.filter(i => i.checked).map(i => i.id)
+  if (!ids.length) return
+  await sb.from('pf_courses').delete().in('id', ids)
+}
+
+async function resetChecked() {
+  const ids = items.filter(i => i.checked).map(i => i.id)
+  if (!ids.length) return
+  await sb.from('pf_courses').update({ checked: false }).in('id', ids)
+  toast('Liste remise à zéro')
+}
+
+function subscribeRT() {
+  if (chan) sb.removeChannel(chan)
+  chan = sb.channel('pf-' + FC)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'pf_courses', filter: 'family_code=eq.' + FC },
+      ({ eventType: ev, new: n, old: o }) => {
+        if (ev === 'INSERT') { if (!items.find(i => i.id === n.id)) items.push(n) }
+        else if (ev === 'UPDATE') { const x = items.findIndex(i => i.id === n.id); if (x !== -1) items[x] = n }
+        else if (ev === 'DELETE') { items = items.filter(i => i.id !== o.id) }
+        renderCourses()
+      })
+    .subscribe(s => {
+      if (s === 'SUBSCRIBED') setSync('En direct', true)
+      if (s === 'CLOSED') setSync('Déconnecté', false)
+    })
+}
+
+// ════════════════════════════════
+// CATÉGORIES
+// ════════════════════════════════
+const CATS = [
+  { id:'fl', label:'Fruits & Légumes', icon:'🥦', keys:['pomme','poire','banane','orange','citron','raisin','fraise','cerise','peche','abricot','melon','pasteque','ananas','mangue','kiwi','framboise','myrtille','prune','avocat','carotte','pomme de terre','tomate','concombre','courgette','poivron','aubergine','oignon','ail','poireau','brocoli','chou','laitue','salade','epinard','haricot vert','petits pois','mais','champignon','radis','betterave','navet','celeri','fenouil','artichaut','asperge','patate','persil','basilic','coriandre','menthe','thym','romarin','ciboulette','gingembre','piment','roquette','mache','endive','butternut','potiron'] },
+  { id:'vp', label:'Viande & Poisson', icon:'🥩', keys:['poulet','boeuf','veau','porc','agneau','dinde','canard','lapin','jambon','lardons','bacon','saucisse','merguez','chipolata','steak','escalope','roti','viande','saumon','thon','cabillaud','truite','sardine','maquereau','crevette','moule','huitre','saint-jacques','dorade','bar','merlu','lieu','colin','calamar','homard','langoustine','crabe','surimi','magret','confit','filet de poisson','anchois'] },
+  { id:'lt', label:'Produits laitiers', icon:'🥛', keys:['lait','yaourt','fromage','beurre','creme fraiche','creme liquide','emmental','gruyere','camembert','brie','roquefort','mozzarella','parmesan','comte','reblochon','munster','ricotta','mascarpone','feta','skyr','fromage blanc','burrata','kiri','babybel','gouda','cheddar'] },
+  { id:'bo', label:'Boulangerie', icon:'🥖', keys:['pain','baguette','brioche','croissant','madeleine','cookie','sable','biscotte','cracker','pate brisee','pate feuilletee','pate a pizza','pain de mie','pain complet'] },
+  { id:'ep', label:'Épicerie', icon:'🥫', keys:['pates','riz','semoule','quinoa','lentille','pois chiche','sauce tomate','coulis','concentre de tomate','soupe','bouillon','huile','vinaigre','moutarde','ketchup','mayonnaise','sel','poivre','sucre','farine','maizena','levure','chocolat','cacao','cafe','the','tisane','confiture','miel','nutella','chips','noix','amande','noisette','cacahuete','pistache','cereales','muesli','flocon','compote','boulgour','curry','paprika','cumin','curcuma','cannelle','origan','pesto','tabasco','sauce soja'] },
+  { id:'bv', label:'Boissons', icon:'🥤', keys:['eau','jus','soda','coca','pepsi','limonade','biere','vin','champagne','cidre','whisky','rhum','vodka','gin','aperitif','smoothie','nectar','orangina','perrier','schweppes','fanta','sprite'] },
+  { id:'sg', label:'Surgelés', icon:'🧊', keys:['surgele','surgelee','glace','sorbet','frite','nugget','hachis parmentier','pizza surgelee'] },
+  { id:'hy', label:'Hygiène & Beauté', icon:'🧴', keys:['shampoing','gel douche','savon','dentifrice','brosse a dent','rasoir','deodorant','creme','coton','tampon','serviette hygienique','couche','lingette','mouchoir'] },
+  { id:'mn', label:'Entretien', icon:'🧹', keys:['lessive','liquide vaisselle','nettoyant','javel','essuie tout','papier toilette','sac poubelle','eponge','assouplissant','pastille lave'] },
+  { id:'bb', label:'Bébé', icon:'👶', keys:['lait maternise','petit pot','compote bebe','biscuit bebe','biberon','tetine','couche taille'] },
+  { id:'an', label:'Animaux', icon:'🐾', keys:['croquette','patee chien','patee chat','litiere','friandise chien','friandise chat'] },
+]
+
+function detectCat(name) {
+  const n = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  for (const c of CATS) {
+    if (c.keys.some(k => n.includes(k.normalize('NFD').replace(/[\u0300-\u036f]/g, '')))) return c
+  }
+  return { id:'au', label:'Autre', icon:'🛒' }
+}
+
+// ════════════════════════════════
+// PRIX
+// ════════════════════════════════
+const DEF = {"Pomme":0.30,"Poire":0.40,"Banane":0.25,"Orange":0.50,"Citron":0.40,"Fraise":3.50,"Cerise":4.00,"Pêche":0.60,"Abricot":0.50,"Melon":2.50,"Ananas":2.00,"Mangue":1.50,"Kiwi":0.40,"Framboise":3.50,"Myrtille":3.00,"Avocat":1.20,"Carotte":1.20,"Pomme de terre":1.50,"Tomate":2.00,"Tomate cerise":2.50,"Concombre":0.80,"Courgette":1.00,"Poivron rouge":1.20,"Aubergine":1.20,"Oignon":1.00,"Ail":0.80,"Poireau":1.50,"Brocoli":1.80,"Laitue":1.20,"Épinard":2.00,"Haricots verts":2.50,"Champignons de Paris":2.00,"Patate douce":1.80,"Poulet entier":7.00,"Blanc de poulet":6.00,"Cuisses de poulet":4.00,"Boeuf haché":7.00,"Steak":10.00,"Entrecôte":14.00,"Filet de boeuf":22.00,"Côte de porc":8.00,"Filet mignon de porc":10.00,"Gigot d'agneau":18.00,"Escalope de dinde":7.00,"Magret de canard":12.00,"Jambon blanc":2.50,"Jambon cru":3.50,"Chorizo":3.00,"Lardons":2.00,"Saucisses de Strasbourg":2.50,"Merguez":3.50,"Chipolatas":3.50,"Saumon frais":15.00,"Saumon fumé":5.00,"Thon en boîte":1.80,"Cabillaud":14.00,"Sardines en boîte":1.50,"Crevettes roses":8.00,"Gambas":12.00,"Moules":3.50,"Lait demi-écrémé":1.10,"Lait entier":1.20,"Yaourt nature":1.50,"Yaourt aux fruits":2.00,"Yaourt grec":2.20,"Fromage blanc":1.50,"Beurre doux":2.20,"Crème fraîche épaisse":1.50,"Crème liquide":1.20,"Emmental":3.50,"Gruyère":4.00,"Comté":5.00,"Camembert":2.20,"Brie":3.00,"Mozzarella":1.80,"Parmesan":4.50,"Reblochon":4.00,"Feta":3.00,"Ricotta":2.00,"Mascarpone":2.50,"Baguette":1.10,"Pain complet":2.00,"Pain de mie":1.80,"Brioche":2.50,"Croissants":3.50,"Pâtes spaghetti":1.20,"Pâtes penne":1.20,"Riz basmati":2.50,"Quinoa":3.50,"Lentilles vertes":2.00,"Pois chiches":1.80,"Sauce tomate":1.20,"Huile d'olive":5.00,"Moutarde de Dijon":1.80,"Ketchup":1.50,"Mayonnaise":2.00,"Sel fin":0.50,"Sucre blanc":1.20,"Miel":4.00,"Confiture fraise":2.50,"Nutella":4.00,"Farine de blé":1.20,"Chocolat noir":2.50,"Café moulu":4.50,"Thé noir":3.50,"Chips nature":1.80,"Amandes":5.00,"Flocons d'avoine":2.00,"Bouillon de légumes":1.50,"Eau plate 1,5L":0.40,"Eau gazeuse":0.60,"Jus d'orange":2.50,"Coca-Cola":1.80,"Bière blonde":1.20,"Vin rouge":5.00,"Vin blanc":5.00,"Champagne":18.00,"Pizza surgelée":3.50,"Frites surgelées":2.50,"Glace vanille":3.50,"Shampoing":3.50,"Gel douche":2.80,"Dentifrice":2.50,"Déodorant":3.00,"Serviettes hygiéniques":3.50,"Couches":14.00,"Mouchoirs":2.00,"Lessive liquide":6.00,"Liquide vaisselle":2.50,"Pastilles lave-vaisselle":8.00,"Javel":1.50,"Essuie-tout":3.50,"Papier toilette":5.00,"Sacs poubelle":3.00,"Lait maternisé":12.00,"Croquettes chien":8.00,"Croquettes chat":6.00,"Litière chat":5.00}
+
+function defPrice(name) {
+  return DEF[name] !== undefined ? DEF[name] : (getSavedPrices()[name] || null)
+}
+function getSavedPrices() {
+  try { return JSON.parse(localStorage.getItem('pf_prices') || '{}') } catch(e) { return {} }
+}
+function savePrice(name, p) {
+  const s = getSavedPrices(); s[name] = parseFloat(p); localStorage.setItem('pf_prices', JSON.stringify(s))
+}
+
+// ════════════════════════════════
+// SUGGESTIONS
+// ════════════════════════════════
+const PRODS = ["Pomme","Pomme Granny Smith","Pomme Golden","Poire","Poire Williams","Banane","Orange","Orange à jus","Citron","Citron vert","Raisin blanc","Raisin noir","Fraise","Cerise","Pêche","Nectarine","Abricot","Melon","Pastèque","Ananas","Mangue","Kiwi","Framboise","Myrtille","Mûre","Prune","Mirabelle","Figue","Avocat","Clémentine","Mandarine","Pamplemousse","Litchi","Grenade","Carotte","Pomme de terre","Tomate","Tomate cerise","Tomate grappe","Concombre","Courgette","Poivron rouge","Poivron vert","Poivron jaune","Aubergine","Oignon","Oignon rouge","Échalote","Ail","Poireau","Brocoli","Chou-fleur","Chou blanc","Chou rouge","Laitue","Salade verte","Roquette","Mâche","Endive","Épinard","Haricots verts","Petits pois","Maïs","Champignons de Paris","Champignons shiitake","Girolles","Radis","Betterave","Navet","Céleri branche","Fenouil","Asperge verte","Patate douce","Artichaut","Potiron","Butternut","Persil","Basilic","Coriandre","Menthe","Thym","Romarin","Ciboulette","Gingembre","Piment","Poulet entier","Blanc de poulet","Cuisses de poulet","Pilons de poulet","Ailes de poulet","Boeuf haché","Steak haché","Steak","Entrecôte","Faux-filet","Filet de boeuf","Rôti de boeuf","Veau haché","Escalope de veau","Côte de porc","Filet mignon de porc","Rôti de porc","Travers de porc","Agneau haché","Gigot d'agneau","Épaule d'agneau","Dinde entière","Escalope de dinde","Magret de canard","Confit de canard","Lapin","Jambon blanc","Jambon cru","Jambon de Bayonne","Chorizo","Lardons","Bacon","Saucisses de Strasbourg","Merguez","Chipolatas","Boudin noir","Pâté","Rillettes","Foie gras","Saumon frais","Saumon fumé","Thon frais","Thon en boîte","Cabillaud","Truite","Sardines fraîches","Sardines en boîte","Maquereau","Lieu noir","Colin","Merlu","Dorade","Bar","Anchois","Crevettes roses","Crevettes grises","Gambas","Moules","Huîtres","Saint-Jacques","Calamars","Homard","Langoustines","Crabe","Surimi","Lait demi-écrémé","Lait entier","Lait écrémé","Lait sans lactose","Yaourt nature","Yaourt aux fruits","Yaourt grec","Skyr","Fromage blanc","Beurre doux","Beurre demi-sel","Margarine","Crème fraîche épaisse","Crème fraîche liquide","Crème liquide","Emmental","Gruyère","Comté","Beaufort","Camembert","Brie","Roquefort","Mozzarella","Burrata","Parmesan","Reblochon","Munster","Cheddar","Gouda","Ricotta","Feta","Mascarpone","Saint-Môret","Kiri","Babybel","Baguette","Pain complet","Pain aux céréales","Pain de mie","Pain de seigle","Brioche","Croissants","Pains au chocolat","Madeleines","Cookies","Sablés","Biscottes","Crackers","Pâte brisée","Pâte feuilletée","Pâte à pizza","Pâtes spaghetti","Pâtes penne","Pâtes fusilli","Pâtes farfalle","Lasagnes","Gnocchi","Riz basmati","Riz long grain","Riz rond","Riz complet","Boulgour","Semoule","Quinoa","Millet","Lentilles vertes","Lentilles corail","Pois chiches","Haricots rouges","Haricots blancs","Sauce tomate","Coulis de tomate","Concentré de tomate","Sauce bolognaise","Pesto","Sauce béchamel","Huile d'olive","Huile de tournesol","Huile de colza","Vinaigre de vin","Vinaigre balsamique","Moutarde de Dijon","Ketchup","Mayonnaise","Sauce soja","Tabasco","Sel fin","Sel de mer","Poivre noir","Paprika","Cumin","Curcuma","Curry","Cannelle","Herbes de Provence","Sucre blanc","Sucre roux","Miel","Sirop d'érable","Confiture fraise","Confiture abricot","Confiture cerise","Nutella","Farine de blé","Farine complète","Maïzena","Levure chimique","Chocolat noir","Chocolat au lait","Chocolat pâtissier","Cacao en poudre","Café moulu","Café en grains","Café soluble","Capsules café","Thé noir","Thé vert","Tisane","Verveine","Camomille","Chips nature","Chips paprika","Noix","Amandes","Noisettes","Noix de cajou","Pistaches","Cacahuètes","Graines de sésame","Graines de chia","Céréales petit déjeuner","Muesli","Flocons d'avoine","Granola","Compote pomme","Compote poire","Bouillon de légumes","Bouillon de poulet","Conserve de thon","Conserve de sardines","Tomates pelées","Soupe en brique","Eau plate 1,5L","Eau gazeuse","Jus d'orange","Jus de pomme","Jus multifruits","Coca-Cola","Coca-Cola Zero","Pepsi","Sprite","Fanta","Limonade","Orangina","Perrier","Bière blonde","Bière brune","Bière sans alcool","Vin rouge","Vin blanc","Vin rosé","Champagne","Cidre","Pastis","Lait d'amande","Lait de soja","Lait d'avoine","Smoothie","Pizza surgelée","Frites surgelées","Nuggets de poulet","Légumes surgelés","Glace vanille","Glace chocolat","Sorbet citron","Sorbet framboise","Shampoing","Après-shampoing","Gel douche","Savon liquide","Savon solide","Dentifrice","Brosse à dents","Déodorant","Rasoir","Mousse à raser","Coton","Coton-tiges","Serviettes hygiéniques","Tampons","Couches","Lingettes","Mouchoirs","Crème solaire","Lessive liquide","Lessive capsules","Assouplissant","Liquide vaisselle","Pastilles lave-vaisselle","Nettoyant WC","Javel","Essuie-tout","Papier toilette","Sacs poubelle","Film alimentaire","Papier aluminium","Éponge","Lait maternisé","Petit pot légumes","Petit pot viande","Petit pot fruits","Compote bébé","Couches taille 1","Couches taille 2","Couches taille 3","Couches taille 4","Couches taille 5","Tétine","Biberon","Croquettes chien","Croquettes chat","Pâtée chien","Pâtée chat","Litière chat","Friandises chien","Friandises chat"]
+
+function getSuggestions(q) {
+  if (!q || q.length < 2) return []
+  const qn = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const exact = [], starts = []
+  for (const p of PRODS) {
+    const pn = p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    if (pn === qn) exact.push(p)
+    else if (pn.startsWith(qn)) starts.push(p)
+  }
+  return [...exact, ...starts].slice(0, 5)
+}
+
+function showSuggestions(q) {
+  const list = getSuggestions(q)
+  if (!list.length) { document.getElementById('suggest').innerHTML = ''; return }
+  document.getElementById('suggest').innerHTML =
+    '<div class="suggest-list">' + list.map(s => {
+      const c = detectCat(s)
+      return `<div class="sug-item" data-name="${esc(s)}">
+        <span class="sug-icon">${c.icon}</span>
+        <span class="sug-name">${esc(s)}</span>
+        <span class="sug-cat">${c.label}</span>
+      </div>`
+    }).join('') + '</div>'
+
+  document.querySelectorAll('.sug-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const name = el.dataset.name
+      document.getElementById('new-item').value = name
+      document.getElementById('suggest').innerHTML = ''
+      const pi = document.getElementById('price-input')
+      const p = defPrice(name)
+      pi.value = p ? p.toFixed(2) : ''
+      pi.focus()
+    })
+  })
+}
+
+// ════════════════════════════════
+// RENDER COURSES
+// ════════════════════════════════
+function renderCourses() {
+  const pending = items.filter(i => !i.checked)
+  const done = items.filter(i => i.checked)
+  const total = items.reduce((s, i) => s + (i.price || 0), 0)
+
+  if (!items.length) {
+    document.getElementById('courses-content').innerHTML =
+      '<div class="empty"><span class="empty-icon">🛒</span><h3>Liste vide</h3><p>Ajoute ton premier article.</p></div>'
+    return
+  }
+
+  let html = ''
+  const groups = {}
+  for (const item of pending) {
+    const cat = detectCat(item.name)
+    if (!groups[cat.id]) groups[cat.id] = { cat, items: [] }
+    groups[cat.id].items.push(item)
+  }
+  const order = [...CATS.map(c => c.id), 'au']
+  for (const id of order) {
+    if (!groups[id]) continue
+    const g = groups[id]
+    const ct = g.items.reduce((s, i) => s + (i.price || 0), 0)
+    const pct = total > 0 && ct > 0 ? Math.round(ct / total * 100) : 0
+    html += `<div class="cat-head">
+      <span class="cat-ico">${g.cat.icon}</span>
+      <span class="cat-nm">${g.cat.label}</span>
+      <span class="cat-cnt">${g.items.length}</span>
+      ${ct > 0 ? `<span class="cat-price">${fmt(ct)}</span>` : ''}
+      ${pct > 0 ? `<span class="cat-pct">${pct}%</span>` : ''}
+    </div>
+    <div class="items-wrap"><div class="items-list">${g.items.map(renderItem).join('')}</div></div>`
+  }
+
+  if (done.length) {
+    const dt = done.reduce((s, i) => s + (i.price || 0), 0)
+    const dp = total > 0 && dt > 0 ? Math.round(dt / total * 100) : 0
+    html += `<div class="cat-head">
+      <span class="cat-ico">✅</span>
+      <span class="cat-nm">Cochés</span>
+      <span class="cat-cnt">${done.length}</span>
+      ${dt > 0 ? `<span class="cat-price">${fmt(dt)}</span>` : ''}
+      ${dp > 0 ? `<span class="cat-pct">${dp}%</span>` : ''}
+    </div>
+    <div class="items-wrap"><div class="items-list">${done.map(renderItem).join('')}</div></div>
+    <div class="btns-wrap">
+      <button class="btn-red" id="btn-clear">Supprimer les cochés</button>
+      <button class="btn-blue" id="btn-reset">Rafraîchir la liste</button>
+    </div>`
+  }
+
+  if (total > 0) {
+    html += `<div class="total-bar">
+      <span class="total-label">Total estimé</span>
+      <span class="total-amount">${fmt(total)}</span>
+    </div>`
+  }
+
+  document.getElementById('courses-content').innerHTML = html
+
+  // Wire dynamic buttons
+  document.getElementById('btn-clear')?.addEventListener('click', clearChecked)
+  document.getElementById('btn-reset')?.addEventListener('click', resetChecked)
+  document.querySelectorAll('.item').forEach(el => {
+    el.addEventListener('click', () => toggleItem(el.dataset.id, el.dataset.checked === 'true'))
+  })
+  document.querySelectorAll('.del').forEach(el => {
+    el.addEventListener('click', e => { e.stopPropagation(); deleteItem(el.dataset.id) })
+  })
+}
+
+function renderItem(item) {
+  return `<div class="item${item.checked ? ' done' : ''}" data-id="${item.id}" data-checked="${item.checked}">
+    <div class="cb"><svg viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span class="item-nm">${esc(item.name)}</span>
+    ${item.price ? `<span class="item-price">${fmt(item.price)}</span>` : ''}
+    <button class="del" data-id="${item.id}">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>`
+}
+
+// ════════════════════════════════
+// TABS
+// ════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('pane-' + name).classList.add('active')
+  document.getElementById('nav-' + name).classList.add('active')
+}
+
+// ════════════════════════════════
+// BOOT
+// ════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Onboarding buttons
+  document.getElementById('btn-create').addEventListener('click', doCreate)
+  document.getElementById('btn-join').addEventListener('click', doJoin)
+  document.getElementById('btn-show-join').addEventListener('click', showJoin)
+  document.getElementById('btn-show-create').addEventListener('click', showCreate)
+  document.getElementById('btn-copy').addEventListener('click', copyCode)
+  document.getElementById('btn-add').addEventListener('click', addItem)
+
+  // Nav buttons
+  document.getElementById('nav-accueil').addEventListener('click', () => switchTab('accueil'))
+  document.getElementById('nav-courses').addEventListener('click', () => switchTab('courses'))
+  document.getElementById('nav-calendrier').addEventListener('click', () => switchTab('calendrier'))
+  document.getElementById('nav-devoirs').addEventListener('click', () => switchTab('devoirs'))
+
+  // Input
+  const ni = document.getElementById('new-item')
+  ni.addEventListener('keydown', e => { if (e.key === 'Enter') addItem() })
+  ni.addEventListener('input', e => showSuggestions(e.target.value))
+  ni.addEventListener('blur', () => setTimeout(() => { document.getElementById('suggest').innerHTML = '' }, 200))
+
+  // Check localStorage
+  const code = localStorage.getItem('pf_code')
+  const fn   = localStorage.getItem('pf_family')
+  const pr   = localStorage.getItem('pf_prenom')
+
+  if (code && fn && pr) {
+    startApp(code, fn, pr)
+  } else {
+    document.getElementById('onboarding').classList.add('visible')
+  }
+})
