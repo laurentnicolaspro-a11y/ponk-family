@@ -393,6 +393,45 @@ document.addEventListener('focusin', e => {
     <div class="tab-pane" id="pane-devoirs">
       <div class="dev-wrap">
 
+        <!-- ÉVEIL -->
+        <div id="eveil-step-theme">
+          <div class="dev-step-title" style="color:var(--green)">Éveil — 3 à 6 ans</div>
+          <div class="dev-grid" style="grid-template-columns:1fr 1fr;margin-bottom:20px">
+            <button class="dev-card" data-theme="animaux" style="padding:16px 8px">🐾<div style="font-size:12px;margin-top:4px;font-weight:700">Animaux</div></button>
+            <button class="dev-card" data-theme="couleurs" style="padding:16px 8px">🎨<div style="font-size:12px;margin-top:4px;font-weight:700">Couleurs</div></button>
+            <button class="dev-card" data-theme="formes" style="padding:16px 8px">⭐<div style="font-size:12px;margin-top:4px;font-weight:700">Formes</div></button>
+            <button class="dev-card" data-theme="fruits" style="padding:16px 8px">🍎<div style="font-size:12px;margin-top:4px;font-weight:700">Fruits</div></button>
+            <button class="dev-card" data-theme="chiffres" style="padding:16px 8px;grid-column:1/-1">🔢<div style="font-size:12px;margin-top:4px;font-weight:700">Chiffres</div></button>
+          </div>
+          <div style="border-top:0.5px solid var(--border);margin-bottom:20px"></div>
+        </div>
+
+        <!-- Jeu Éveil -->
+        <div id="eveil-step-jeu" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+            <button class="dev-back-btn" id="eveil-back">‹</button>
+            <div>
+              <div class="dev-step-title" style="margin-bottom:0" id="eveil-theme-label"></div>
+              <div style="font-size:12px;color:var(--muted)" id="eveil-progress"></div>
+            </div>
+          </div>
+          <div id="eveil-card" style="background:var(--surface);border-radius:24px;padding:40px 20px;text-align:center;box-shadow:0 2px 20px rgba(0,0,0,0.08);margin-bottom:20px;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div id="eveil-emoji" style="font-size:90px;line-height:1.1;margin-bottom:12px"></div>
+            <div id="eveil-mot-reveal" style="font-size:26px;font-weight:800;color:var(--text);opacity:0;transition:opacity 0.3s"></div>
+          </div>
+          <div id="eveil-feedback" style="text-align:center;font-size:20px;font-weight:700;margin-bottom:14px;min-height:30px"></div>
+          <button id="eveil-mic-btn" style="width:100%;background:var(--green);color:white;border:none;border-radius:20px;padding:18px;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 14px rgba(52,199,89,0.3)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" fill="white"/><path d="M5 10a7 7 0 0014 0" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+            Appuie et parle
+          </button>
+          <div id="eveil-score" style="display:none;background:var(--black);border-radius:20px;padding:24px;text-align:center;margin-top:16px">
+            <div style="font-size:44px;margin-bottom:8px">🎉</div>
+            <div style="font-size:30px;font-weight:800;color:#4ADE80" id="eveil-score-val"></div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:4px">bonnes réponses</div>
+            <button id="eveil-retry" style="margin-top:14px;background:var(--green);color:white;border:none;border-radius:12px;padding:10px 24px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">Rejouer</button>
+          </div>
+        </div>
+
         <!-- ÉTAPE 1 : Classe -->
         <div id="dev-step-classe">
           <div class="dev-step-title">Choisir la classe</div>
@@ -482,10 +521,7 @@ document.addEventListener('focusin', e => {
       <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/></svg></div>
       <span class="nav-label">Devoirs</span>
     </button>
-    <button class="nav-btn" id="nav-eveil">
-      <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#8E8E93" stroke-width="1.8"/><path d="M9 9l1.5 1.5L12 9l1.5 1.5L15 9M9 14h6" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-      <span class="nav-label">Éveil</span>
-    </button>
+
   </nav>
 </div>
 
