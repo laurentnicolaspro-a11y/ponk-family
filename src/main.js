@@ -213,6 +213,28 @@ async function updateQty(id, delta) {
   await sb.from('pf_courses').update({ quantity: newQty }).eq('id', id)
 }
 
+function editPrice(el) {
+  const id = el.dataset.id
+  const currentPrice = el.dataset.price || ''
+  const input = document.createElement('input')
+  input.type = 'number'
+  input.step = '0.01'
+  input.min = '0'
+  input.value = currentPrice
+  input.placeholder = '0,00'
+  input.style.cssText = 'width:60px;border:1.5px solid var(--green);border-radius:8px;padding:3px 6px;font-family:inherit;font-size:13px;font-weight:600;text-align:center;outline:none;background:white;color:var(--text)'
+  el.replaceWith(input)
+  input.focus()
+  input.select()
+  async function confirmEdit() {
+    const newPrice = input.value ? parseFloat(input.value) : null
+    await sb.from('pf_courses').update({ price: newPrice }).eq('id', id)
+    if (newPrice) savePrice(items.find(i => i.id === id)?.name || '', newPrice)
+  }
+  input.addEventListener('blur', confirmEdit)
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { input.blur() } })
+}
+
 async function deleteItem(id) {
   await sb.from('pf_courses').delete().eq('id', id)
 }
@@ -347,7 +369,7 @@ function showSuggestions(q) {
 function renderCourses() {
   const pending = items.filter(i => !i.checked)
   const done = items.filter(i => i.checked)
-  const total = items.reduce((s, i) => s + (i.price || 0), 0)
+  const total = items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0)
 
   if (!items.length) {
     document.getElementById('courses-content').innerHTML =
@@ -366,7 +388,7 @@ function renderCourses() {
   for (const id of order) {
     if (!groups[id]) continue
     const g = groups[id]
-    const ct = g.items.reduce((s, i) => s + (i.price || 0), 0)
+    const ct = g.items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0)
     const pct = total > 0 && ct > 0 ? Math.round(ct / total * 100) : 0
     html += `<div class="cat-head">
       <span class="cat-ico">${g.cat.icon}</span>
@@ -379,7 +401,7 @@ function renderCourses() {
   }
 
   if (done.length) {
-    const dt = done.reduce((s, i) => s + (i.price || 0), 0)
+    const dt = done.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0)
     const dp = total > 0 && dt > 0 ? Math.round(dt / total * 100) : 0
     html += `<div class="cat-head">
       <span class="cat-ico">✅</span>
@@ -412,12 +434,14 @@ function renderCourses() {
     const del = e.target.closest('.del')
     const qtyMinus = e.target.closest('.qty-minus')
     const qtyPlus = e.target.closest('.qty-plus')
+    const priceEl = e.target.closest('.editable-price')
     const item = e.target.closest('.item')
     if (btnClear) { clearChecked(); return }
     if (btnReset) { resetChecked(); return }
     if (del) { e.stopPropagation(); deleteItem(del.dataset.id); return }
     if (qtyMinus) { e.stopPropagation(); updateQty(qtyMinus.dataset.id, -1); return }
     if (qtyPlus) { e.stopPropagation(); updateQty(qtyPlus.dataset.id, 1); return }
+    if (priceEl) { e.stopPropagation(); editPrice(priceEl); return }
     if (item && !e.target.closest('.qty-ctrl')) { toggleItem(item.dataset.id, item.dataset.checked === 'true') }
   })
 }
@@ -425,6 +449,9 @@ function renderCourses() {
 function renderItem(item) {
   const qty = item.quantity || 1
   const totalPrice = item.price ? item.price * qty : null
+  const priceDisplay = totalPrice
+    ? `<span class="item-price editable-price" data-id="${item.id}" data-price="${item.price || ''}">${fmt(totalPrice)}</span>`
+    : `<span class="item-price editable-price no-price" data-id="${item.id}" data-price="">+prix</span>`
   return `<div class="item${item.checked ? ' done' : ''}" data-id="${item.id}" data-checked="${item.checked}">
     <div class="cb"><svg viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <span class="item-nm">${esc(item.name)}</span>
@@ -433,7 +460,7 @@ function renderItem(item) {
       <span class="qty-val">${qty}</span>
       <button class="qty-btn qty-plus" data-id="${item.id}">+</button>
     </div>
-    ${totalPrice ? `<span class="item-price">${fmt(totalPrice)}</span>` : ''}
+    ${priceDisplay}
     <button class="del" data-id="${item.id}">
       <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
