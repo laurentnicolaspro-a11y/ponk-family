@@ -128,6 +128,7 @@ function renderMembers() {
   document.getElementById('btn-toggle-edit').addEventListener('click', () => {
     editMembers = !editMembers
     renderMembers()
+    // Re-wire after render
   })
 
   document.querySelectorAll('.del-member').forEach(btn => {
@@ -135,8 +136,7 @@ function renderMembers() {
       const prenom = btn.dataset.prenom
       if (!confirm('Supprimer ' + prenom + ' ?')) return
       await sb.from('pf_members').delete().eq('family_code', FC).eq('prenom', prenom)
-      members = members.filter(m => m.prenom !== prenom)
-      renderMembers()
+      await loadMembers()
     })
   })
 }
