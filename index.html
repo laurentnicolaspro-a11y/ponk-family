@@ -207,7 +207,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   <header class="app-header">
     <div class="header-row">
       <div class="header-title">Ponk <span>Family</span></div>
-      <div class="sync-badge"><div class="dot" id="dot"></div><span id="sync-label">–</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="sync-badge"><div class="dot" id="dot"></div><span id="sync-label">–</span></div>
+        <button id="btn-logout" style="background:none;border:none;cursor:pointer;color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;">Quitter</button>
+      </div>
     </div>
   </header>
 
