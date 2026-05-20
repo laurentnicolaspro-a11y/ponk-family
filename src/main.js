@@ -119,7 +119,7 @@ function renderMembers() {
       <div class="member-av">${esc(m.prenom[0].toUpperCase())}</div>
       <div style="flex:1">
         <div class="member-name">${esc(m.prenom)}</div>
-        ${m.prenom === ME ? '<div class="member-you">Toi</div>' : ''}
+        
       </div>
       ${editMembers && m.prenom !== ME ? `<button class="del-member" data-id="${m.id}" data-prenom="${esc(m.prenom)}" style="background:none;border:none;cursor:pointer;color:#FF3B30;font-size:20px;padding:4px 8px;font-weight:300;">×</button>` : ''}
     </div>`
