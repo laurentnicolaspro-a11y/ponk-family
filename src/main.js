@@ -713,7 +713,7 @@ function initCalendar() {
 // ════════════════════════════════
 // DEVOIRS
 // ════════════════════════════════
-const GEMINI_KEY = 'AIzaSyBkko2MmIT4DwnEzlbYnKrWU_1cnXrRRA8'
+const GEMINI_KEY = 'AIzaSyDMA1XgyeigI9zxGX901rWdKJ7-oISbn3Y'
 
 const CHAPITRES = {
   "CP":  ["Addition jusqu a 20","Soustraction jusqu a 20","Numeration jusqu a 30","Formes geometriques","Comparaison de nombres"],
@@ -814,6 +814,16 @@ function showDevStep(step) {
   document.getElementById('dev-step-classe').style.display = step === 'classe' ? 'block' : 'none'
   document.getElementById('dev-step-chapitre').style.display = step === 'chapitre' ? 'block' : 'none'
   document.getElementById('dev-step-contenu').style.display = step === 'contenu' ? 'block' : 'none'
+  // Hide eveil when navigating devoirs
+  const evTheme = document.getElementById('eveil-step-theme')
+  const evJeu = document.getElementById('eveil-step-jeu')
+  if (step !== 'classe') {
+    if (evTheme) evTheme.style.display = 'none'
+    if (evJeu) evJeu.style.display = 'none'
+  } else {
+    if (evTheme) evTheme.style.display = 'block'
+    if (evJeu) evJeu.style.display = 'none'
+  }
 
   if (step === 'chapitre') {
     document.getElementById('dev-chapitre-title').textContent = 'Chapitres - ' + devClasse
@@ -952,6 +962,7 @@ function startEveil(theme) {
   eveilSecondChance = false
 
   document.getElementById('eveil-step-theme').style.display = 'none'
+  document.getElementById('dev-step-classe').style.display = 'none'
   document.getElementById('eveil-step-jeu').style.display = 'block'
   document.getElementById('eveil-score').style.display = 'none'
   document.getElementById('eveil-theme-label').textContent = THEME_LABELS[theme]
@@ -1016,7 +1027,8 @@ function eveilFail() {
 }
 
 function showEveilScore() {
-  document.getElementById('eveil-mic-btn').style.display = 'none'
+  const micBtn = document.getElementById('eveil-mic-btn')
+  if (micBtn) micBtn.style.display = 'none'
   document.getElementById('eveil-score').style.display = 'block'
   document.getElementById('eveil-score-val').textContent = eveilScore + ' / ' + eveilCards.length
   speakWord('Bravo ! Tu as reussi ' + eveilScore + ' sur ' + eveilCards.length)
@@ -1071,6 +1083,7 @@ function initEveil() {
     eveilListening = false
     document.getElementById('eveil-step-jeu').style.display = 'none'
     document.getElementById('eveil-step-theme').style.display = 'block'
+    document.getElementById('dev-step-classe').style.display = 'block'
   })
   document.getElementById('eveil-mic-btn')?.addEventListener('click', startMicEveil)
   document.getElementById('eveil-retry')?.addEventListener('click', () => startEveil(eveilTheme))
@@ -1098,7 +1111,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('nav-courses').addEventListener('click', () => switchTab('courses'))
   document.getElementById('nav-calendrier').addEventListener('click', () => switchTab('calendrier'))
   document.getElementById('nav-devoirs').addEventListener('click', () => switchTab('devoirs'))
-  document.getElementById('nav-eveil').addEventListener('click', () => switchTab('eveil'))
 
   // Input
   const ni = document.getElementById('new-item')
